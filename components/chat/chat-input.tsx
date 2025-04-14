@@ -1,0 +1,45 @@
+'use client'
+
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { Loader2, Send } from 'lucide-react'
+import { ChangeEvent, FormEvent } from 'react'
+
+interface ChatInputProps {
+  input: string
+  isLoading: boolean
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void
+}
+
+export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputProps) {
+  return (
+    <div className="sticky bottom-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="p-4">
+        <form onSubmit={onSubmit} className="relative">
+          <div className="relative flex items-center rounded-xl border bg-background/50 backdrop-blur-sm shadow-lg">
+            <Input
+              value={input}
+              onChange={onChange}
+              placeholder="Ask anything"
+              disabled={isLoading}
+              className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+
+            <div className="mr-2">
+              {isLoading ? (
+                <Button disabled variant="ghost" size="icon" className="py-1.5">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </Button>
+              ) : (
+                <Button type="submit" variant="ghost" size="icon" className="py-1.5">
+                  <Send className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+} 

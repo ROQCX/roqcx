@@ -1,0 +1,45 @@
+version: 1
+frontend:
+    phases:
+        preBuild:
+            commands:
+                - echo "Creating .env file..."
+                - echo "# Next.js" > .env
+                - echo "NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}" >> .env
+                - echo "" >> .env
+                - echo "# Auth" >> .env
+                - echo "NEXTAUTH_URL=${NEXTAUTH_URL}" >> .env
+                - echo "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}" >> .env
+                - echo "" >> .env
+                - echo "# API Security" >> .env
+                - echo "API_KEY=${API_KEY}" >> .env
+                - echo "NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY}" >> .env
+                - echo "" >> .env
+                - echo "# Database" >> .env
+                - echo "TURSO_DB_URL=${TURSO_DB_URL}" >> .env
+                - echo "TURSO_DB_AUTH_TOKEN=${TURSO_DB_AUTH_TOKEN}" >> .env
+                - echo "" >> .env
+                - echo "# OpenAI" >> .env
+                - echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> .env
+                - echo "" >> .env
+                - echo "# Resend" >> .env
+                - echo "RESEND_API_KEY=${RESEND_API_KEY}" >> .env
+                - echo "" >> .env
+                - echo "# Recaptcha" >> .env
+                - echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}" >> .env
+                - echo "RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}" >> .env
+                - echo "" >> .env
+                - echo "# Google Tag Manager" >> .env
+                - echo "NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID}" >> .env
+                - npm install
+        build:
+            commands:
+                - 'npm run build'
+    artifacts:
+        baseDirectory: .next
+        files:
+            - '**/*'
+    cache:
+        paths:
+            - '.next/cache/**/*'
+            - 'node_modules/**/*' 

@@ -1,0 +1,16 @@
+{
+  "name": "ROQ CX",
+  "short_name": "ROQ CX",
+  "description": "Transform your business with cutting-edge automation, analytics, and AI solutions tailored for SMBs.",
+  "icons": [
+    {
+      "src": "/3d_logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#ffa404",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+} 
