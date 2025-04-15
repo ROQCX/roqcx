@@ -5,214 +5,146 @@ import { getMDXComponent } from "mdx-bundler/client"
 import { GlassCard } from "../ui/glass-card"
 import type { CaseStudyWithContent } from "../../lib/case-studies"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import {  Lightbulb,  Puzzle, LineChart } from "lucide-react"
-import { ComponentProps } from "react"
+import { Target, Lightbulb, LineChart } from "lucide-react"
+import type { ComponentProps } from "react"
+import type { MDXComponents } from "mdx/types"
+import { motion } from 'framer-motion'
 
 interface CaseStudyContentProps {
   caseStudy: CaseStudyWithContent
 }
 
-interface ImageProps extends ComponentProps<'img'> {
-  src: string
-  alt: string
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 }
 }
 
-const components = {
-  img: (props: ImageProps) => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="group relative my-12 overflow-hidden rounded-xl"
-    >
-      <Image
-        src={props.src}
-        alt={props.alt}
-        width={1200}
-        height={630}
-        className="w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-    </motion.div>
-  ),
-  a: (props: ComponentProps<'a'>) => (
-    <a
-      {...props}
-      className="text-primary hover:text-primary/80 transition-colors duration-200"
-      target="_blank"
-      rel="noopener noreferrer"
-    />
-  ),
-  code: (props: ComponentProps<'code'>) => (
-    <code
-      {...props}
-      className="rounded bg-zinc-100 px-1.5 py-0.5 text-sm dark:bg-zinc-800"
-    />
-  ),
-  pre: (props: ComponentProps<'pre'>) => (
-    <motion.pre
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-8 rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100 dark:bg-zinc-800"
-    >
-      {props.children}
-    </motion.pre>
-  ),
-  blockquote: (props: ComponentProps<'blockquote'>) => (
-    <motion.blockquote
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-8 border-l-4 border-primary/50 pl-4 italic text-muted-foreground"
-    >
-      {props.children}
-    </motion.blockquote>
-  ),
-  ul: (props: ComponentProps<'ul'>) => (
-    <ul
-      {...props}
-      className="my-6 list-disc space-y-3 pl-6 marker:text-primary/50 dark:marker:text-primary/50"
-    />
-  ),
-  ol: (props: ComponentProps<'ol'>) => (
-    <ol
-      {...props}
-      className="my-6 list-decimal space-y-3 pl-6 marker:text-primary/50 dark:marker:text-primary/50"
-    />
-  ),
-  table: (props: ComponentProps<'table'>) => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-8 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800"
-    >
-      <table
-        {...props}
-        className="w-full border-collapse divide-y divide-zinc-200 dark:divide-zinc-800"
-      />
-    </motion.div>
-  ),
-  th: (props: ComponentProps<'th'>) => (
-    <th
-      {...props}
-      className="border-r border-zinc-200 bg-zinc-50/50 px-4 py-3 text-left text-sm font-medium text-zinc-900 last:border-r-0 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100"
-    />
-  ),
-  td: (props: ComponentProps<'td'>) => (
-    <td
-      {...props}
-      className="border-r border-zinc-200 px-4 py-3 text-sm text-zinc-600 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400"
-    />
-  ),
-  tr: (props: ComponentProps<'tr'>) => (
-    <tr
-      {...props}
-      className="border-b border-zinc-200 last:border-0 dark:border-zinc-800"
-    />
-  ),
-  h1: (props: ComponentProps<'h1'>) => (
-    <motion.h1
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="mb-8 mt-12 text-3xl font-semibold tracking-tight text-foreground"
-    >
-      {props.children}
+const components: MDXComponents = {
+  h1: ({ children }) => (
+    <motion.h1 {...fadeInUp} className="text-3xl font-bold mt-8 mb-4">
+      {children}
     </motion.h1>
   ),
-  h2: (props: ComponentProps<'h2'>) => {
-    const text = typeof props.children === 'string' 
-      ? props.children 
-      : Array.isArray(props.children) 
-        ? props.children.join('') 
-        : ''
-    
-    let icon = null
-    
-    if (text === "The Challenge") {
-      icon = (
-        <div className="relative mr-3">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-sm" />
-          <Puzzle className="relative h-7 w-7 text-blue-500" />
-        </div>
-      )
-    } else if (text === "Our Solution") {
-      icon = (
-        <div className="relative mr-3">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20 blur-sm" />
-          <Lightbulb className="relative h-7 w-7 text-yellow-500" />
-        </div>
-      )
-    } else if (text === "The Impact") {
-      icon = (
-        <div className="relative mr-3">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-sm" />
-          <LineChart className="relative h-7 w-7 text-green-500" />
-        </div>
-      )
-    }
+  h2: ({ children }) => {
+    const text = typeof children === 'string' ? children : ''
+    const icon = text.toLowerCase().includes('challenge') ? <Target className="inline-block w-6 h-6 mr-2" /> :
+                 text.toLowerCase().includes('solution') ? <Lightbulb className="inline-block w-6 h-6 mr-2" /> :
+                 text.toLowerCase().includes('impact') ? <LineChart className="inline-block w-6 h-6 mr-2" /> : null
 
     return (
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="mb-6 mt-10 flex items-center text-2xl font-semibold tracking-tight text-foreground"
-      >
+      <motion.h2 {...fadeInUp} className="flex items-center gap-2 text-2xl font-bold mt-8 mb-4">
         {icon}
-        {props.children}
+        {children}
       </motion.h2>
     )
   },
-  h3: (props: ComponentProps<'h3'>) => (
-    <motion.h3
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="mb-4 mt-8 text-xl font-semibold tracking-tight text-foreground"
-    >
-      {props.children}
+  h3: ({ children }) => (
+    <motion.h3 {...fadeInUp} className="text-xl font-semibold mt-6 mb-3">
+      {children}
     </motion.h3>
   ),
-  h4: (props: ComponentProps<'h4'>) => (
-    <motion.h4
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="mb-4 mt-6 text-lg font-semibold tracking-tight text-foreground"
-    >
-      {props.children}
-    </motion.h4>
+  h4: ({ children, ...props }: ComponentProps<'h4'>) => (
+    <h4 {...props} className="text-lg font-semibold mt-4 mb-2">
+      {children}
+    </h4>
   ),
-  p: (props: ComponentProps<'p'>) => (
-    <motion.p
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-4 text-base leading-7 text-muted-foreground"
-    >
-      {props.children}
+  p: ({ children }) => (
+    <motion.p {...fadeInUp} className="my-4 leading-relaxed">
+      {children}
     </motion.p>
+  ),
+  a: ({ href, children }) => (
+    <motion.a 
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary hover:underline"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      {children}
+    </motion.a>
+  ),
+  img: ({ src, alt }) => (
+    <div className="relative w-full h-64 my-8">
+      <Image
+        src={src || ''}
+        alt={alt || ''}
+        fill
+        className="object-cover rounded-lg"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
+  ),
+  ul: ({ children }) => (
+    <motion.ul {...fadeInUp} className="list-disc list-inside space-y-2 my-4">
+      {children}
+    </motion.ul>
+  ),
+  ol: ({ children }) => (
+    <motion.ol {...fadeInUp} className="list-decimal list-inside space-y-2 my-4">
+      {children}
+    </motion.ol>
+  ),
+  li: ({ children }) => (
+    <motion.li {...fadeInUp} className="my-2">
+      {children}
+    </motion.li>
+  ),
+  blockquote: ({ children }) => (
+    <motion.blockquote {...fadeInUp} className="border-l-4 border-primary pl-4 my-4 italic">
+      {children}
+    </motion.blockquote>
+  ),
+  pre: ({ children }) => (
+    <motion.pre {...fadeInUp} className="bg-muted p-4 rounded-lg my-4 overflow-x-auto">
+      {children}
+    </motion.pre>
+  ),
+  code: ({ children }) => (
+    <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
+      {children}
+    </code>
+  ),
+  table: ({ children, ...props }: ComponentProps<'table'>) => (
+    <div className="my-8 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <table {...props} className="w-full border-collapse divide-y divide-zinc-200 dark:divide-zinc-800">
+        {children}
+      </table>
+    </div>
+  ),
+  th: ({ children, ...props }: ComponentProps<'th'>) => (
+    <th {...props} className="border-r border-zinc-200 bg-zinc-50/50 px-4 py-3 text-left text-sm font-medium text-zinc-900 last:border-r-0 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100">
+      {children}
+    </th>
+  ),
+  td: ({ children, ...props }: ComponentProps<'td'>) => (
+    <td {...props} className="border-r border-zinc-200 px-4 py-3 text-sm text-zinc-600 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400">
+      {children}
+    </td>
+  ),
+  tr: ({ children, ...props }: ComponentProps<'tr'>) => (
+    <tr {...props} className="border-b border-zinc-200 last:border-0 dark:border-zinc-800">
+      {children}
+    </tr>
   ),
 }
 
 export function CaseStudyContent({ caseStudy }: CaseStudyContentProps) {
-  const Component = useMemo(
-    () => getMDXComponent(caseStudy.content),
-    [caseStudy.content]
-  )
+  const Component = useMemo(() => {
+    if (!caseStudy.content) return null
+    try {
+      return getMDXComponent(caseStudy.content)
+    } catch (error) {
+      console.error('Error creating MDX component:', error)
+      return null
+    }
+  }, [caseStudy.content])
+
+  if (!Component) {
+    return <div>Failed to load content</div>
+  }
 
   return (
     <div className="mx-auto">

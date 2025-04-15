@@ -8,9 +8,8 @@ import { CalendarDays, Clock } from "lucide-react"
 import { format } from "date-fns"
 import type { BlogPostWithContent } from "../../lib/blog"
 import Image from "next/image"
-import { motion } from "framer-motion"
 import type { ComponentProps } from "react"
-import { MDXComponents } from "mdx/types"
+import type { MDXComponents } from "mdx/types"
 
 interface BlogPostContentProps {
   post: BlogPostWithContent
@@ -18,211 +17,163 @@ interface BlogPostContentProps {
 
 const components: MDXComponents = {
   img: (props: ComponentProps<'img'>) => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-12 overflow-hidden rounded-xl"
-    >
+    <div className="my-12 overflow-hidden rounded-xl">
       <Image
         src={props.src || ""}
         alt={props.alt || ""}
         width={1200}
         height={630}
-        className="w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+        className="w-full object-cover"
       />
-    </motion.div>
+    </div>
   ),
-  a: (props: ComponentProps<'a'>) => (
+  a: ({ children, ...props }: ComponentProps<'a'>) => (
     <a
       {...props}
-      className="text-primary hover:text-primary/80 transition-colors duration-200"
+      className="text-primary hover:text-primary/80"
       target="_blank"
       rel="noopener noreferrer"
-    />
+    >
+      {children}
+    </a>
   ),
-  code: (props: ComponentProps<'code'>) => (
+  code: ({ children, ...props }: ComponentProps<'code'>) => (
     <code
       {...props}
       className="rounded bg-zinc-100 px-1.5 py-0.5 text-sm dark:bg-zinc-800"
-    />
+    >
+      {children}
+    </code>
   ),
-  pre: (props) => (
+  pre: ({ children, ...props }: ComponentProps<'pre'>) => (
     <pre {...props} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 overflow-x-auto my-4">
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </pre>
   ),
-  blockquote: (props) => (
+  blockquote: ({ children, ...props }: ComponentProps<'blockquote'>) => (
     <blockquote {...props} className="border-l-4 border-roq-orange pl-4 italic my-4">
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </blockquote>
   ),
-  ul: (props: ComponentProps<'ul'>) => (
+  ul: ({ children, ...props }: ComponentProps<'ul'>) => (
     <ul
       {...props}
       className="my-6 list-disc space-y-3 pl-6 marker:text-primary/50 dark:marker:text-primary/50"
-    />
+    >
+      {children}
+    </ul>
   ),
-  ol: (props: ComponentProps<'ol'>) => (
+  ol: ({ children, ...props }: ComponentProps<'ol'>) => (
     <ol
       {...props}
       className="my-6 list-decimal space-y-3 pl-6 marker:text-primary/50 dark:marker:text-primary/50"
-    />
-  ),
-  table: (props: ComponentProps<'table'>) => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-8 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800"
     >
+      {children}
+    </ol>
+  ),
+  table: ({ children, ...props }: ComponentProps<'table'>) => (
+    <div className="my-8 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
       <table
         {...props}
         className="w-full border-collapse divide-y divide-zinc-200 dark:divide-zinc-800"
-      />
-    </motion.div>
+      >
+        {children}
+      </table>
+    </div>
   ),
-  th: (props: ComponentProps<'th'>) => (
+  th: ({ children, ...props }: ComponentProps<'th'>) => (
     <th
       {...props}
       className="border-r border-zinc-200 bg-zinc-50/50 px-4 py-3 text-left text-sm font-medium text-zinc-900 last:border-r-0 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100"
-    />
+    >
+      {children}
+    </th>
   ),
-  td: (props: ComponentProps<'td'>) => (
+  td: ({ children, ...props }: ComponentProps<'td'>) => (
     <td
       {...props}
       className="border-r border-zinc-200 px-4 py-3 text-sm text-zinc-600 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400"
-    />
+    >
+      {children}
+    </td>
   ),
-  tr: (props: ComponentProps<'tr'>) => (
+  tr: ({ children, ...props }: ComponentProps<'tr'>) => (
     <tr
       {...props}
       className="border-b border-zinc-200 last:border-0 dark:border-zinc-800"
-    />
+    >
+      {children}
+    </tr>
   ),
-  h1: (props) => (
+  h1: ({ children, ...props }: ComponentProps<'h1'>) => (
     <h1 {...props} className="text-4xl font-bold mb-6">
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </h1>
   ),
-  h2: (props) => (
+  h2: ({ children, ...props }: ComponentProps<'h2'>) => (
     <h2 {...props} className="text-3xl font-semibold mb-4">
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </h2>
   ),
-  h3: (props) => (
+  h3: ({ children, ...props }: ComponentProps<'h3'>) => (
     <h3 {...props} className="text-2xl font-semibold mb-3">
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </h3>
   ),
-  h4: (props) => (
+  h4: ({ children, ...props }: ComponentProps<'h4'>) => (
     <h4 {...props} className="text-xl font-semibold mb-3">
-      <motion.span
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </h4>
   ),
-  p: (props) => (
+  p: ({ children, ...props }: ComponentProps<'p'>) => (
     <p {...props} className="mb-4 leading-relaxed">
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </p>
   ),
-  li: (props) => (
+  li: ({ children, ...props }: ComponentProps<'li'>) => (
     <li {...props} className="mb-2">
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {props.children}
-      </motion.span>
+      {children}
     </li>
   ),
 }
 
 export function BlogPostContent({ post }: BlogPostContentProps) {
-  const Component = useMemo(() => getMDXComponent(post.content), [post.content])
+  const Component = useMemo(() => {
+    if (typeof window === 'undefined') return null
+    if (!post.content) return null
+    
+    try {
+      return getMDXComponent(post.content)
+    } catch (error) {
+      console.error('Error creating MDX component:', error)
+      return null
+    }
+  }, [post.content])
+
+  if (!Component) {
+    return <div>Loading content...</div>
+  }
 
   return (
     <article className="mx-auto max-w-4xl">
       <header className="mb-12 text-center">
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           {post.tags.map((tag) => (
-            <motion.span
+            <span
               key={tag}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
               className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
             >
               {tag}
-            </motion.span>
+            </span>
           ))}
         </div>
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl"
-        >
+        <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           {post.title}
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground"
-        >
+        </h1>
+        <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
           {post.description}
-        </motion.p>
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-center space-x-6"
-        >
+        </p>
+        <div className="flex items-center justify-center space-x-6">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={post.author.image} alt={post.author.name} />
@@ -243,7 +194,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
               {post.readingTime} min read
             </div>
           </div>
-        </motion.div>
+        </div>
       </header>
 
       <GlassCard className="prose prose-zinc mx-auto max-w-none dark:prose-invert 

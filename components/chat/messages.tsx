@@ -41,7 +41,7 @@ export function Messages({
           <div className="h-full w-full flex items-center justify-center p-4">
             <div className="max-w-2xl w-full">
               <Welcome 
-                onQuestionClick={onSelectQuestion}
+                onQuestionClick={(question: string) => onSelectQuestion?.(question)}
                 exampleQuestions={exampleQuestions}
                 message={welcomeMessage}
               />
