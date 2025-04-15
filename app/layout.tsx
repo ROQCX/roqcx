@@ -18,11 +18,17 @@ export const metadata: Metadata = {
     siteName: "ROQ CX",
     images: [
       {
-        url: "/roqcx.webp",
+        url: "/roqcx.png",
         width: 1024,
         height: 1024,
         alt: "ROQ CX Logo - Business Automation & AI Solutions",
       },
+      {
+        url: "/roqcx.webp",
+        width: 1024,
+        height: 1024,
+        alt: "ROQ CX Logo - Business Automation & AI Solutions",
+      }
     ],
     locale: "en_US",
     type: "website",
@@ -31,17 +37,18 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ROQ CX - Automate & Elevate Your Business",
     description: "Transform your business with cutting-edge automation, analytics, and AI solutions tailored for SMBs.",
-    images: ["/roqcx.webp"],
+    images: ["/roqcx.png", "/roqcx.webp"],
     creator: "@roqcx",
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
       { url: "/3d_logo.svg", type: "image/svg+xml" }
     ],
     apple: [
       { url: "/3d_logo.svg", type: "image/svg+xml" }
     ],
-    shortcut: ["/3d_logo.svg"]
+    shortcut: ["/favicon.ico"]
   },
   manifest: "/site.webmanifest",
   robots: {
