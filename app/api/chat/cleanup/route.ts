@@ -5,7 +5,38 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
-    const { sessionId } = await req.json()
+    // Check API key
+    const apiKey = req.headers.get('x-api-key')
+    if (!apiKey || apiKey !== process.env.NEXT_PUBLIC_API_KEY) {
+      console.log('API key validation failed:', {
+        received: apiKey,
+        expected: process.env.NEXT_PUBLIC_API_KEY
+      })
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Check if request has a body
+    const contentType = req.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      return NextResponse.json(
+        { error: 'Content-Type must be application/json' },
+        { status: 400 }
+      )
+    }
+
+    // Try to parse the request body
+    let sessionId: string | undefined
+    try {
+      const body = await req.json()
+      sessionId = body.sessionId
+    } catch (error) {
+      // If JSON parsing fails, treat as empty body
+      sessionId = undefined
+    }
+
     const now = Date.now()
     const cutoffTime = now - (24 * 60 * 60 * 1000) // 24 hours ago
 
@@ -61,7 +92,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error during cleanup:', error)
     return NextResponse.json(
-      { error: 'Failed to perform cleanup' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

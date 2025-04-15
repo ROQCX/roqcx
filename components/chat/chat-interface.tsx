@@ -1,129 +1,103 @@
 'use client'
 
-import { Message } from 'ai'
+import { Message, useChat } from 'ai/react'
 import { ChatHeader } from './chat-header'
 import { Messages } from './messages'
 import { ChatInput } from './chat-input'
 import { ChatbotInfoOverlay } from './chatbot-info-overlay'
+import { NewChatDialog } from './new-chat-dialog'
 import { useState } from 'react'
 import { useAnalytics } from '../../app/hooks/use-analytics'
 
 interface ChatInterfaceProps {
   initialMessages: Message[]
-  selectedChatModel?: string
-  selectedVisibilityType?: string
   isReadonly?: boolean
   exampleQuestions?: string[]
   welcomeMessage?: string
+  showInfoButton?: boolean
+  apiRoute?: string
 }
 
 export function ChatInterface({
   initialMessages,
   isReadonly = false,
   exampleQuestions,
-  welcomeMessage
+  welcomeMessage,
+  showInfoButton = true,
+  apiRoute = '/api/chat'
 }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages)
-  const [isLoading, setIsLoading] = useState(false)
   const [showOverlay, setShowOverlay] = useState(false)
+  const [showNewChatDialog, setShowNewChatDialog] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(true)
   const { trackEvent } = useAnalytics()
 
-  const handleSendMessage = async (message: string) => {
+  const { messages, input, handleInputChange,  isLoading, reload, append, setMessages } = useChat({
+    initialMessages,
+    api: apiRoute,
+    headers: {
+      'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+    },
+    onResponse: (response) => {
+      if (response.ok) {
+        trackEvent('chat_message_received', {
+          responseLength: response.headers.get('content-length')
+        })
+      }
+    },
+    onFinish: (message) => {
+      trackEvent('chat_message_complete', {
+        responseLength: message.content.length
+      })
+    },
+    onError: (error) => {
+      console.error('Error in chat:', error)
+      trackEvent('chat_error', {
+        error: error.message
+      })
+    }
+  })
+
+  const handleSendMessage = async (message: string, isExampleQuestion = false) => {
     if (isReadonly) return
 
     trackEvent('chat_message_send', {
       messageLength: message.length,
-      isQuestion: message.endsWith('?')
+      isQuestion: message.endsWith('?'),
+      isExampleQuestion
     })
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
+    setShowWelcome(false)
+    await append({
       content: message,
       role: 'user'
-    }
-
-    setMessages(prev => [...prev, newMessage])
-    setIsLoading(true)
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [...messages, newMessage],
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to send message')
-      }
-
-      const data = await response.json()
-      setMessages(prev => [...prev, data])
-      
-      trackEvent('chat_message_received', {
-        responseLength: data.content.length
-      })
-    } catch (error) {
-      console.error('Error sending message:', error)
-      trackEvent('chat_error', {
-        error: error instanceof Error ? error.message : 'Unknown error'
-      })
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   const handleRegenerate = async () => {
     if (isReadonly) return
-
     trackEvent('chat_regenerate')
-    setIsLoading(true)
+    await reload()
+  }
 
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: messages.slice(0, -1),
-        }),
-      })
+  const handleNewChat = () => {
+    if (isReadonly) return
+    setShowNewChatDialog(true)
+  }
 
-      if (!response.ok) {
-        throw new Error('Failed to regenerate message')
-      }
-
-      const data = await response.json()
-      setMessages(prev => [...prev.slice(0, -1), data])
-      
-      trackEvent('chat_regenerate_success', {
-        responseLength: data.content.length
-      })
-    } catch (error) {
-      console.error('Error regenerating message:', error)
-      trackEvent('chat_regenerate_error', {
-        error: error instanceof Error ? error.message : 'Unknown error'
-      })
-    } finally {
-      setIsLoading(false)
-    }
+  const handleConfirmNewChat = () => {
+    trackEvent('chat_new')
+    setMessages([])
+    setShowWelcome(true)
   }
 
   return (
     <div className="flex flex-col h-full">
       <ChatHeader 
-        onInfoClick={!isReadonly ? () => {
+        onInfoClick={!isReadonly && showInfoButton ? () => {
           setShowOverlay(true)
           trackEvent('chat_info_open')
         } : undefined}
-        onNewChat={!isReadonly ? () => {
-          setMessages([])
-          trackEvent('chat_new')
-        } : undefined}
+        onNewChat={!isReadonly ? handleNewChat : undefined}
         hasMessages={messages.length > 0}
       />
       <Messages 
@@ -132,23 +106,20 @@ export function ChatInterface({
         onRegenerate={handleRegenerate}
         onSelectQuestion={(question) => {
           trackEvent('chat_example_question', { question })
-          handleSendMessage(question)
+          handleSendMessage(question, true)
         }}
         exampleQuestions={exampleQuestions}
         welcomeMessage={welcomeMessage}
+        showWelcome={showWelcome}
       />
       {!isReadonly && (
         <ChatInput
-          input=""
+          input={input}
           isLoading={isLoading}
-          onChange={() => {}}
+          onChange={handleInputChange}
           onSubmit={(e) => {
             e.preventDefault()
-            const input = e.currentTarget.elements.namedItem('message') as HTMLInputElement
-            if (input?.value) {
-              handleSendMessage(input.value)
-              input.value = ''
-            }
+            handleSendMessage(input)
           }}
         />
       )}
@@ -159,6 +130,13 @@ export function ChatInterface({
             setShowOverlay(false)
             trackEvent('chat_info_close')
           }} 
+        />
+      )}
+      {!isReadonly && (
+        <NewChatDialog
+          open={showNewChatDialog}
+          onOpenChange={setShowNewChatDialog}
+          onConfirm={handleConfirmNewChat}
         />
       )}
     </div>

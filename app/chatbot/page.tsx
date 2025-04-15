@@ -6,7 +6,10 @@ import dynamic from 'next/dynamic'
 // Dynamically import the chat interface with no SSR
 const DynamicChatInterface = dynamic(
   () => import('../../components/chat/chat-interface').then(mod => mod.ChatInterface),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <div className="flex items-center justify-center h-[500px]">Loading...</div>
+  }
 )
 
 // Dynamically import the overlay
@@ -38,12 +41,11 @@ export default function ChatbotPage() {
   return (
     <div className="container mx-auto h-full px-4">
       <div className="mx-auto max-w-4xl h-full bg-background/60 backdrop-blur-lg rounded-lg border shadow-lg relative">
-        <Suspense fallback={<div className="flex items-center justify-center h-[500px]">Loading...</div>}>
-          <DynamicChatInterface 
-            initialMessages={[]} 
-            exampleQuestions={DEMO_QUESTIONS}
-          />
-        </Suspense>
+        <DynamicChatInterface 
+          initialMessages={[]} 
+          exampleQuestions={DEMO_QUESTIONS}
+          welcomeMessage="Hello! I'm your AI assistant. How can I help you today?"
+        />
 
         {showOverlay && (
           <Suspense fallback={null}>

@@ -14,7 +14,6 @@ import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { Button } from "../../../../components/ui/button"
 
-const DEFAULT_CHAT_MODEL = 'gpt-4'
 
 const features = [
   {
@@ -65,9 +64,7 @@ const ROQ_CX_QUESTIONS = [
 ]
 
 export default async function ROQChat() {
-  const cookieStore = await cookies()
-  const modelIdFromCookie = cookieStore.get('chat-model')
-
+    
   return (
     <div className="relative">
       <div className="container mx-auto px-4 py-24 sm:py-32">
@@ -146,11 +143,11 @@ export default async function ROQChat() {
           <GlassCard className="p-6">
             <ChatInterface
               initialMessages={[]}
-              selectedChatModel={modelIdFromCookie?.value || DEFAULT_CHAT_MODEL}
-              selectedVisibilityType="private"
-              isReadonly={true}
+              isReadonly={false}
               exampleQuestions={ROQ_CX_QUESTIONS}
               welcomeMessage="Welcome to ROQ CX Assistant! How can I help you learn about our products and services?"
+              showInfoButton={false}
+              apiRoute="/api/chat/roqcx"
             />
           </GlassCard>
         </div>

@@ -15,6 +15,7 @@ interface MessagesProps {
   onSelectQuestion?: (question: string) => void
   exampleQuestions?: string[]
   welcomeMessage?: string
+  showWelcome?: boolean
 }
 
 export function Messages({ 
@@ -23,7 +24,8 @@ export function Messages({
   onRegenerate,
   onSelectQuestion,
   exampleQuestions,
-  welcomeMessage = "Hello! How can I help you today?"
+  welcomeMessage = "Hello! How can I help you today?",
+  showWelcome: controlledShowWelcome
 }: MessagesProps) {
   const [showWelcome, setShowWelcome] = useState(true)
   const [containerRef, endRef] = useScrollToBottom<HTMLDivElement>()
@@ -34,14 +36,21 @@ export function Messages({
     }
   }, [messages.length])
 
+  const handleQuestionClick = (question: string) => {
+    setShowWelcome(false)
+    onSelectQuestion?.(question)
+  }
+
+  const shouldShowWelcome = controlledShowWelcome !== undefined ? controlledShowWelcome : showWelcome
+
   return (
     <div ref={containerRef} className="flex-1 overflow-y-auto h-full">
       <AnimatePresence mode="wait">
-        {showWelcome ? (
+        {shouldShowWelcome ? (
           <div className="h-full w-full flex items-center justify-center p-4">
             <div className="max-w-2xl w-full">
               <Welcome 
-                onQuestionClick={(question: string) => onSelectQuestion?.(question)}
+                onQuestionClick={handleQuestionClick}
                 exampleQuestions={exampleQuestions}
                 message={welcomeMessage}
               />
