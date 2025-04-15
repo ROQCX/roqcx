@@ -45,7 +45,11 @@ export function ChatInterface({
         })
         toast.success("Message received")
       } else {
-        toast.error("Failed to send message. Please try again.")
+        response.json().then(data => {
+          toast.error(`Error: ${data.message || 'Failed to send message'} (Status: ${response.status})`)
+        }).catch(() => {
+          toast.error(`Request failed with status: ${response.status}`)
+        })
       }
     },
     onFinish: (message) => {
@@ -59,7 +63,10 @@ export function ChatInterface({
       trackEvent('chat_error', {
         error: error.message
       })
-      toast.error(error.message || "An error occurred. Please try again.")
+      const errorMessage = error instanceof Error 
+        ? `Error: ${error.message}`
+        : 'An unexpected error occurred. Please check your connection and API key.'
+      toast.error(errorMessage)
     }
   })
 
@@ -79,7 +86,10 @@ export function ChatInterface({
         role: 'user'
       })
     } catch (error) {
-      toast.error("Failed to send message. Please try again.")
+      const errorMessage = error instanceof Error 
+        ? `Failed to send message: ${error.message}`
+        : 'Failed to send message. Please check your connection and try again.'
+      toast.error(errorMessage)
     }
   }
 
@@ -89,7 +99,10 @@ export function ChatInterface({
     try {
       await reload()
     } catch (error) {
-      toast.error("Failed to regenerate response. Please try again.")
+      const errorMessage = error instanceof Error 
+        ? `Failed to regenerate response: ${error.message}`
+        : 'Failed to regenerate response. Please check your connection and try again.'
+      toast.error(errorMessage)
     }
   }
 
