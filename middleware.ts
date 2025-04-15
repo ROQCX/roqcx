@@ -2,19 +2,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { rateLimit } from './lib/rate-limit'
 
-// Helper function to clean API key
-function cleanApiKey(key: string | null | undefined): string {
-  if (!key) return ''
-  return key.trim().replace(/^['"](.+)['"]$/, '$1')
-}
-
 // List of allowed origins for CORS
 const allowedOrigins = [
-  process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  'http://localhost:3001',
   'https://www.roqcx.com',
   'https://roqcx.com',
-  // Add other allowed origins here
+  'http://localhost:3000', // For local development
 ]
 
 // List of API routes that require authentication
@@ -32,23 +24,18 @@ const limiter = rateLimit({
 })
 
 export async function middleware(request: NextRequest) {
-  console.log('Middleware triggered for:', request.nextUrl.pathname)
-  console.log('Request method:', request.method)
-  console.log('Origin:', request.headers.get('origin'))
+  const pathname = request.nextUrl.pathname
+  const origin = request.headers.get('origin')
 
   // Apply rate limiting first
   const rateLimitResponse = limiter(request)
   if (rateLimitResponse) {
-    console.log('Rate limit exceeded')
     return rateLimitResponse
   }
 
   // Handle CORS
-  const origin = request.headers.get('origin')
   const isAllowedOrigin = !origin || allowedOrigins.includes(origin)
-  
   if (!isAllowedOrigin) {
-    console.log('Origin not allowed:', origin)
     return new NextResponse(null, { status: 403 })
   }
 
@@ -59,7 +46,6 @@ export async function middleware(request: NextRequest) {
   if (origin) {
     response.headers.set('Access-Control-Allow-Origin', origin)
   } else {
-    // Allow requests from same origin (null origin)
     response.headers.set('Access-Control-Allow-Origin', '*')
   }
   
@@ -69,7 +55,6 @@ export async function middleware(request: NextRequest) {
 
   // Handle preflight requests
   if (request.method === 'OPTIONS') {
-    console.log('Handling preflight request')
     return new NextResponse(null, {
       status: 204,
       headers: {
@@ -82,25 +67,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check if the route requires authentication
-  const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
-  console.log('Is protected route:', isProtectedRoute)
-  
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
   if (isProtectedRoute) {
-    const apiKey = cleanApiKey(request.headers.get('x-api-key'))
-    const expectedApiKey = cleanApiKey(process.env.NEXT_PUBLIC_API_KEY)
-    const expectedApiKeyAlt = cleanApiKey(process.env.API_KEY)
+    const apiKey = request.headers.get('x-api-key')
+    const expectedApiKey = process.env.NEXT_PUBLIC_API_KEY
 
-    console.log('API Key validation:', {
-      receivedKeyLength: apiKey?.length || 0,
-      expectedKeyLength: expectedApiKey?.length || 0,
-      expectedAltKeyLength: expectedApiKeyAlt?.length || 0,
-      hasReceivedKey: !!apiKey,
-      hasExpectedKey: !!expectedApiKey,
-      hasExpectedAltKey: !!expectedApiKeyAlt
-    })
-    
-    if (!apiKey || (apiKey !== expectedApiKey && apiKey !== expectedApiKeyAlt)) {
-      console.log('API key validation failed')
+    if (!apiKey || apiKey !== expectedApiKey) {
       return new NextResponse(
         JSON.stringify({ error: 'Unauthorized', message: 'Invalid API key' }),
         { 
@@ -112,7 +84,6 @@ export async function middleware(request: NextRequest) {
         }
       )
     }
-    console.log('API key validation successful')
   }
 
   return response
