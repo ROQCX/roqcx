@@ -23,9 +23,15 @@ const limiter = rateLimit({
   maxRequests: Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
 })
 
+// Normalize origin by removing duplicate www
+function normalizeOrigin(origin: string | null): string | null {
+  if (!origin) return null
+  return origin.replace(/www\.www\./, 'www.')
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
-  const origin = request.headers.get('origin')
+  const origin = normalizeOrigin(request.headers.get('origin'))
 
   // Apply rate limiting first
   const rateLimitResponse = limiter(request)

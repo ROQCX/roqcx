@@ -10,6 +10,11 @@ import { useState } from 'react'
 import { useAnalytics } from '../../app/hooks/use-analytics'
 import { toast } from 'sonner'
 
+// Normalize URL by removing duplicate www
+function normalizeUrl(url: string): string {
+  return url.replace(/www\.www\./, 'www.')
+}
+
 interface ChatInterfaceProps {
   initialMessages: Message[]
   isReadonly?: boolean
@@ -39,12 +44,13 @@ export function ChatInterface({
       'x-api-key': (process.env.NEXT_PUBLIC_API_KEY || '').trim().replace(/^['"](.+)['"]$/, '$1'),
     },
     onResponse: (response) => {
-      // Log request details
+      // Log request details with normalized URL
+      const normalizedOrigin = normalizeUrl(window.location.origin)
       console.log('Chat request details:', {
         apiRoute,
         apiKey: process.env.NEXT_PUBLIC_API_KEY ? `${process.env.NEXT_PUBLIC_API_KEY.length} chars` : 'missing',
         cleanedApiKey: (process.env.NEXT_PUBLIC_API_KEY || '').trim().replace(/^['"](.+)['"]$/, '$1').length + ' chars',
-        origin: window.location.origin
+        origin: normalizedOrigin
       })
 
       if (response.ok) {
@@ -53,13 +59,13 @@ export function ChatInterface({
         })
         toast.success("Message received")
       } else {
-        // Log response details for debugging
+        // Log response details for debugging with normalized URL
         console.error('Chat API Error:', {
           status: response.status,
           statusText: response.statusText,
           headers: Object.fromEntries(response.headers.entries()),
-          url: response.url,
-          origin: window.location.origin,
+          url: normalizeUrl(response.url),
+          origin: normalizedOrigin,
           pathname: window.location.pathname
         })
 
