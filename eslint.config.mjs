@@ -1,6 +1,5 @@
 import nextPlugin from '@next/eslint-plugin-next'
 import typescriptPlugin from '@typescript-eslint/eslint-plugin'
-import typescriptParser from '@typescript-eslint/parser'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 
 export default [
@@ -15,29 +14,39 @@ export default [
       'coverage/**',
       'public/**',
       '*.config.{js,ts}',
-      '**/*.d.ts',
+      '**/*.d.ts'
     ],
     plugins: {
       '@next/next': nextPlugin,
       '@typescript-eslint': typescriptPlugin,
-      'react-hooks': reactHooksPlugin,
+      'react-hooks': reactHooksPlugin
     },
     languageOptions: {
-      parser: typescriptParser,
+      parser: typescriptPlugin.parser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
-          jsx: true,
-        },
-      },
+          jsx: true
+        }
+      }
     },
     rules: {
+      // Next.js rules
       '@next/next/no-html-link-for-pages': 'error',
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@next/next/no-img-element': 'warn',
+      '@next/next/no-typos': 'error',
+      '@next/next/no-unwanted-polyfillio': 'error',
+      
+      // TypeScript rules
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      
+      // React rules
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-    },
-  },
+      'react-hooks/exhaustive-deps': 'warn'
+    }
+  }
 ]

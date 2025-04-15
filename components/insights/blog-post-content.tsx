@@ -8,7 +8,7 @@ import { CalendarDays, Clock } from "lucide-react"
 import { format } from "date-fns"
 import type { BlogPostWithContent } from "../../lib/blog"
 import Image from "next/image"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion } from "framer-motion"
 import type { ComponentProps } from "react"
 import { MDXComponents } from "mdx/types"
 
