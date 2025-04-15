@@ -3,9 +3,14 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
+interface DataLayerEvent {
+  event: string
+  [key: string]: unknown
+}
+
 declare global {
   interface Window {
-    dataLayer: any[]
+    dataLayer: DataLayerEvent[]
   }
 }
 
@@ -22,7 +27,7 @@ export function useAnalytics() {
     }
   }, [pathname, searchParams])
 
-  const trackEvent = (eventName: string, properties?: Record<string, any>) => {
+  const trackEvent = (eventName: string, properties?: Record<string, unknown>) => {
     window.dataLayer?.push({
       event: eventName,
       ...properties,
