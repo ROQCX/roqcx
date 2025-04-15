@@ -2,6 +2,7 @@ import { ContactForm } from "../../../components/contact/contact-form"
 import { Metadata } from "next"
 import { Mail, MessageCircle, MapPin } from "lucide-react"
 import Script from "next/script"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Contact Us | ROQ CX",
@@ -72,7 +73,9 @@ export default function ContactPage() {
             <div className="lg:pl-8 xl:pl-12">
               <div className="overflow-hidden rounded-2xl bg-background/60 shadow-sm ring-1 ring-zinc-950/5 backdrop-blur dark:bg-zinc-900/60 dark:ring-white/10">
                 <div className="p-8">
-                  <ContactForm />
+                  <Suspense fallback={<div>Loading form...</div>}>
+                    <ContactForm />
+                  </Suspense>
                 </div>
               </div>
             </div>
