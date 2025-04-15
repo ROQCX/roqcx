@@ -132,27 +132,29 @@ const components = {
     const text = props.children
     let icon = null
     
-    if (text === "The Challenge") {
-      icon = (
-        <div className="relative mr-3">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-sm" />
-          <Puzzle className="relative h-7 w-7 text-blue-500" />
-        </div>
-      )
-    } else if (text === "Our Solution") {
-      icon = (
-        <div className="relative mr-3">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20 blur-sm" />
-          <Lightbulb className="relative h-7 w-7 text-yellow-500" />
-        </div>
-      )
-    } else if (text === "The Impact") {
-      icon = (
-        <div className="relative mr-3">
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-sm" />
-          <LineChart className="relative h-7 w-7 text-green-500" />
-        </div>
-      )
+    if (typeof text === 'string') {
+      if (text === "The Challenge") {
+        icon = (
+          <div className="relative mr-3">
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-sm" />
+            <Puzzle className="relative h-7 w-7 text-blue-500" />
+          </div>
+        )
+      } else if (text === "Our Solution") {
+        icon = (
+          <div className="relative mr-3">
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20 blur-sm" />
+            <Lightbulb className="relative h-7 w-7 text-yellow-500" />
+          </div>
+        )
+      } else if (text === "The Impact") {
+        icon = (
+          <div className="relative mr-3">
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-sm" />
+            <LineChart className="relative h-7 w-7 text-green-500" />
+          </div>
+        )
+      }
     }
 
     return (
@@ -164,7 +166,7 @@ const components = {
         className="mb-6 mt-10 flex items-center text-2xl font-semibold tracking-tight text-foreground"
       >
         {icon}
-        {text}
+        {props.children}
       </motion.h2>
     )
   },
