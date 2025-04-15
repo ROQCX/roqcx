@@ -6,6 +6,8 @@ import { rateLimit } from './lib/rate-limit'
 const allowedOrigins = [
   process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   'http://localhost:3001',
+  'https://www.roqcx.com',
+  'https://roqcx.com',
   // Add other allowed origins here
 ]
 
@@ -88,7 +90,7 @@ export async function middleware(request: NextRequest) {
     if (!apiKey || (apiKey !== process.env.API_KEY && apiKey !== process.env.NEXT_PUBLIC_API_KEY)) {
       console.log('API key validation failed')
       return new NextResponse(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ error: 'Unauthorized', message: 'Invalid API key' }),
         { 
           status: 401,
           headers: {

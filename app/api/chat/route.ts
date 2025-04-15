@@ -23,12 +23,12 @@ export async function POST(req: Request) {
     // Check API key
     const apiKey = req.headers.get('x-api-key')
     if (!apiKey || apiKey !== process.env.NEXT_PUBLIC_API_KEY) {
-      console.log('API key validation failed:', {
+      console.error('API key validation failed:', {
         received: apiKey,
         expected: process.env.NEXT_PUBLIC_API_KEY
       })
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized', message: 'Invalid API key' },
         { status: 401 }
       )
     }
@@ -83,12 +83,12 @@ ${similarChunks.map(chunk => chunk.content).join('\n\n')}`
     console.error('Error in chat endpoint:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request format' },
+        { error: 'Invalid request format', message: error.message },
         { status: 400 }
       )
     }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

@@ -8,6 +8,7 @@ import { ChatbotInfoOverlay } from './chatbot-info-overlay'
 import { NewChatDialog } from './new-chat-dialog'
 import { useState } from 'react'
 import { useAnalytics } from '../../app/hooks/use-analytics'
+import { toast } from 'sonner'
 
 interface ChatInterfaceProps {
   initialMessages: Message[]
@@ -31,7 +32,7 @@ export function ChatInterface({
   const [showWelcome, setShowWelcome] = useState(true)
   const { trackEvent } = useAnalytics()
 
-  const { messages, input, handleInputChange,  isLoading, reload, append, setMessages } = useChat({
+  const { messages, input, handleInputChange, isLoading, reload, append, setMessages } = useChat({
     initialMessages,
     api: apiRoute,
     headers: {
@@ -42,18 +43,23 @@ export function ChatInterface({
         trackEvent('chat_message_received', {
           responseLength: response.headers.get('content-length')
         })
+        toast.success("Message received")
+      } else {
+        toast.error("Failed to send message. Please try again.")
       }
     },
     onFinish: (message) => {
       trackEvent('chat_message_complete', {
         responseLength: message.content.length
       })
+      toast.success("Message complete")
     },
     onError: (error) => {
       console.error('Error in chat:', error)
       trackEvent('chat_error', {
         error: error.message
       })
+      toast.error(error.message || "An error occurred. Please try again.")
     }
   })
 
@@ -67,16 +73,24 @@ export function ChatInterface({
     })
 
     setShowWelcome(false)
-    await append({
-      content: message,
-      role: 'user'
-    })
+    try {
+      await append({
+        content: message,
+        role: 'user'
+      })
+    } catch (error) {
+      toast.error("Failed to send message. Please try again.")
+    }
   }
 
   const handleRegenerate = async () => {
     if (isReadonly) return
     trackEvent('chat_regenerate')
-    await reload()
+    try {
+      await reload()
+    } catch (error) {
+      toast.error("Failed to regenerate response. Please try again.")
+    }
   }
 
   const handleNewChat = () => {
@@ -88,6 +102,7 @@ export function ChatInterface({
     trackEvent('chat_new')
     setMessages([])
     setShowWelcome(true)
+    toast.success("New chat started")
   }
 
   return (
