@@ -36,7 +36,7 @@ export function ChatInterface({
     initialMessages,
     api: apiRoute,
     headers: {
-      'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+      'x-api-key': (process.env.NEXT_PUBLIC_API_KEY || '').trim().replace(/^['"](.+)['"]$/, '$1'),
     },
     onResponse: (response) => {
       if (response.ok) {

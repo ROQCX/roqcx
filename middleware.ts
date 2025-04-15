@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { rateLimit } from './lib/rate-limit'
 
+// Helper function to clean API key
+function cleanApiKey(key: string | null | undefined): string {
+  if (!key) return ''
+  return key.trim().replace(/^['"](.+)['"]$/, '$1')
+}
+
 // List of allowed origins for CORS
 const allowedOrigins = [
   process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
@@ -80,14 +86,20 @@ export async function middleware(request: NextRequest) {
   console.log('Is protected route:', isProtectedRoute)
   
   if (isProtectedRoute) {
-    const apiKey = request.headers.get('x-api-key')
-    console.log('API Key received:', apiKey ? 'Present' : 'Missing')
-    console.log('Expected API Keys:', {
-      API_KEY: process.env.API_KEY ? 'Present' : 'Missing',
-      NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY ? 'Present' : 'Missing'
+    const apiKey = cleanApiKey(request.headers.get('x-api-key'))
+    const expectedApiKey = cleanApiKey(process.env.NEXT_PUBLIC_API_KEY)
+    const expectedApiKeyAlt = cleanApiKey(process.env.API_KEY)
+
+    console.log('API Key validation:', {
+      receivedKeyLength: apiKey?.length || 0,
+      expectedKeyLength: expectedApiKey?.length || 0,
+      expectedAltKeyLength: expectedApiKeyAlt?.length || 0,
+      hasReceivedKey: !!apiKey,
+      hasExpectedKey: !!expectedApiKey,
+      hasExpectedAltKey: !!expectedApiKeyAlt
     })
     
-    if (!apiKey || (apiKey !== process.env.API_KEY && apiKey !== process.env.NEXT_PUBLIC_API_KEY)) {
+    if (!apiKey || (apiKey !== expectedApiKey && apiKey !== expectedApiKeyAlt)) {
       console.log('API key validation failed')
       return new NextResponse(
         JSON.stringify({ error: 'Unauthorized', message: 'Invalid API key' }),
