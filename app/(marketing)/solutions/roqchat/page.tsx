@@ -13,6 +13,7 @@ import {
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { Button } from "../../../../components/ui/button"
+import { Suspense } from "react"
 
 
 const features = [
@@ -64,7 +65,9 @@ const ROQ_CX_QUESTIONS = [
 ]
 
 export default async function ROQChat() {
-    
+  const cookieStore = await cookies()
+  const modelIdFromCookie = cookieStore.get('chat-model')
+
   return (
     <div className="relative">
       <div className="container mx-auto px-4 py-24 sm:py-32">
@@ -141,14 +144,16 @@ export default async function ROQChat() {
         <div className="mx-auto mt-24 max-w-4xl">
           <h2 className="text-center text-2xl font-bold mb-8">Try ROQChat Now</h2>
           <GlassCard className="p-6">
-            <ChatInterface
-              initialMessages={[]}
-              isReadonly={false}
-              exampleQuestions={ROQ_CX_QUESTIONS}
-              welcomeMessage="Welcome to ROQ CX Assistant! How can I help you learn about our products and services?"
-              showInfoButton={false}
-              apiRoute="/api/chat/roqcx"
-            />
+            <Suspense fallback={<div>Loading chat interface...</div>}>
+              <ChatInterface
+                initialMessages={[]}
+                isReadonly={false}
+                exampleQuestions={ROQ_CX_QUESTIONS}
+                welcomeMessage="Welcome to ROQ CX Assistant! How can I help you learn about our products and services?"
+                showInfoButton={false}
+                apiRoute="/api/chat/roqcx"
+              />
+            </Suspense>
           </GlassCard>
         </div>
 
