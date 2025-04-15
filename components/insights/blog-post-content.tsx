@@ -10,12 +10,13 @@ import type { BlogPostWithContent } from "../../lib/blog"
 import Image from "next/image"
 import { motion, HTMLMotionProps } from "framer-motion"
 import type { ComponentProps } from "react"
+import { MDXComponents } from "mdx/types"
 
 interface BlogPostContentProps {
   post: BlogPostWithContent
 }
 
-const components = {
+const components: MDXComponents = {
   img: (props: ComponentProps<'img'>) => (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -47,25 +48,27 @@ const components = {
       className="rounded bg-zinc-100 px-1.5 py-0.5 text-sm dark:bg-zinc-800"
     />
   ),
-  pre: (props: HTMLMotionProps<'pre'>) => (
-    <motion.pre
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="my-8 rounded-lg bg-zinc-900 p-4 text-sm text-zinc-100 dark:bg-zinc-800"
-    />
+  pre: (props) => (
+    <pre {...props} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 overflow-x-auto my-4">
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </pre>
   ),
-  blockquote: (props: HTMLMotionProps<'blockquote'>) => (
-    <motion.blockquote
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="my-8 border-l-4 border-primary/50 pl-4 italic text-muted-foreground"
-    />
+  blockquote: (props) => (
+    <blockquote {...props} className="border-l-4 border-roq-orange pl-4 italic my-4">
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </blockquote>
   ),
   ul: (props: ComponentProps<'ul'>) => (
     <ul
@@ -111,55 +114,71 @@ const components = {
       className="border-b border-zinc-200 last:border-0 dark:border-zinc-800"
     />
   ),
-  h1: (props: HTMLMotionProps<'h1'>) => (
-    <motion.h1
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="mb-8 mt-12 text-3xl font-semibold tracking-tight text-foreground"
-    />
+  h1: (props) => (
+    <h1 {...props} className="text-4xl font-bold mb-6">
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </h1>
   ),
-  h2: (props: HTMLMotionProps<'h2'>) => (
-    <motion.h2
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="mb-6 mt-10 text-2xl font-semibold tracking-tight text-foreground"
-    />
+  h2: (props) => (
+    <h2 {...props} className="text-3xl font-semibold mb-4">
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </h2>
   ),
-  h3: (props: HTMLMotionProps<'h3'>) => (
-    <motion.h3
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="mb-4 mt-8 text-xl font-semibold tracking-tight text-foreground"
-    />
+  h3: (props) => (
+    <h3 {...props} className="text-2xl font-semibold mb-3">
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </h3>
   ),
-  h4: (props: HTMLMotionProps<'h4'>) => (
-    <motion.h4
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="mb-4 mt-6 text-lg font-semibold tracking-tight text-foreground"
-    />
+  h4: (props) => (
+    <h4 {...props} className="text-xl font-semibold mb-3">
+      <motion.span
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </h4>
   ),
-  p: (props: HTMLMotionProps<'p'>) => (
-    <motion.p
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      {...props}
-      className="my-4 text-base leading-7 text-muted-foreground"
-    />
+  p: (props) => (
+    <p {...props} className="mb-4 leading-relaxed">
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </p>
+  ),
+  li: (props) => (
+    <li {...props} className="mb-2">
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {props.children}
+      </motion.span>
+    </li>
   ),
 }
 
