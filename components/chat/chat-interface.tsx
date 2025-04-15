@@ -39,6 +39,14 @@ export function ChatInterface({
       'x-api-key': (process.env.NEXT_PUBLIC_API_KEY || '').trim().replace(/^['"](.+)['"]$/, '$1'),
     },
     onResponse: (response) => {
+      // Log request details
+      console.log('Chat request details:', {
+        apiRoute,
+        apiKey: process.env.NEXT_PUBLIC_API_KEY ? `${process.env.NEXT_PUBLIC_API_KEY.length} chars` : 'missing',
+        cleanedApiKey: (process.env.NEXT_PUBLIC_API_KEY || '').trim().replace(/^['"](.+)['"]$/, '$1').length + ' chars',
+        origin: window.location.origin
+      })
+
       if (response.ok) {
         trackEvent('chat_message_received', {
           responseLength: response.headers.get('content-length')
@@ -50,7 +58,9 @@ export function ChatInterface({
           status: response.status,
           statusText: response.statusText,
           headers: Object.fromEntries(response.headers.entries()),
-          url: response.url
+          url: response.url,
+          origin: window.location.origin,
+          pathname: window.location.pathname
         })
 
         // Handle specific status codes
@@ -70,6 +80,7 @@ export function ChatInterface({
               toast.error(`Request failed with status: ${response.status}`)
             } else {
               response.json().then(data => {
+                console.error('Error response body:', data)
                 toast.error(`Error: ${data.message || 'Unknown error'} (Status: ${response.status})`)
               }).catch(() => {
                 toast.error(`Request failed with status: ${response.status}`)
