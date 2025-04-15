@@ -117,6 +117,12 @@ export async function getPostContent(slug: string): Promise<BlogPostWithContent>
       options.rehypePlugins = [...(options.rehypePlugins ?? [])]
       return options
     },
+    esbuildOptions(options) {
+      options.target = 'es2020'
+      options.platform = 'node'
+      options.jsx = 'preserve'
+      return options
+    },
   })
 
   // Handle both string and object author formats

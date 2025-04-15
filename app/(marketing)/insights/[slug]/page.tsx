@@ -3,6 +3,7 @@ import { BlogPostContent } from "../../../../components/insights/blog-post-conte
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
 import { StructuredData } from "../../../../components/seo/structured-data"
+import { Suspense } from "react"
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -17,6 +18,9 @@ export async function generateStaticParams() {
     slug: post.slug,
   }))
 }
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
@@ -62,48 +66,45 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
+  const post = await getPostContent(slug)
 
-  try {
-    const post = await getPostContent(slug)
-
-    if (!post) {
-      notFound()
-    }
-
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      headline: post.title,
-      description: post.description,
-      image: post.coverImage,
-      author: {
-        "@type": "Person",
-        name: post.author.name,
-        jobTitle: post.author.role,
-      },
-      datePublished: post.date,
-      dateModified: post.date,
-      publisher: {
-        "@type": "Organization",
-        name: "ROQ CX",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.roqcx.com/roqcx.png",
-        },
-      },
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": `https://www.roqcx.com/insights/${post.slug}`,
-      },
-    }
-
-    return (
-      <>
-        <StructuredData data={jsonLd} />
-        <BlogPostContent post={post} />
-      </>
-    )
-  } catch {
+  if (!post || !post.content) {
     notFound()
   }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.coverImage,
+    author: {
+      "@type": "Person",
+      name: post.author.name,
+      jobTitle: post.author.role,
+    },
+    datePublished: post.date,
+    dateModified: post.date,
+    publisher: {
+      "@type": "Organization",
+      name: "ROQ CX",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.roqcx.com/roqcx.png",
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://www.roqcx.com/insights/${post.slug}`,
+    },
+  }
+
+  return (
+    <article className="mx-auto">
+      <StructuredData data={jsonLd} />
+      <Suspense fallback={<div>Loading blog post content...</div>}>
+        <BlogPostContent post={post} />
+      </Suspense>
+    </article>
+  )
 } 

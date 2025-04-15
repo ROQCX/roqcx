@@ -87,31 +87,44 @@ export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithCo
     )
   }
 
-  const { code } = await bundleMDX({
-    source: content,
-    cwd: CASE_STUDIES_DIR,
-    mdxOptions(options) {
-      options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm]
-      options.rehypePlugins = [...(options.rehypePlugins ?? [])]
-      return options
-    },
-  })
+  try {
+    const { code } = await bundleMDX({
+      source: content,
+      cwd: CASE_STUDIES_DIR,
+      mdxOptions(options) {
+        options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm]
+        options.rehypePlugins = [...(options.rehypePlugins ?? [])]
+        return options
+      },
+      esbuildOptions(options) {
+        options.target = 'es2020'
+        options.platform = 'browser'
+        options.jsx = 'transform'
+        options.minify = false
+        options.bundle = true
+        return options
+      },
+    })
 
-  return {
-    slug,
-    title: data.title,
-    description: data.description,
-    date: data.date,
-    coverImage: data.coverImage,
-    logo: data.logo,
-    tags: data.tags,
-    client: data.client,
-    industry: data.industry,
-    duration: data.duration,
-    role: data.role,
-    teamSize: data.teamSize,
-    technologies: data.technologies,
-    results: data.results,
-    content: code,
+    return {
+      slug,
+      title: data.title,
+      description: data.description,
+      date: data.date,
+      coverImage: data.coverImage,
+      logo: data.logo,
+      tags: data.tags,
+      client: data.client,
+      industry: data.industry,
+      duration: data.duration,
+      role: data.role,
+      teamSize: data.teamSize,
+      technologies: data.technologies,
+      results: data.results,
+      content: code,
+    }
+  } catch (error) {
+    console.error('Error bundling MDX:', error)
+    throw error
   }
 } 

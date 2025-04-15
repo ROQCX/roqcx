@@ -23,15 +23,15 @@ export async function storeEmbedding(
   const now = Date.now()
   
   // Check if content already exists for this session
-  const existingChunk = await db.execute({
-    sql: `
+  const existingChunk = await db.execute(
+    `
       SELECT c.id
       FROM chunks c
       WHERE c.content = ? AND (c.session_id = ? OR (c.is_global = TRUE AND ? IS NULL))
       LIMIT 1
     `,
-    args: [content, sessionId || null, sessionId]
-  })
+    [content, sessionId ?? null, sessionId ?? null]
+  )
 
   if (existingChunk.rows.length > 0) {
     // Update existing chunk's embedding and timestamp
@@ -64,14 +64,14 @@ export async function storeEmbedding(
           INSERT INTO chunks (id, content, session_id, is_global, created_at, updated_at)
           VALUES (?, ?, ?, ?, ?, ?)
         `,
-        args: [chunkId, content, sessionId || null, !sessionId, now, now]
+        args: [chunkId, content, sessionId ?? null, !sessionId, now, now]
       },
       {
         sql: `
           INSERT INTO embeddings (id, chunk_id, session_id, embedding, created_at, updated_at)
           VALUES (?, ?, ?, vector32(?), ?, ?)
         `,
-        args: [crypto.randomUUID(), chunkId, sessionId || null, JSON.stringify(embedding), now, now]
+        args: [crypto.randomUUID(), chunkId, sessionId ?? null, JSON.stringify(embedding), now, now]
       }
     ])
   }
@@ -83,8 +83,8 @@ export async function findSimilarChunks(
   sessionId?: string | null,
   limit: number = 5
 ): Promise<{ content: string; similarity: number }[]> {
-  const results = await db.execute({
-    sql: `
+  const results = await db.execute(
+    `
       SELECT DISTINCT c.content, 
              vector_distance_cos(e.embedding, vector32(?)) as similarity
       FROM chunks c
@@ -93,8 +93,8 @@ export async function findSimilarChunks(
       ORDER BY similarity DESC
       LIMIT ?
     `,
-    args: [JSON.stringify(embedding), sessionId || null, limit]
-  })
+    [JSON.stringify(embedding), sessionId ?? null, limit]
+  )
 
   return results.rows.map(row => ({
     content: row.content as string,
@@ -104,11 +104,11 @@ export async function findSimilarChunks(
 
 // Clear session data
 export async function clearSessionData(sessionId: string): Promise<void> {
-  await db.execute({
-    sql: `
+  await db.execute(
+    `
       DELETE FROM chunks
       WHERE session_id = ?
     `,
-    args: [sessionId]
-  })
+    [sessionId]
+  )
 } 
