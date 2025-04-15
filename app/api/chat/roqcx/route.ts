@@ -2,6 +2,7 @@ import { streamText, type CoreMessage } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { findSimilarChunks, generateEmbedding } from '../../../../lib/ai/embedding'
 import { z } from 'zod'
+import { NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
@@ -16,14 +17,41 @@ const requestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(100),
 })
 
+// Helper function to run cleanup in the background
+async function runCleanup(apiKey: string) {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/chat/cleanup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+      },
+    })
+  } catch {
+    // Silently handle any cleanup errors
+  }
+}
+
 export async function POST(req: Request) {
   try {
+    // Check API key
+    const apiKey = req.headers.get('x-api-key')
+    if (!apiKey || apiKey !== process.env.NEXT_PUBLIC_API_KEY) {
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'Invalid API key' },
+        { status: 401 }
+      )
+    }
+
     // Parse and validate request body
     const body = await req.json()
     const { messages } = requestSchema.parse(body)
     
     // Get the last message
     const lastMessage = messages[messages.length - 1]
+
+    // Start cleanup in the background without awaiting it
+    runCleanup(apiKey)
 
     // Generate embedding for the last message
     const embedding = await generateEmbedding(lastMessage.content)
@@ -49,16 +77,14 @@ ${similarChunks.join('\n\n')}`
     return result.toDataStreamResponse()
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new Response(JSON.stringify({ error: 'Invalid request format' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return NextResponse.json(
+        { error: 'Invalid request format', message: 'Please check your input and try again' },
+        { status: 400 }
+      )
     }
-
-    console.error('Chat API error:', error)
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return NextResponse.json(
+      { error: 'Internal server error', message: 'An error occurred. Please try again.' },
+      { status: 500 }
+    )
   }
 } 

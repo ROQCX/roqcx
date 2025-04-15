@@ -8,10 +8,6 @@ export async function POST(req: Request) {
     // Check API key
     const apiKey = req.headers.get('x-api-key')
     if (!apiKey || apiKey !== process.env.NEXT_PUBLIC_API_KEY) {
-      console.error('API key validation failed:', {
-        received: apiKey,
-        expected: process.env.NEXT_PUBLIC_API_KEY
-      })
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Invalid API key' },
         { status: 401 }
@@ -93,9 +89,8 @@ export async function POST(req: Request) {
       message: sessionId ? 'Session data cleared' : 'Expired data cleaned up'
     })
   } catch (error) {
-    console.error('Error during cleanup:', error)
     return NextResponse.json(
-      { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error', message: 'An error occurred during cleanup' },
       { status: 500 }
     )
   }

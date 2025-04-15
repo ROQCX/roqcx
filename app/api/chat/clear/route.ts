@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-
 import { getOrCreateSessionId } from '../../../../lib/utils/session'
 
 export const runtime = 'edge'
@@ -23,7 +22,6 @@ export async function POST() {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error clearing session data:', error)
     return NextResponse.json(
       { error: 'Failed to clear session data' },
       { status: 500 }

@@ -23,7 +23,6 @@ const menuItems: MenuItem[] = [
       { href: "/solutions/analytics", label: "Analytics & Dashboards" },
       { href: "/solutions/ai", label: "AI & Predictive Models" },
       { href: "/solutions/roqchat", label: "ROQChat AI Assistant" },
-      { href: "/chatbot", label: "Chat Assistant" },
     ],
   },
   { href: "/about", label: "About" },
@@ -36,6 +35,7 @@ const menuItems: MenuItem[] = [
     ]
   },
   { href: "/insights", label: "Insights" },
+  { href: "/chatbot", label: "Demo Chat" },
   { href: "/contact", label: "Contact" },
 ]
 

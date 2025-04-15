@@ -18,15 +18,26 @@ const requestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(100),
 })
 
+// Helper function to run cleanup in the background
+async function runCleanup(apiKey: string) {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/chat/cleanup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+      },
+    })
+  } catch {
+    // Silently handle any cleanup errors
+  }
+}
+
 export async function POST(req: Request) {
   try {
     // Check API key
     const apiKey = req.headers.get('x-api-key')
     if (!apiKey || apiKey !== process.env.NEXT_PUBLIC_API_KEY) {
-      console.error('API key validation failed:', {
-        received: apiKey,
-        expected: process.env.NEXT_PUBLIC_API_KEY
-      })
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Invalid API key' },
         { status: 401 }
@@ -38,17 +49,8 @@ export async function POST(req: Request) {
     const { messages } = requestSchema.parse(body)
     const lastMessage = messages[messages.length - 1]
 
-    // Run cleanup asynchronously in the background
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/chat/cleanup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
-    }).catch(error => {
-      console.error('Cleanup error:', error)
-      // Silently handle any cleanup errors
-    })
+    // Start cleanup in the background without awaiting it
+    runCleanup(apiKey)
 
     const embedding = await generateEmbedding(lastMessage.content)
     const similarChunks = await findSimilarChunks(embedding, sessionId)
@@ -80,15 +82,14 @@ ${similarChunks.map(chunk => chunk.content).join('\n\n')}`
 
     return result.toDataStreamResponse()
   } catch (error) {
-    console.error('Error in chat endpoint:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request format', message: error.message },
+        { error: 'Invalid request format', message: 'Please check your input and try again' },
         { status: 400 }
       )
     }
     return NextResponse.json(
-      { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error', message: 'An error occurred. Please try again.' },
       { status: 500 }
     )
   }

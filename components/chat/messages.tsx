@@ -30,6 +30,13 @@ export function Messages({
   const [showWelcome, setShowWelcome] = useState(true)
   const [containerRef, endRef] = useScrollToBottom<HTMLDivElement>()
 
+  // Scroll to bottom when messages change or welcome state changes
+  useEffect(() => {
+    if (endRef.current) {
+      endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }, [messages, showWelcome, endRef])
+
   useEffect(() => {
     if (messages.length > 0) {
       setShowWelcome(false)
@@ -44,7 +51,10 @@ export function Messages({
   const shouldShowWelcome = controlledShowWelcome !== undefined ? controlledShowWelcome : showWelcome
 
   return (
-    <div ref={containerRef} className="flex-1 overflow-y-auto h-full">
+    <div 
+      ref={containerRef} 
+      className="flex-1 overflow-y-auto h-full scroll-smooth"
+    >
       <AnimatePresence mode="wait">
         {shouldShowWelcome ? (
           <div className="h-full w-full flex items-center justify-center p-4">
@@ -85,7 +95,7 @@ export function Messages({
                 </motion.div>
               )}
             </AnimatePresence>
-            <div ref={endRef} />
+            <div ref={endRef} className="h-4" />
           </div>
         )}
       </AnimatePresence>
