@@ -45,11 +45,37 @@ export function ChatInterface({
         })
         toast.success("Message received")
       } else {
-        response.json().then(data => {
-          toast.error(`Error: ${data.message || 'Failed to send message'} (Status: ${response.status})`)
-        }).catch(() => {
-          toast.error(`Request failed with status: ${response.status}`)
+        // Log response details for debugging
+        console.error('Chat API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          url: response.url
         })
+
+        // Handle specific status codes
+        switch (response.status) {
+          case 403:
+            toast.error("Access denied. Please check your API key and permissions.")
+            break
+          case 401:
+            toast.error("Unauthorized. Please check your API key.")
+            break
+          case 429:
+            toast.error("Too many requests. Please try again later.")
+            break
+          default:
+            // Only try to read response if it hasn't been read
+            if (response.bodyUsed) {
+              toast.error(`Request failed with status: ${response.status}`)
+            } else {
+              response.json().then(data => {
+                toast.error(`Error: ${data.message || 'Unknown error'} (Status: ${response.status})`)
+              }).catch(() => {
+                toast.error(`Request failed with status: ${response.status}`)
+              })
+            }
+        }
       }
     },
     onFinish: (message) => {
@@ -63,6 +89,13 @@ export function ChatInterface({
       trackEvent('chat_error', {
         error: error.message
       })
+
+      // Handle specific error types
+      if (error.message?.includes('body stream already read')) {
+        // This is expected in some cases, don't show error to user
+        return
+      }
+
       const errorMessage = error instanceof Error 
         ? `Error: ${error.message}`
         : 'An unexpected error occurred. Please check your connection and API key.'
