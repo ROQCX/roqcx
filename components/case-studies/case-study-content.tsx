@@ -129,32 +129,35 @@ const components = {
     </motion.h1>
   ),
   h2: (props: ComponentProps<'h2'>) => {
-    const text = props.children
+    const text = typeof props.children === 'string' 
+      ? props.children 
+      : Array.isArray(props.children) 
+        ? props.children.join('') 
+        : ''
+    
     let icon = null
     
-    if (typeof text === 'string') {
-      if (text === "The Challenge") {
-        icon = (
-          <div className="relative mr-3">
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-sm" />
-            <Puzzle className="relative h-7 w-7 text-blue-500" />
-          </div>
-        )
-      } else if (text === "Our Solution") {
-        icon = (
-          <div className="relative mr-3">
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20 blur-sm" />
-            <Lightbulb className="relative h-7 w-7 text-yellow-500" />
-          </div>
-        )
-      } else if (text === "The Impact") {
-        icon = (
-          <div className="relative mr-3">
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-sm" />
-            <LineChart className="relative h-7 w-7 text-green-500" />
-          </div>
-        )
-      }
+    if (text === "The Challenge") {
+      icon = (
+        <div className="relative mr-3">
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-sm" />
+          <Puzzle className="relative h-7 w-7 text-blue-500" />
+        </div>
+      )
+    } else if (text === "Our Solution") {
+      icon = (
+        <div className="relative mr-3">
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20 blur-sm" />
+          <Lightbulb className="relative h-7 w-7 text-yellow-500" />
+        </div>
+      )
+    } else if (text === "The Impact") {
+      icon = (
+        <div className="relative mr-3">
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-sm" />
+          <LineChart className="relative h-7 w-7 text-green-500" />
+        </div>
+      )
     }
 
     return (
