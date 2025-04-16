@@ -145,9 +145,12 @@ export function RoqchatShowcase() {
                 <input
                   type="text"
                   placeholder="Type your message..."
-                  className="flex-1 rounded-lg border border-zinc-200 bg-white/50 px-4 py-2 text-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/50"
+                  className="flex-1 rounded-lg border border-zinc-200 bg-white/50 px-4 py-2 text-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/50 cursor-default pointer-events-none"
+                  readOnly
+                  disabled
+                  aria-label="Sample chat input (readonly)"
                 />
-                <Button size="icon">
+                <Button size="icon" aria-label="Send message (demo)" disabled>
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
