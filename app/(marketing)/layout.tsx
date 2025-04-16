@@ -139,7 +139,7 @@ export default function MarketingLayout({
         <GeometricPattern variant="dark" density="medium" />
       </div>
       <Navigation />
-      <main className="container mx-auto px-4 py-24 sm:py-32 relative z-10">
+      <main className="container mx-auto px-4 py-24 sm:py-32 relative z-10 [&:not(:has(.hero))]:pt-32">
         {children}
       </main>
       <Footer />

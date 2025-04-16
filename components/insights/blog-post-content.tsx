@@ -3,145 +3,128 @@
 import { useMemo } from "react"
 import { getMDXComponent } from "mdx-bundler/client"
 import { GlassCard } from "../ui/glass-card"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-import { CalendarDays, Clock } from "lucide-react"
-import { format } from "date-fns"
 import type { BlogPostWithContent } from "../../lib/blog"
 import Image from "next/image"
 import type { ComponentProps } from "react"
 import type { MDXComponents } from "mdx/types"
+import { motion } from 'framer-motion'
 
 interface BlogPostContentProps {
   post: BlogPostWithContent
 }
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 }
+}
+
 const components: MDXComponents = {
-  img: (props: ComponentProps<'img'>) => (
-    <div className="my-12 overflow-hidden rounded-xl">
+  h1: ({ children }) => (
+    <motion.h1 {...fadeInUp} className="text-3xl font-bold mt-8 mb-4">
+      {children}
+    </motion.h1>
+  ),
+  h2: ({ children }) => (
+    <motion.h2 {...fadeInUp} className="text-2xl font-bold mt-8 mb-4">
+      {children}
+    </motion.h2>
+  ),
+  h3: ({ children }) => (
+    <motion.h3 {...fadeInUp} className="text-xl font-semibold mt-6 mb-3">
+      {children}
+    </motion.h3>
+  ),
+  h4: ({ children, ...props }: ComponentProps<'h4'>) => (
+    <h4 {...props} className="text-lg font-semibold mt-4 mb-2">
+      {children}
+    </h4>
+  ),
+  p: ({ children }) => (
+    <motion.p {...fadeInUp} className="my-4 leading-relaxed">
+      {children}
+    </motion.p>
+  ),
+  a: ({ href, children }) => (
+    <motion.a 
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary hover:underline"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      {children}
+    </motion.a>
+  ),
+  img: ({ src, alt }) => (
+    <div className="relative w-full h-64 my-8">
       <Image
-        src={props.src || ""}
-        alt={props.alt || ""}
-        width={1200}
-        height={630}
-        className="w-full object-cover"
+        src={src || ''}
+        alt={alt || ''}
+        fill
+        className="object-cover rounded-lg"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       />
     </div>
   ),
-  a: ({ children, ...props }: ComponentProps<'a'>) => (
-    <a
-      {...props}
-      className="text-primary hover:text-primary/80"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+  ul: ({ children }) => (
+    <motion.ul {...fadeInUp} className="list-disc list-inside space-y-2 my-4">
       {children}
-    </a>
+    </motion.ul>
   ),
-  code: ({ children, ...props }: ComponentProps<'code'>) => (
-    <code
-      {...props}
-      className="rounded bg-zinc-100 px-1.5 py-0.5 text-sm dark:bg-zinc-800"
-    >
+  ol: ({ children }) => (
+    <motion.ol {...fadeInUp} className="list-decimal list-inside space-y-2 my-4">
+      {children}
+    </motion.ol>
+  ),
+  li: ({ children }) => (
+    <motion.li {...fadeInUp} className="my-2">
+      {children}
+    </motion.li>
+  ),
+  blockquote: ({ children }) => (
+    <motion.blockquote {...fadeInUp} className="border-l-4 border-primary pl-4 my-4 italic">
+      {children}
+    </motion.blockquote>
+  ),
+  pre: ({ children }) => (
+    <motion.pre {...fadeInUp} className="bg-muted p-4 rounded-lg my-4 overflow-x-auto">
+      {children}
+    </motion.pre>
+  ),
+  code: ({ children }) => (
+    <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
       {children}
     </code>
   ),
-  pre: ({ children, ...props }: ComponentProps<'pre'>) => (
-    <pre {...props} className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4 overflow-x-auto my-4">
-      {children}
-    </pre>
-  ),
-  blockquote: ({ children, ...props }: ComponentProps<'blockquote'>) => (
-    <blockquote {...props} className="border-l-4 border-roq-orange pl-4 italic my-4">
-      {children}
-    </blockquote>
-  ),
-  ul: ({ children, ...props }: ComponentProps<'ul'>) => (
-    <ul
-      {...props}
-      className="my-6 list-disc space-y-3 pl-6 marker:text-primary/50 dark:marker:text-primary/50"
-    >
-      {children}
-    </ul>
-  ),
-  ol: ({ children, ...props }: ComponentProps<'ol'>) => (
-    <ol
-      {...props}
-      className="my-6 list-decimal space-y-3 pl-6 marker:text-primary/50 dark:marker:text-primary/50"
-    >
-      {children}
-    </ol>
-  ),
   table: ({ children, ...props }: ComponentProps<'table'>) => (
     <div className="my-8 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-      <table
-        {...props}
-        className="w-full border-collapse divide-y divide-zinc-200 dark:divide-zinc-800"
-      >
+      <table {...props} className="w-full border-collapse divide-y divide-zinc-200 dark:divide-zinc-800">
         {children}
       </table>
     </div>
   ),
   th: ({ children, ...props }: ComponentProps<'th'>) => (
-    <th
-      {...props}
-      className="border-r border-zinc-200 bg-zinc-50/50 px-4 py-3 text-left text-sm font-medium text-zinc-900 last:border-r-0 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100"
-    >
+    <th {...props} className="border-r border-zinc-200 bg-zinc-50/50 px-4 py-3 text-left text-sm font-medium text-zinc-900 last:border-r-0 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100">
       {children}
     </th>
   ),
   td: ({ children, ...props }: ComponentProps<'td'>) => (
-    <td
-      {...props}
-      className="border-r border-zinc-200 px-4 py-3 text-sm text-zinc-600 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400"
-    >
+    <td {...props} className="border-r border-zinc-200 px-4 py-3 text-sm text-zinc-600 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400">
       {children}
     </td>
   ),
   tr: ({ children, ...props }: ComponentProps<'tr'>) => (
-    <tr
-      {...props}
-      className="border-b border-zinc-200 last:border-0 dark:border-zinc-800"
-    >
+    <tr {...props} className="border-b border-zinc-200 last:border-0 dark:border-zinc-800">
       {children}
     </tr>
-  ),
-  h1: ({ children, ...props }: ComponentProps<'h1'>) => (
-    <h1 {...props} className="text-4xl font-bold mb-6">
-      {children}
-    </h1>
-  ),
-  h2: ({ children, ...props }: ComponentProps<'h2'>) => (
-    <h2 {...props} className="text-3xl font-semibold mb-4">
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }: ComponentProps<'h3'>) => (
-    <h3 {...props} className="text-2xl font-semibold mb-3">
-      {children}
-    </h3>
-  ),
-  h4: ({ children, ...props }: ComponentProps<'h4'>) => (
-    <h4 {...props} className="text-xl font-semibold mb-3">
-      {children}
-    </h4>
-  ),
-  p: ({ children, ...props }: ComponentProps<'p'>) => (
-    <p {...props} className="mb-4 leading-relaxed">
-      {children}
-    </p>
-  ),
-  li: ({ children, ...props }: ComponentProps<'li'>) => (
-    <li {...props} className="mb-2">
-      {children}
-    </li>
   ),
 }
 
 export function BlogPostContent({ post }: BlogPostContentProps) {
   const Component = useMemo(() => {
-    if (typeof window === 'undefined') return null
     if (!post.content) return null
-    
     try {
       return getMDXComponent(post.content)
     } catch (error) {
@@ -151,53 +134,14 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
   }, [post.content])
 
   if (!Component) {
-    return <div>Loading content...</div>
+    return <div>Failed to load content</div>
   }
 
   return (
-    <article className="mx-auto max-w-4xl">
-      <header className="mb-12 text-center">
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-        <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          {post.title}
-        </h1>
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-          {post.description}
-        </p>
-        <div className="flex items-center justify-center space-x-6">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={post.author.image} alt={post.author.name} />
-              <AvatarFallback>{post.author.name[0]}</AvatarFallback>
-            </Avatar>
-            <div className="text-sm">
-              <p className="font-medium text-foreground">{post.author.name}</p>
-              <p className="text-muted-foreground">{post.author.role}</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <CalendarDays className="mr-2 h-4 w-4" />
-              {format(new Date(post.date), "MMMM yyyy")}
-            </div>
-            <div className="flex items-center">
-              <Clock className="mr-2 h-4 w-4" />
-              {post.readingTime} min read
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <GlassCard className="prose prose-zinc mx-auto max-w-none dark:prose-invert 
+    <div className="mx-auto">
+      <GlassCard 
+        variant="gradient"
+        className="prose prose-zinc mx-auto w-full max-w-none dark:prose-invert 
         prose-headings:font-semibold prose-headings:tracking-tight
         prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg 
         prose-p:text-base prose-p:leading-7 prose-p:text-muted-foreground
@@ -209,9 +153,11 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
         prose-li:marker:text-primary/50 dark:prose-li:marker:text-primary/50
         prose-strong:text-foreground dark:prose-strong:text-foreground
         prose-code:rounded prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm dark:prose-code:bg-zinc-800
-        p-8 lg:prose-lg">
+        p-8 lg:prose-lg
+        bg-gradient-to-br from-roq-orange/10 via-roq-pink/10 to-roq-blue/10
+        dark:from-roq-orange/5 dark:via-roq-pink/5 dark:to-roq-blue/5">
         <Component components={components} />
       </GlassCard>
-    </article>
+    </div>
   )
 } 

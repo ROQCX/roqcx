@@ -67,7 +67,7 @@ export function Hero() {
               repeat: Infinity,
               repeatType: "reverse"
             }}
-            className="absolute bottom-8 inset-x-0 flex justify-center"
+            className="absolute bottom-8 inset-x-0 hidden sm:flex justify-center"
           >
             <div className="flex flex-col items-center">
               <span className="text-sm text-zinc-600 dark:text-zinc-400">

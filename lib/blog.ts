@@ -109,40 +109,47 @@ export async function getPostContent(slug: string): Promise<BlogPostWithContent>
     )
   }
 
-  const { code } = await bundleMDX({
-    source: content,
-    cwd: BLOG_DIR,
-    mdxOptions(options) {
-      options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm]
-      options.rehypePlugins = [...(options.rehypePlugins ?? [])]
-      return options
-    },
-    esbuildOptions(options) {
-      options.target = 'es2020'
-      options.platform = 'node'
-      options.jsx = 'preserve'
-      return options
-    },
-  })
+  try {
+    const { code } = await bundleMDX({
+      source: content,
+      cwd: BLOG_DIR,
+      mdxOptions(options) {
+        options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm]
+        options.rehypePlugins = [...(options.rehypePlugins ?? [])]
+        return options
+      },
+      esbuildOptions(options) {
+        options.target = 'es2020'
+        options.platform = 'node'
+        options.jsx = 'preserve'
+        options.minify = false
+        options.bundle = true
+        return options
+      },
+    })
 
-  // Handle both string and object author formats
-  const author = typeof data.author === 'string' 
-    ? {
-        name: data.author,
-        image: "/authors/default.jpg",
-        role: "Author"
-      }
-    : data.author
+    // Handle both string and object author formats
+    const author = typeof data.author === 'string' 
+      ? {
+          name: data.author,
+          image: "/authors/default.jpg",
+          role: "Author"
+        }
+      : data.author
 
-  return {
-    slug,
-    title: data.title,
-    description: data.description,
-    date: data.date,
-    author,
-    readingTime: Math.ceil(readingTime(content).minutes),
-    tags: (data.tags || []).map(normalizeTag),
-    coverImage: data.coverImage || data.image,
-    content: code,
+    return {
+      slug,
+      title: data.title,
+      description: data.description,
+      date: data.date,
+      author,
+      readingTime: Math.ceil(readingTime(content).minutes),
+      tags: (data.tags || []).map(normalizeTag),
+      coverImage: data.coverImage || data.image,
+      content: code,
+    }
+  } catch (error) {
+    console.error('Error bundling MDX:', error)
+    throw error
   }
 } 
