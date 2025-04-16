@@ -24,6 +24,10 @@ export interface CaseStudy {
     title: string
     value: string
   }>
+  author?: {
+    name: string
+    role: string
+  }
 }
 
 export interface CaseStudyWithContent extends CaseStudy {
@@ -62,6 +66,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy> {
     teamSize: data.teamSize,
     technologies: data.technologies,
     results: data.results,
+    author: data.author,
   }
 }
 
@@ -121,6 +126,7 @@ export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithCo
       teamSize: data.teamSize,
       technologies: data.technologies,
       results: data.results,
+      author: data.author,
       content: code,
     }
   } catch (error) {

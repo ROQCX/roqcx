@@ -5,10 +5,10 @@ import { Metadata } from "next"
 import { StructuredData } from "../../../../components/seo/structured-data"
 import { Suspense } from "react"
 
-interface BlogPostPageProps {
-  params: Promise<{
+type Params = {
+  params: {
     slug: string
-  }>
+  }
 }
 
 // Generate static params for all blog posts at build time
@@ -22,9 +22,8 @@ export async function generateStaticParams() {
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const { slug } = await params
-  const post = await getPostContent(slug)
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const post = await getPostContent(params.slug)
 
   if (!post) {
     return {
@@ -41,7 +40,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.description,
       type: "article",
       publishedTime: post.date,
-      authors: [post.author.name],
+      authors: post.author ? [post.author.name] : undefined,
       tags: post.tags,
       images: [
         {
@@ -64,9 +63,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const { slug } = await params
-  const post = await getPostContent(slug)
+export default async function BlogPostPage({ params }: Params) {
+  const post = await getPostContent(params.slug)
 
   if (!post || !post.content) {
     notFound()
@@ -78,11 +76,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     headline: post.title,
     description: post.description,
     image: post.coverImage,
-    author: {
-      "@type": "Person",
-      name: post.author.name,
-      jobTitle: post.author.role,
-    },
+    ...(post.author && {
+      author: {
+        "@type": "Person",
+        name: post.author.name,
+        jobTitle: post.author.role,
+      },
+    }),
     datePublished: post.date,
     dateModified: post.date,
     publisher: {

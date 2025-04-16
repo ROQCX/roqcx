@@ -1,17 +1,16 @@
-import { notFound } from "next/navigation"
-import { getCaseStudyBySlug, getCaseStudyContent, getAllCaseStudies } from "../../../../lib/case-studies"
-import { CaseStudyHeader } from "../../../../components/case-studies/case-study-header"
+import { getAllCaseStudies, getCaseStudyContent } from "../../../../lib/case-studies"
 import { CaseStudyContent } from "../../../../components/case-studies/case-study-content"
-import { CaseStudyRelated } from "../../../../components/case-studies/case-study-related"
-import { Suspense } from "react"
-import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import { Metadata } from "next"
 import { StructuredData } from "../../../../components/seo/structured-data"
+import { Suspense } from "react"
 
-interface CaseStudyPageProps {
-  params: Promise<{ slug: string }>
+type Params = {
+  params: {
+    slug: string
+  }
 }
 
-// Generate static params for all case studies at build time
 export async function generateStaticParams() {
   const caseStudies = await getAllCaseStudies()
   return caseStudies.map((caseStudy) => ({
@@ -22,11 +21,8 @@ export async function generateStaticParams() {
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({
-  params,
-}: CaseStudyPageProps): Promise<Metadata> {
-  const { slug } = await params
-  const caseStudy = await getCaseStudyBySlug(slug)
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const caseStudy = await getCaseStudyContent(params.slug)
 
   if (!caseStudy) {
     return {
@@ -36,14 +32,15 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${caseStudy.title} | ROQ Case Study`,
+    title: `${caseStudy.title} | ROQ CX Case Study`,
     description: caseStudy.description,
     openGraph: {
-      title: `${caseStudy.title} | ROQ Case Study`,
+      title: `${caseStudy.title} | ROQ CX Case Study`,
       description: caseStudy.description,
       type: "article",
       publishedTime: caseStudy.date,
-         tags: caseStudy.tags,
+      authors: caseStudy.author ? [caseStudy.author.name] : undefined,
+      tags: caseStudy.tags,
       images: [
         {
           url: caseStudy.coverImage,
@@ -65,11 +62,8 @@ export async function generateMetadata({
   }
 }
 
-export default async function CaseStudyPage({
-  params,
-}: CaseStudyPageProps) {
-  const { slug } = await params
-  const caseStudy = await getCaseStudyContent(slug)
+export default async function CaseStudyPage({ params }: Params) {
+  const caseStudy = await getCaseStudyContent(params.slug)
 
   if (!caseStudy || !caseStudy.content) {
     notFound()
@@ -81,6 +75,13 @@ export default async function CaseStudyPage({
     headline: caseStudy.title,
     description: caseStudy.description,
     image: caseStudy.coverImage,
+    ...(caseStudy.author && {
+      author: {
+        "@type": "Person",
+        name: caseStudy.author.name,
+        jobTitle: caseStudy.author.role,
+      },
+    }),
     datePublished: caseStudy.date,
     dateModified: caseStudy.date,
     publisher: {
@@ -98,19 +99,11 @@ export default async function CaseStudyPage({
   }
 
   return (
-    <article className="mx-auto w-full">
+    <article className="mx-auto">
       <StructuredData data={jsonLd} />
-      <div className="max-w-3xl mx-auto">
-        <CaseStudyHeader caseStudy={caseStudy} />
-      </div>
-      <div className="w-[90%] mx-auto">
-        <Suspense fallback={<div>Loading case study content...</div>}>
-          <CaseStudyContent caseStudy={caseStudy} />
-        </Suspense>
-      </div>
-      <div className="max-w-3xl mx-auto">
-        <CaseStudyRelated caseStudy={caseStudy} />
-      </div>
+      <Suspense fallback={<div>Loading case study content...</div>}>
+        <CaseStudyContent caseStudy={caseStudy} />
+      </Suspense>
     </article>
   )
 } 
