@@ -4,13 +4,21 @@ type JsonArray = JsonValue[]
 
 interface StructuredDataProps {
   data: JsonObject
+  type?: 'Organization' | 'BlogPosting' | 'Article' | 'FAQPage' | 'Product' | 'BreadcrumbList' | 'LocalBusiness'
 }
 
-export function StructuredData({ data }: StructuredDataProps) {
+export function StructuredData({ data, type }: StructuredDataProps) {
+  // Ensure @context is always present
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': type || data['@type'] || 'WebPage',
+    ...data,
+  }
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
     />
   )
 } 

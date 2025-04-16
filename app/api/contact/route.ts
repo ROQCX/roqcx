@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     await resend.emails.send({
-      from: 'ROQ CX <updates@roqcx.com>',
+      from: 'ROQ CX <hello@updates.roqcx.com>',
       to: ['hello@roqcx.com'],
       subject: `New Contact Form Submission from ${name}`,
       text: `

@@ -1,17 +1,9 @@
 import { getAllPosts, getPostContent } from "../../../../lib/blog"
 import { BlogPostContent } from "../../../../components/insights/blog-post-content"
 import { notFound } from "next/navigation"
-import { Metadata } from "next"
-import { StructuredData } from "../../../../components/seo/structured-data"
 import { Suspense } from "react"
+import { StructuredData } from "@/components/seo/structured-data"
 
-type Params = {
-  params: {
-    slug: string
-  }
-}
-
-// Generate static params for all blog posts at build time
 export async function generateStaticParams() {
   const posts = await getAllPosts()
   return posts.map((post) => ({
@@ -22,7 +14,7 @@ export async function generateStaticParams() {
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }) {
   const post = await getPostContent(params.slug)
 
   if (!post) {
@@ -63,15 +55,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 }
 
-export default async function BlogPostPage({ params }: Params) {
+export default async function BlogPostPage({ params }) {
   const post = await getPostContent(params.slug)
 
   if (!post || !post.content) {
     notFound()
   }
 
-  const jsonLd = {
-    "@context": "https://schema.org",
+  const blogPostStructuredData = {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
@@ -90,7 +81,7 @@ export default async function BlogPostPage({ params }: Params) {
       name: "ROQ CX",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.roqcx.com/roqcx.png",
+        url: "https://www.roqcx.com/3d_logo.svg",
       },
     },
     mainEntityOfPage: {
@@ -101,7 +92,7 @@ export default async function BlogPostPage({ params }: Params) {
 
   return (
     <article className="mx-auto">
-      <StructuredData data={jsonLd} />
+      <StructuredData data={blogPostStructuredData} type="BlogPosting" />
       <Suspense fallback={<div>Loading blog post content...</div>}>
         <BlogPostContent post={post} />
       </Suspense>

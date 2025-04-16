@@ -10,21 +10,40 @@ const defaultStructuredData = {
   "@type": "Organization",
   name: "ROQ CX",
   url: "https://www.roqcx.com",
-  logo: "https://www.roqcx.com/roqcx.png",
-  description: "Transform your business with cutting-edge automation, analytics, and AI solutions tailored for SMBs.",
+  logo: "https://www.roqcx.com/3d_logo.svg",
+  description: "ROQ CX is a leading customer experience consulting firm specializing in AI-powered solutions.",
   sameAs: [
+    "https://www.linkedin.com/company/roqcx",
     "https://twitter.com/roqcx",
-    "https://linkedin.com/company/roqcx",
   ],
   address: {
     "@type": "PostalAddress",
-    addressCountry: "UAE",
+    streetAddress: "123 Business Street",
+    addressLocality: "San Francisco",
+    addressRegion: "CA",
+    postalCode: "94105",
+    addressCountry: "US"
   },
   contactPoint: {
     "@type": "ContactPoint",
+    telephone: "+1-555-123-4567",
     contactType: "customer service",
     email: "contact@roqcx.com",
-    availableLanguage: ["English"],
+    areaServed: "US",
+    availableLanguage: ["English"]
+  },
+  foundingDate: "2023",
+  founders: [
+    {
+      "@type": "Person",
+      name: "Zayne Turner",
+      jobTitle: "Founder & CEO"
+    }
+  ],
+  employees: {
+    "@type": "Person",
+    name: "Zayne Turner",
+    jobTitle: "Founder & CEO"
   },
   offers: {
     "@type": "AggregateOffer",

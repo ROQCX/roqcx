@@ -103,8 +103,8 @@ export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithCo
       },
       esbuildOptions(options) {
         options.target = 'es2020'
-        options.platform = 'browser'
-        options.jsx = 'transform'
+        options.platform = 'node'
+        options.jsx = 'preserve'
         options.minify = false
         options.bundle = true
         return options

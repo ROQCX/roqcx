@@ -1,15 +1,8 @@
 import { getAllCaseStudies, getCaseStudyContent } from "../../../../lib/case-studies"
 import { CaseStudyContent } from "../../../../components/case-studies/case-study-content"
 import { notFound } from "next/navigation"
-import { Metadata } from "next"
-import { StructuredData } from "../../../../components/seo/structured-data"
 import { Suspense } from "react"
-
-type Params = {
-  params: {
-    slug: string
-  }
-}
+import { StructuredData } from "@/components/seo/structured-data"
 
 export async function generateStaticParams() {
   const caseStudies = await getAllCaseStudies()
@@ -21,7 +14,7 @@ export async function generateStaticParams() {
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }) {
   const caseStudy = await getCaseStudyContent(params.slug)
 
   if (!caseStudy) {
@@ -62,15 +55,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 }
 
-export default async function CaseStudyPage({ params }: Params) {
+export default async function CaseStudyPage({ params }) {
   const caseStudy = await getCaseStudyContent(params.slug)
 
   if (!caseStudy || !caseStudy.content) {
     notFound()
   }
 
-  const jsonLd = {
-    "@context": "https://schema.org",
+  const caseStudyStructuredData = {
     "@type": "Article",
     headline: caseStudy.title,
     description: caseStudy.description,
@@ -89,7 +81,7 @@ export default async function CaseStudyPage({ params }: Params) {
       name: "ROQ CX",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.roqcx.com/roqcx.png",
+        url: "https://www.roqcx.com/3d_logo.svg",
       },
     },
     mainEntityOfPage: {
@@ -100,7 +92,7 @@ export default async function CaseStudyPage({ params }: Params) {
 
   return (
     <article className="mx-auto">
-      <StructuredData data={jsonLd} />
+      <StructuredData data={caseStudyStructuredData} type="Article" />
       <Suspense fallback={<div>Loading case study content...</div>}>
         <CaseStudyContent caseStudy={caseStudy} />
       </Suspense>
