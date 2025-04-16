@@ -1,6 +1,6 @@
 const withMDX = require('@next/mdx')({
   options: {
-    remarkPlugins: [require('remark-gfm')],
+    remarkPlugins: [],
     rehypePlugins: [],
   },
 })
