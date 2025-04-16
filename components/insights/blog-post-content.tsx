@@ -6,6 +6,7 @@ import Image from "next/image"
 import type { ComponentProps } from "react"
 import type { MDXComponents } from "mdx/types"
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import remarkGfm from 'remark-gfm'
 
 interface BlogPostContentProps {
   post: BlogPostWithContent
@@ -59,17 +60,17 @@ const components: MDXComponents = {
     </div>
   ),
   ul: ({ children }) => (
-    <ul className="list-disc list-inside space-y-2 my-4">
+    <ul className="list-disc space-y-2 my-4 pl-4">
       {children}
     </ul>
   ),
   ol: ({ children }) => (
-    <ol className="list-decimal list-inside space-y-2 my-4">
+    <ol className="list-decimal space-y-2 my-4 pl-4">
       {children}
     </ol>
   ),
   li: ({ children }) => (
-    <li className="my-2">
+    <li className="my-2 pl-2">
       {children}
     </li>
   ),
@@ -89,24 +90,24 @@ const components: MDXComponents = {
     </code>
   ),
   table: ({ children, ...props }: ComponentProps<'table'>) => (
-    <div className="my-8 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-      <table {...props} className="w-full border-collapse divide-y divide-zinc-200 dark:divide-zinc-800">
+    <div className="my-8 overflow-hidden rounded-lg border-2 border-zinc-300 dark:border-zinc-700">
+      <table {...props} className="w-full border-collapse divide-y-2 divide-zinc-300 dark:divide-zinc-700">
         {children}
       </table>
     </div>
   ),
   th: ({ children, ...props }: ComponentProps<'th'>) => (
-    <th {...props} className="border-r border-zinc-200 bg-zinc-50/50 px-4 py-3 text-left text-sm font-medium text-zinc-900 last:border-r-0 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100">
+    <th {...props} className="border-r-2 border-zinc-300 bg-zinc-100 px-4 py-3 text-left text-sm font-semibold text-zinc-900 last:border-r-0 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50">
       {children}
     </th>
   ),
   td: ({ children, ...props }: ComponentProps<'td'>) => (
-    <td {...props} className="border-r border-zinc-200 px-4 py-3 text-sm text-zinc-600 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400">
+    <td {...props} className="border-r-2 border-zinc-300 px-4 py-3 text-sm text-zinc-700 last:border-r-0 dark:border-zinc-700 dark:text-zinc-300">
       {children}
     </td>
   ),
   tr: ({ children, ...props }: ComponentProps<'tr'>) => (
-    <tr {...props} className="border-b border-zinc-200 last:border-0 dark:border-zinc-800">
+    <tr {...props} className="border-b-2 border-zinc-300 last:border-0 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800/50">
       {children}
     </tr>
   ),
@@ -134,7 +135,15 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
         prose-strong:text-foreground dark:prose-strong:text-foreground
         prose-code:rounded prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm dark:prose-code:bg-zinc-800
         p-8 lg:prose-lg">
-        <MDXRemote source={post.content} components={components} />
+        <MDXRemote 
+          source={post.content} 
+          components={components}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkGfm]
+            }
+          }}
+        />
       </GlassCard>
     </div>
   )

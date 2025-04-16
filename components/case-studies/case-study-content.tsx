@@ -68,17 +68,17 @@ const components: MDXComponents = {
     </div>
   ),
   ul: ({ children }) => (
-    <ul className="list-disc list-inside space-y-2 my-4">
+    <ul className="list-disc space-y-2 my-4 pl-4">
       {children}
     </ul>
   ),
   ol: ({ children }) => (
-    <ol className="list-decimal list-inside space-y-2 my-4">
+    <ol className="list-decimal space-y-2 my-4 pl-4">
       {children}
     </ol>
   ),
   li: ({ children }) => (
-    <li className="my-2">
+    <li className="my-2 pl-2">
       {children}
     </li>
   ),
