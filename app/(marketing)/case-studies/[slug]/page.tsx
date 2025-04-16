@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation"
-import { getCaseStudyContent, getAllCaseStudies } from "@/lib/case-studies"
-import { MDXContent } from "@/components/mdx/mdx-content"
+import { getAllCaseStudies, getCaseStudyContent } from "@/lib/case-studies"
 import { StructuredData } from "@/components/seo/structured-data"
+import { CaseStudyRelated } from "@/components/case-studies/case-study-related"
+import { MDXContent } from "@/components/mdx/mdx-content"
 
+// Generate static pages for all case studies at build time
 export async function generateStaticParams() {
   const caseStudies = await getAllCaseStudies()
   return caseStudies.map((caseStudy) => ({
@@ -10,85 +12,77 @@ export async function generateStaticParams() {
   }))
 }
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
+// Generate metadata for each case study
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  try {
-    const caseStudy = await getCaseStudyContent(slug)
-    return {
-      title: `${caseStudy.title} | ROQ CX Case Study`,
-      description: caseStudy.description,
-      openGraph: {
-        title: `${caseStudy.title} | ROQ CX Case Study`,
-        description: caseStudy.description,
-        type: "article",
-        publishedTime: caseStudy.date,
-        authors: caseStudy.author ? [caseStudy.author.name] : undefined,
-        tags: caseStudy.tags,
-        images: [
-          {
-            url: caseStudy.coverImage || "",
-            width: 1200,
-            height: 630,
-            alt: caseStudy.title,
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: caseStudy.title,
-        description: caseStudy.description,
-        images: [caseStudy.coverImage || ""],
-      },
-      alternates: {
-        canonical: `/case-studies/${slug}`,
-      },
-    }
-  } catch (error) {
+  const resolvedParams = await params
+  const caseStudies = await getAllCaseStudies()
+  const caseStudy = caseStudies.find((c) => c.slug === resolvedParams.slug)
+
+  if (!caseStudy) {
     return {
       title: "Case Study Not Found",
       description: "The requested case study could not be found.",
     }
   }
+
+  return {
+    title: caseStudy.title,
+    description: caseStudy.description,
+    openGraph: {
+      title: caseStudy.title,
+      description: caseStudy.description,
+      images: [
+        {
+          url: caseStudy.coverImage,
+          width: 1200,
+          height: 630,
+          alt: caseStudy.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: caseStudy.title,
+      description: caseStudy.description,
+      images: [caseStudy.coverImage],
+    },
+  }
 }
 
+// The page component - will be statically generated at build time
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  try {
-    const caseStudy = await getCaseStudyContent(slug)
+  const resolvedParams = await params
+  const [caseStudy, allCaseStudies] = await Promise.all([
+    getCaseStudyContent(resolvedParams.slug),
+    getAllCaseStudies(),
+  ])
 
-    return (
-      <article className="container mx-auto px-4 py-8">
-        <StructuredData
-          type="CaseStudy"
-          data={{
-            headline: caseStudy.title,
-            description: caseStudy.description,
-            author: caseStudy.author ? {
-              "@type": "Person",
-              name: caseStudy.author.name
-            } : undefined,
-            datePublished: caseStudy.date,
-            publisher: {
-              "@type": "Organization",
-              name: "ROQ CX",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://www.roqcx.com/3d_logo.svg"
-              }
-            }
-          }}
-        />
-        <MDXContent 
-          content={caseStudy.content} 
-          type="case-study" 
-          metadata={caseStudy}
-        />
-      </article>
-    )
-  } catch (error) {
+  if (!caseStudy) {
     notFound()
   }
+
+  const relatedStudies = allCaseStudies
+    .filter((study) => study.slug !== resolvedParams.slug)
+    .slice(0, 3)
+
+  return (
+    <>
+      <StructuredData
+        type="CaseStudy"
+        data={{
+          "@type": "CaseStudy",
+          headline: caseStudy.title,
+          description: caseStudy.description,
+          image: caseStudy.coverImage,
+          datePublished: caseStudy.date,
+          author: caseStudy.author ? {
+            "@type": "Person",
+            name: caseStudy.author.name
+          } : undefined,
+        }}
+      />
+      <MDXContent content={caseStudy.content} type="case-study" data={caseStudy} />
+      <CaseStudyRelated relatedStudies={relatedStudies} />
+    </>
+  )
 } 

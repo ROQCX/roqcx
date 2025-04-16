@@ -1,8 +1,7 @@
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
-import { bundleMDX } from "mdx-bundler"
-import remarkGfm from "remark-gfm"
+
 
 const CASE_STUDIES_DIR = path.join(process.cwd(), "content/case-studies")
 
@@ -75,62 +74,22 @@ export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithCo
   const fileContent = fs.readFileSync(filePath, "utf8")
   const { data, content } = matter(fileContent)
 
-  if (process.platform === "win32") {
-    process.env.ESBUILD_BINARY_PATH = path.join(
-      process.cwd(),
-      "node_modules",
-      "esbuild",
-      "esbuild.exe"
-    )
-  } else {
-    process.env.ESBUILD_BINARY_PATH = path.join(
-      process.cwd(),
-      "node_modules",
-      "esbuild",
-      "bin",
-      "esbuild"
-    )
-  }
-
-  try {
-    const { code } = await bundleMDX({
-      source: content,
-      cwd: CASE_STUDIES_DIR,
-      mdxOptions(options) {
-        options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm]
-        options.rehypePlugins = [...(options.rehypePlugins ?? [])]
-        return options
-      },
-      esbuildOptions(options) {
-        options.target = 'es2020'
-        options.platform = 'node'
-        options.jsx = 'preserve'
-        options.minify = false
-        options.bundle = true
-        return options
-      },
-    })
-
-    return {
-      slug,
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      coverImage: data.coverImage,
-      logo: data.logo,
-      tags: data.tags,
-      client: data.client,
-      industry: data.industry,
-      duration: data.duration,
-      role: data.role,
-      teamSize: data.teamSize,
-      technologies: data.technologies,
-      results: data.results,
-      author: data.author,
-      content: code,
-    }
-  } catch (error) {
-    console.error('Error bundling MDX:', error)
-    throw error
+  return {
+    slug,
+    title: data.title,
+    description: data.description,
+    date: data.date,
+    coverImage: data.coverImage,
+    logo: data.logo,
+    tags: data.tags,
+    client: data.client,
+    industry: data.industry,
+    duration: data.duration,
+    role: data.role,
+    teamSize: data.teamSize,
+    technologies: data.technologies,
+    results: data.results,
+    author: data.author,
+    content,
   }
 } 

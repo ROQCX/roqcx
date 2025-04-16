@@ -1,19 +1,16 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { getAllCaseStudies } from "../../lib/case-studies"
-import { CaseStudyCard } from "./case-study-card"
 import type { CaseStudy } from "../../lib/case-studies"
+import { Suspense } from "react"
+import { CaseStudyCardList } from "./case-study-related-list"
 
 interface CaseStudyRelatedProps {
-  caseStudy: CaseStudy
+  relatedStudies: CaseStudy[]
 }
 
-export async function CaseStudyRelated({ caseStudy }: CaseStudyRelatedProps) {
-  const allCaseStudies = await getAllCaseStudies()
-  const relatedCaseStudies = allCaseStudies
-    .filter((study) => study.slug !== caseStudy.slug)
-    .slice(0, 3)
-
-  if (relatedCaseStudies.length === 0) {
+export function CaseStudyRelated({ relatedStudies }: CaseStudyRelatedProps) {
+  if (relatedStudies.length === 0) {
     return null
   }
 
@@ -23,11 +20,9 @@ export async function CaseStudyRelated({ caseStudy }: CaseStudyRelatedProps) {
         <CardTitle>Related Case Studies</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {relatedCaseStudies.map((study) => (
-            <CaseStudyCard key={study.slug} {...study} />
-          ))}
-        </div>
+        <Suspense fallback={<div>Loading related case studies...</div>}>
+          <CaseStudyCardList studies={relatedStudies} />
+        </Suspense>
       </CardContent>
     </Card>
   )

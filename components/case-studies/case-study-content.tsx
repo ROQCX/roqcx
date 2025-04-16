@@ -1,30 +1,22 @@
 "use client"
 
-import { useMemo } from "react"
-import { getMDXComponent } from "mdx-bundler/client"
 import { GlassCard } from "../ui/glass-card"
 import type { CaseStudyWithContent } from "../../lib/case-studies"
 import Image from "next/image"
 import { Target, Lightbulb, LineChart } from "lucide-react"
 import type { ComponentProps } from "react"
 import type { MDXComponents } from "mdx/types"
-import { motion } from 'framer-motion'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 interface CaseStudyContentProps {
   caseStudy: CaseStudyWithContent
 }
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-}
-
 const components: MDXComponents = {
   h1: ({ children }) => (
-    <motion.h1 {...fadeInUp} className="text-3xl font-bold mt-8 mb-4">
+    <h1 className="text-3xl font-bold mt-8 mb-4">
       {children}
-    </motion.h1>
+    </h1>
   ),
   h2: ({ children }) => {
     const text = typeof children === 'string' ? children : ''
@@ -33,16 +25,16 @@ const components: MDXComponents = {
                  text.toLowerCase().includes('impact') ? <LineChart className="inline-block w-6 h-6 mr-2" /> : null
 
     return (
-      <motion.h2 {...fadeInUp} className="flex items-center gap-2 text-2xl font-bold mt-8 mb-4">
+      <h2 className="flex items-center gap-2 text-2xl font-bold mt-8 mb-4">
         {icon}
         {children}
-      </motion.h2>
+      </h2>
     )
   },
   h3: ({ children }) => (
-    <motion.h3 {...fadeInUp} className="text-xl font-semibold mt-6 mb-3">
+    <h3 className="text-xl font-semibold mt-6 mb-3">
       {children}
-    </motion.h3>
+    </h3>
   ),
   h4: ({ children, ...props }: ComponentProps<'h4'>) => (
     <h4 {...props} className="text-lg font-semibold mt-4 mb-2">
@@ -50,21 +42,19 @@ const components: MDXComponents = {
     </h4>
   ),
   p: ({ children }) => (
-    <motion.p {...fadeInUp} className="my-4 leading-relaxed">
+    <p className="my-4 leading-relaxed">
       {children}
-    </motion.p>
+    </p>
   ),
   a: ({ href, children }) => (
-    <motion.a 
+    <a 
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       className="text-primary hover:underline"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
     >
       {children}
-    </motion.a>
+    </a>
   ),
   img: ({ src, alt }) => (
     <div className="relative w-full h-64 my-8">
@@ -78,29 +68,29 @@ const components: MDXComponents = {
     </div>
   ),
   ul: ({ children }) => (
-    <motion.ul {...fadeInUp} className="list-disc list-inside space-y-2 my-4">
+    <ul className="list-disc list-inside space-y-2 my-4">
       {children}
-    </motion.ul>
+    </ul>
   ),
   ol: ({ children }) => (
-    <motion.ol {...fadeInUp} className="list-decimal list-inside space-y-2 my-4">
+    <ol className="list-decimal list-inside space-y-2 my-4">
       {children}
-    </motion.ol>
+    </ol>
   ),
   li: ({ children }) => (
-    <motion.li {...fadeInUp} className="my-2">
+    <li className="my-2">
       {children}
-    </motion.li>
+    </li>
   ),
   blockquote: ({ children }) => (
-    <motion.blockquote {...fadeInUp} className="border-l-4 border-primary pl-4 my-4 italic">
+    <blockquote className="border-l-4 border-primary pl-4 my-4 italic">
       {children}
-    </motion.blockquote>
+    </blockquote>
   ),
   pre: ({ children }) => (
-    <motion.pre {...fadeInUp} className="bg-muted p-4 rounded-lg my-4 overflow-x-auto">
+    <pre className="bg-muted p-4 rounded-lg my-4 overflow-x-auto">
       {children}
-    </motion.pre>
+    </pre>
   ),
   code: ({ children }) => (
     <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
@@ -132,17 +122,7 @@ const components: MDXComponents = {
 }
 
 export function CaseStudyContent({ caseStudy }: CaseStudyContentProps) {
-  const Component = useMemo(() => {
-    if (!caseStudy.content) return null
-    try {
-      return getMDXComponent(caseStudy.content)
-    } catch (error) {
-      console.error('Error creating MDX component:', error)
-      return null
-    }
-  }, [caseStudy.content])
-
-  if (!Component) {
+  if (!caseStudy.content) {
     return <div>Failed to load content</div>
   }
 
@@ -165,7 +145,7 @@ export function CaseStudyContent({ caseStudy }: CaseStudyContentProps) {
         p-8 lg:prose-lg
         bg-gradient-to-br from-roq-orange/10 via-roq-pink/10 to-roq-blue/10
         dark:from-roq-orange/5 dark:via-roq-pink/5 dark:to-roq-blue/5">
-        <Component components={components} />
+        <MDXRemote source={caseStudy.content} components={components} />
       </GlassCard>
     </div>
   )

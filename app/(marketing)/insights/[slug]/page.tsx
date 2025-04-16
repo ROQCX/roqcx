@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation"
-import { getPostContent, getAllPosts } from "@/lib/blog"
+import { getAllPosts, getPostContent } from "@/lib/blog"
 import { MDXContent } from "@/components/mdx/mdx-content"
 import { StructuredData } from "@/components/seo/structured-data"
 
+// Generate static pages for all blog posts at build time
 export async function generateStaticParams() {
   const posts = await getAllPosts()
   return posts.map((post) => ({
@@ -10,85 +11,69 @@ export async function generateStaticParams() {
   }))
 }
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
+// Generate metadata for each blog post
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  try {
-    const post = await getPostContent(slug)
-    return {
-      title: `${post.title} | ROQ CX Insights`,
-      description: post.description,
-      openGraph: {
-        title: `${post.title} | ROQ CX Insights`,
-        description: post.description,
-        type: "article",
-        publishedTime: post.date,
-        authors: post.author ? [post.author.name] : undefined,
-        tags: post.tags,
-        images: [
-          {
-            url: post.coverImage || "",
-            width: 1200,
-            height: 630,
-            alt: post.title,
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: post.title,
-        description: post.description,
-        images: [post.coverImage || ""],
-      },
-      alternates: {
-        canonical: `/insights/${slug}`,
-      },
-    }
-  } catch (error) {
+  const resolvedParams = await params
+  const posts = await getAllPosts()
+  const post = posts.find((p) => p.slug === resolvedParams.slug)
+
+  if (!post) {
     return {
       title: "Blog Post Not Found",
       description: "The requested blog post could not be found.",
     }
   }
+
+  return {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [
+        {
+          url: post.coverImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [post.coverImage],
+    },
+  }
 }
 
+// The page component - will be statically generated at build time
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  try {
-    const post = await getPostContent(slug)
+  const resolvedParams = await params
+  const post = await getPostContent(resolvedParams.slug)
 
-    return (
-      <article className="container mx-auto px-4 py-8">
-        <StructuredData
-          type="BlogPosting"
-          data={{
-            headline: post.title,
-            description: post.description,
-            author: post.author ? {
-              "@type": "Person",
-              name: post.author.name
-            } : undefined,
-            datePublished: post.date,
-            publisher: {
-              "@type": "Organization",
-              name: "ROQ CX",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://www.roqcx.com/3d_logo.svg"
-              }
-            }
-          }}
-        />
-        <MDXContent 
-          content={post.content} 
-          type="blog-post" 
-          metadata={post}
-        />
-      </article>
-    )
-  } catch (error) {
+  if (!post) {
     notFound()
   }
+
+  return (
+    <>
+      <StructuredData
+        type="BlogPosting"
+        data={{
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.description,
+          image: post.coverImage,
+          datePublished: post.date,
+          author: post.author ? {
+            "@type": "Person",
+            name: post.author.name
+          } : undefined,
+        }}
+      />
+      <MDXContent content={post.content} type="blog-post" data={post} />
+    </>
+  )
 } 

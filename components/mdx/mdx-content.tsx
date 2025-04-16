@@ -1,30 +1,34 @@
-import { CaseStudyContent } from "@/components/case-studies/case-study-content"
-import { BlogPostContent } from "@/components/insights/blog-post-content"
-import { CaseStudyHeader } from "@/components/case-studies/case-study-header"
-import { CaseStudyRelated } from "@/components/case-studies/case-study-related"
+
+import { CaseStudyHeader } from "../case-studies/case-study-header"
 import { BlogPostHeader } from "../insights/blog-post-header"
+import { CaseStudyContent } from "../case-studies/case-study-content"
+import { BlogPostContent } from "../insights/blog-post-content"
+import type { CaseStudyWithContent } from "@/lib/case-studies"
+import type { BlogPostWithContent } from "@/lib/blog"
 
 interface MDXContentProps {
   content: string
-  type: 'case-study' | 'blog-post'
-  metadata: any
+  type: "case-study" | "blog-post"
+  data: CaseStudyWithContent | BlogPostWithContent
 }
 
-export async function MDXContent({ content, type, metadata }: MDXContentProps) {
-  if (type === 'case-study') {
-    return (
-      <>
-        <CaseStudyHeader caseStudy={metadata} />
-        <CaseStudyContent caseStudy={{ ...metadata, content }} />
-        <CaseStudyRelated caseStudy={metadata} />
-      </>
-    )
-  }
-  
+
+
+export function MDXContent({ content, type, data }: MDXContentProps) {
   return (
     <>
-      <BlogPostHeader post={{ ...metadata }} />
-      <BlogPostContent post={{ ...metadata, content }} />
+      {type === "case-study" ? (
+        <>
+          <CaseStudyHeader caseStudy={data as CaseStudyWithContent} />
+            <CaseStudyContent caseStudy={data as CaseStudyWithContent} />
+          </>
+        ) : (
+          <>
+            <BlogPostHeader post={data as BlogPostWithContent} />
+            <BlogPostContent post={data as BlogPostWithContent} />
+          </>
+        )}
+     
     </>
   )
 } 
