@@ -13,9 +13,10 @@ export async function generateStaticParams() {
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   try {
-    const caseStudy = await getCaseStudyContent(params.slug)
+    const caseStudy = await getCaseStudyContent(slug)
     return {
       title: `${caseStudy.title} | ROQ CX Case Study`,
       description: caseStudy.description,
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }) {
         images: [caseStudy.coverImage || ""],
       },
       alternates: {
-        canonical: `/case-studies/${params.slug}`,
+        canonical: `/case-studies/${slug}`,
       },
     }
   } catch (error) {
@@ -53,9 +54,10 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function CaseStudyPage({ params }) {
+export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   try {
-    const caseStudy = await getCaseStudyContent(params.slug)
+    const caseStudy = await getCaseStudyContent(slug)
 
     return (
       <article className="container mx-auto px-4 py-8">

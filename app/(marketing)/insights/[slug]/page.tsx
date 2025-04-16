@@ -13,9 +13,10 @@ export async function generateStaticParams() {
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   try {
-    const post = await getPostContent(params.slug)
+    const post = await getPostContent(slug)
     return {
       title: `${post.title} | ROQ CX Insights`,
       description: post.description,
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }) {
         images: [post.coverImage || ""],
       },
       alternates: {
-        canonical: `/insights/${params.slug}`,
+        canonical: `/insights/${slug}`,
       },
     }
   } catch (error) {
@@ -53,9 +54,10 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function BlogPostPage({ params }) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   try {
-    const post = await getPostContent(params.slug)
+    const post = await getPostContent(slug)
 
     return (
       <article className="container mx-auto px-4 py-8">
