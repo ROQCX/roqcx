@@ -28,6 +28,9 @@ export function Hero() {
               with AI-powered automation
             </span>
           </h1>
+          <p className="mx-auto mt-2 text-sm text-zinc-500 dark:text-zinc-500">
+            Backed by MIT Sloan research: AI can boost worker productivity by up to 40% when used within its capabilities
+          </p>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400 sm:text-xl">
             Make manual busywork our job, not yours. ROQ CX helps small businesses automate repetitive tasks, boost productivity, and focus on what matters most, growth.
           </p>
