@@ -1,6 +1,5 @@
 import { GlassCard } from "../../../../components/ui/glass-card"
 import { CTACard } from "../../../../components/ui/cta-card"
-import { ChatInterface } from "../../../../components/chat/chat-interface"
 import {
   MessageSquare,
   Shield,
@@ -9,12 +8,12 @@ import {
   Brain,
   Bot,
   ArrowRight,
+  Sparkles,
+  Target,
+  Workflow,
 } from "lucide-react"
-import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { Button } from "../../../../components/ui/button"
-import { Suspense } from "react"
-
 
 const features = [
   {
@@ -55,37 +54,52 @@ const benefits = [
   },
 ]
 
-const ROQ_CX_QUESTIONS = [
-  "How can ROQ CX help improve my customer service?",
-  "What are the key benefits of using ROQ CX for small businesses?",
-  "How does ROQ CX's AI technology work?",
-  "Can ROQ CX help reduce my customer support costs?",
-  "What makes ROQ CX different from other customer experience platforms?",
-  "How can ROQ CX help me understand my customers better?"
+const agenticCapabilities = [
+  {
+    title: "Autonomous Problem Solving",
+    description: "Our AI doesn't just respond, it takes initiative to solve complex customer issues by breaking them down into actionable steps and executing them independently.",
+    icon: Target,
+  },
+  {
+    title: "Contextual Understanding",
+    description: "The AI maintains deep context awareness across conversations, remembering previous interactions and using them to provide more relevant, personalized solutions.",
+    icon: Brain,
+  },
+  {
+    title: "Proactive Assistance",
+    description: "Instead of waiting for instructions, our AI anticipates needs and suggests solutions before problems arise, reducing response times and improving customer satisfaction.",
+    icon: Sparkles,
+  },
+  {
+    title: "Workflow Automation",
+    description: "Seamlessly integrates with your existing systems to automate routine tasks, from ticket creation to follow-up scheduling, without human intervention.",
+    icon: Workflow,
+  },
 ]
 
-export default async function ROQChat() {
-  const cookieStore = await cookies()
-  const modelIdFromCookie = cookieStore.get('chat-model')
+export const metadata = {
+  title: "ROQChat AI Assistant | ROQ CX",
+  description: "Experience the future of customer support with ROQChat's AI-powered assistant. Get 24/7 instant, accurate responses and streamline your communication workflows.",
+}
 
+export default async function ROQChat() {
   return (
     <div className="relative">
-      <div className="container mx-auto px-4 py-24 sm:py-32">
+      <div className="container mx-auto px-4">
         {/* Hero Section */}
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="flex justify-center">
-            <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
-              <Brain className="h-8 w-8 text-white" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            ROQChat AI Assistant
+        <section className="container mx-auto px-4 max-w-2xl text-center pt-20 sm:pt-32">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+            ROQChat{' '}
+            <span className="bg-gradient-to-r from-roq-orange via-roq-pink to-roq-blue bg-clip-text text-transparent">
+              AI Assistant
+            </span>
           </h1>
           <p className="mt-6 text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Experience the future of customer support and team collaboration with our
-            AI-powered chat assistant. Get instant, accurate responses and streamline
-            your communication workflows.
+            Experience the future of customer support and team collaboration with our AI-powered chat assistant. Get instant, accurate responses and streamline your communication workflows.
           </p>
+          <div className="inline-block rounded-full bg-roq-orange/90 px-6 py-2 text-white font-semibold shadow mt-6">
+            24/7 instant, accurate responses
+          </div>
           <div className="mt-8">
             <Link href="/chatbot">
               <Button size="lg" className="group">
@@ -94,68 +108,85 @@ export default async function ROQChat() {
               </Button>
             </Link>
           </div>
-        </div>
+        </section>
 
-        {/* Features Section */}
-        <div className="mx-auto mt-24 max-w-7xl">
-          <h2 className="text-center text-2xl font-bold">Key Features</h2>
-          <div className="mt-16 grid gap-8 lg:grid-cols-3">
-            {features.map((feature) => (
-              <GlassCard key={feature.title} className="p-6">
-                <div className="flex h-full flex-col">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
-                    <feature.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="mt-4 text-xl font-semibold">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 flex-grow text-zinc-600 dark:text-zinc-400">
-                    {feature.description}
-                  </p>
-                </div>
-              </GlassCard>
-            ))}
+        {/* Features & Benefits */}
+        <section className="container mx-auto px-4 mt-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div>
+              <h2 className="text-2xl font-bold mb-6 text-roq-orange">Key Features</h2>
+              <div className="space-y-6">
+                {features.map((feature) => (
+                  <GlassCard key={feature.title} className="flex items-center gap-4 p-6">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
+                      <feature.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">{feature.title}</h3>
+                      <p className="text-zinc-600 dark:text-zinc-400">{feature.description}</p>
+                    </div>
+                  </GlassCard>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold mb-6 text-roq-pink">Benefits</h2>
+              <div className="space-y-6">
+                {benefits.map((benefit) => (
+                  <GlassCard key={benefit.title} className="flex items-center gap-4 p-6">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
+                      <benefit.icon className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">{benefit.title}</h3>
+                      <p className="text-zinc-600 dark:text-zinc-400">{benefit.description}</p>
+                    </div>
+                  </GlassCard>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Benefits Section */}
-        <div className="mx-auto mt-24 max-w-7xl">
-          <h2 className="text-center text-2xl font-bold">Benefits</h2>
-          <div className="mt-16 grid gap-8 lg:grid-cols-3">
-            {benefits.map((benefit) => (
-              <GlassCard key={benefit.title} className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
-                    <benefit.icon className="h-5 w-5 text-white" />
+        {/* Agentic AI Section */}
+        <section className="container mx-auto px-4 mt-24">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold mb-4">
+              Beyond Chatbots:{" "}
+              <span className="bg-gradient-to-r from-roq-orange to-roq-pink bg-clip-text text-transparent">
+                Agentic AI
+              </span>
+            </h2>
+            <p className="text-lg text-zinc-600 dark:text-zinc-400">
+              ROQChat isn't just another chatbot, it's an intelligent agent that actively solves problems, learns from interactions, and continuously improves your customer experience.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {agenticCapabilities.map((capability) => (
+              <GlassCard key={capability.title} className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
+                    <capability.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{benefit.title}</h3>
-                    <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                      {benefit.description}
-                    </p>
+                    <h3 className="text-xl font-semibold mb-2">{capability.title}</h3>
+                    <p className="text-zinc-600 dark:text-zinc-400">{capability.description}</p>
                   </div>
                 </div>
               </GlassCard>
             ))}
           </div>
-        </div>
 
-        {/* Chat Interface Section */}
-        <div className="mx-auto mt-24 max-w-4xl">
-          <h2 className="text-center text-2xl font-bold mb-8">Try ROQChat Now</h2>
-          <GlassCard className="p-6">
-            <Suspense fallback={<div>Loading chat interface...</div>}>
-              <ChatInterface
-                initialMessages={[]}
-                isReadonly={false}
-                exampleQuestions={ROQ_CX_QUESTIONS}
-                welcomeMessage="Welcome to ROQ CX Assistant! How can I help you learn about our products and services?"
-                showInfoButton={false}
-                apiRoute="/api/chat/roqcx"
-              />
-            </Suspense>
-          </GlassCard>
-        </div>
+          <div className="mt-12 text-center">
+            <div className="inline-block rounded-lg bg-zinc-100 dark:bg-zinc-800 px-6 py-3">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                <span className="font-semibold text-roq-orange">Real Results:</span>{" "}
+                Our clients see an average 40% reduction in response time and 65% increase in first-contact resolution
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* CTA Section */}
         <div className="mx-auto mt-24 max-w-3xl text-center">

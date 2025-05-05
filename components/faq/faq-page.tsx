@@ -1,26 +1,45 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const faqs = [
+  // Implementation and Adoption
   {
-    question: "What services does ROQ CX offer?",
-    answer: "ROQ CX offers AI-powered customer experience consulting, automation solutions, and analytics services tailored for SMBs. Our services help businesses streamline operations, enhance customer interactions, and leverage data-driven insights for growth."
+    question: "How quickly can automation be implemented in a small business?",
+    answer: "Most small businesses can begin seeing results from automation within a few weeks. Our solutions are designed for rapid deployment, with minimal disruption to your existing workflows. We guide you through each step to ensure a smooth transition."
   },
   {
-    question: "How can ROQ CX help my business?",
-    answer: "ROQ CX helps businesses improve customer satisfaction, streamline operations, and leverage AI to enhance their customer experience. We provide customized solutions that align with your business goals and industry requirements."
+    question: "What technical expertise is required to use your automation tools?",
+    answer: "No advanced technical skills are needed. Our tools are built for ease of use, with intuitive interfaces and comprehensive onboarding. We provide training and ongoing support to empower your team regardless of their technical background."
   },
   {
-    question: "What industries do you serve?",
-    answer: "We serve a wide range of industries including retail, healthcare, finance, and technology, with solutions tailored to each sector's unique needs. Our expertise spans across various business sizes and types."
+    question: "How do you ensure smooth adoption across our team?",
+    answer: "We offer hands-on onboarding, clear documentation, and responsive support. Our team works closely with yours to address concerns, customize workflows, and encourage adoption through best practices and change management."
+  },
+  // ROI and Business Impact
+  {
+    question: "How do I measure the ROI of implementing automation?",
+    answer: "We help you define clear KPIs before implementation, such as time saved, error reduction, and cost savings. Our analytics dashboards provide real-time visibility into performance, so you can track ROI and business impact from day one."
   },
   {
-    question: "How do I get started with ROQ CX?",
-    answer: "Getting started is easy - simply contact us through our website or email, and we'll schedule a consultation to discuss your needs. Our team will work with you to understand your requirements and propose the best solutions."
+    question: "What specific time savings can I expect for my business?",
+    answer: "Time savings depend on your current processes, but most clients see a reduction in manual work by 30-60%. We analyze your workflows and provide estimates during the discovery phase, so you know what to expect."
   },
   {
-    question: "What makes ROQ CX different from other consulting firms?",
-    answer: "ROQ CX combines deep industry expertise with cutting-edge AI technology to deliver innovative solutions. We focus on practical, implementable strategies that drive real business results and provide ongoing support to ensure success."
-  }
+    question: "How have similar businesses in my industry benefited from your solutions?",
+    answer: "We have case studies and success stories from businesses like yours. Many have achieved faster turnaround times, improved customer satisfaction, and significant cost reductions. Ask us for examples relevant to your industry."
+  },
+  // Security and Data Privacy
+  {
+    question: "How is my business data protected when using your automation tools?",
+    answer: "We use industry-standard encryption, secure cloud infrastructure, and regular security audits to protect your data. Access controls and compliance with best practices are built into every solution."
+  },
+  {
+    question: "Who owns the data generated through your platform?",
+    answer: "You retain full ownership of your business data. We do not use or share your data without your explicit consent, and you can export your data at any time."
+  },
+  {
+    question: "How do you ensure compliance with data privacy regulations?",
+    answer: "Our platform is designed to comply with major data privacy regulations (such as GDPR). We provide transparency, data access controls, and regular compliance reviews to keep your business protected."
+  },
 ]
 
 export function FAQPage() {
@@ -33,7 +52,7 @@ export function FAQPage() {
               Frequently Asked Questions
             </h2>
             <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-              Find answers to common questions about our services and how we can help your business.
+              Find answers to common questions about AI, Automation, and How it can help your business.
             </p>
           </div>
         </div>

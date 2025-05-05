@@ -29,7 +29,8 @@ const values = [
 export default function AboutPage() {
   return (
     <div className="container mx-auto px-4">
-      <div className="mx-auto max-w-3xl text-center">
+      {/* Hero Section */}
+      <section className="mx-auto max-w-2xl text-center pt-20 sm:pt-32">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           Empowering Small Businesses with{" "}
           <span className="bg-gradient-to-r from-roq-orange via-roq-pink to-roq-blue bg-clip-text text-transparent">
@@ -40,8 +41,9 @@ export default function AboutPage() {
           At ROQ CX, we believe that every business deserves access to cutting-edge technology 
           that helps them compete and thrive in today&apos;s digital landscape.
         </p>
-      </div>
+      </section>
 
+      {/* Main Content */}
       <div className="mx-auto mt-16 max-w-4xl">
         <div className="prose prose-lg dark:prose-invert">
           <p>
@@ -79,7 +81,7 @@ export default function AboutPage() {
             {values.map((value) => (
               <GlassCard key={value.title} className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-roq-orange to-roq-pink">
+                  <div className="flex h-12 w-12 aspect-square items-center justify-center rounded-md bg-gradient-to-br from-roq-orange to-roq-pink">
                     <value.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>

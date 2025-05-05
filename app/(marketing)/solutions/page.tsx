@@ -10,9 +10,9 @@ interface Solution {
 
 const solutions: Solution[] = [
   {
-    title: "Process Automation",
+    title: "Eliminate Manual Overload",
     description:
-      "Streamline your operations with intelligent automation. From data entry to complex workflows, we'll help you save time and reduce errors.",
+      "Escape admin chaos and reclaim 10+ hours per week. Automate scheduling, data entry, and reporting so your team can focus on growth, not grunt work.",
     icon: "cog",
     href: "/solutions/automation",
     features: [
@@ -23,9 +23,9 @@ const solutions: Solution[] = [
     ],
   },
   {
-    title: "Analytics & Dashboards",
+    title: "Win and Keep More Customers",
     description:
-      "Transform your data into actionable insights. Get real-time visibility into your business performance with custom dashboards.",
+      "Never miss a lead. Smart workflows and CRM automation engage prospects instantly and nurture them on autopilot—helping you win and keep more customers.",
     icon: "bar-chart-3",
     href: "/solutions/analytics",
     features: [
@@ -36,9 +36,9 @@ const solutions: Solution[] = [
     ],
   },
   {
-    title: "AI & Predictive Models",
+    title: "Deliver a Consistent Experience",
     description:
-      "Harness the power of AI to predict trends and make data-driven decisions. Enterprise-grade AI solutions scaled for SMBs.",
+      "Deliver a consistent, professional customer experience 24/7. Our automation ensures every customer gets fast, reliable service—no matter how busy you are.",
     icon: "brain",
     href: "/solutions/ai",
     features: [
@@ -51,7 +51,7 @@ const solutions: Solution[] = [
   {
     title: "ROQChat AI Assistant",
     description:
-      "Your 24/7 AI-powered assistant that learns from your business data to provide accurate, instant responses to customer queries.",
+      "24/7 AI-powered assistant for instant, accurate responses. Enhance support, boost productivity, and streamline communication for your team and customers.",
     icon: "message-square",
     href: "/solutions/roqchat",
     features: [
@@ -66,8 +66,8 @@ const solutions: Solution[] = [
 export default function Solutions() {
   return (
     <div className="relative">
-      <div className="container mx-auto px-4 sm:">
-        <div className="mx-auto max-w-2xl text-center">
+      <div className="container mx-auto px-4 ">
+        <div className="mx-auto max-w-2xl text-center pt-20 sm:pt-32">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Solutions that{" "}
             <span className="bg-gradient-to-r from-roq-orange via-roq-pink to-roq-blue bg-clip-text text-transparent">
@@ -89,4 +89,9 @@ export default function Solutions() {
       </div>
     </div>
   )
+}
+
+export const metadata = {
+  title: "Solutions | ROQ CX",
+  description: "Explore ROQ CX's suite of automation, analytics, AI, and customer support solutions designed to transform and grow your business.",
 } 

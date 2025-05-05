@@ -19,9 +19,9 @@ const menuItems: MenuItem[] = [
     href: "/solutions",
     label: "Solutions",
     submenu: [
-      { href: "/solutions/automation", label: "Process Automation" },
-      { href: "/solutions/analytics", label: "Analytics & Dashboards" },
-      { href: "/solutions/ai", label: "AI & Predictive Models" },
+      { href: "/solutions/automation", label: "Eliminate Manual Overload" },
+      { href: "/solutions/analytics", label: "Win and Keep More Customers" },
+      { href: "/solutions/ai", label: "Deliver a Consistent Experience" },
       { href: "/solutions/roqchat", label: "ROQChat AI Assistant" },
     ],
   },

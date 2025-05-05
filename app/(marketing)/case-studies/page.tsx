@@ -42,4 +42,9 @@ export default async function CaseStudiesPage() {
       </div>
     </div>
   )
+}
+
+export const metadata = {
+  title: "Case Studies | ROQ CX",
+  description: "Discover real-world case studies of how ROQ CX helps businesses automate, optimize, and achieve remarkable results with AI-powered solutions.",
 } 

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "../components/providers/theme-provider";
 import { Toaster } from "sonner";
 import Script from "next/script";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -101,6 +102,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster position="top-center" />
+          <ChatWidget />
         </ThemeProvider>
       </body>
     </html>

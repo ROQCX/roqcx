@@ -19,3 +19,8 @@ export default function Home() {
     </>
   )
 }
+
+export const metadata = {
+  title: "ROQ CX - Automate & Elevate Your Business",
+  description: "Automate, analyze, and elevate your business with ROQ CX. Discover our AI-powered solutions, case studies, and expert insights for SMBs.",
+}

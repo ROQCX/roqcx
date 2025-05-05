@@ -15,6 +15,11 @@ function BlogSearchSkeleton() {
   )
 }
 
+export const metadata = {
+  title: "Insights & Articles | ROQ CX",
+  description: "Expert insights, articles, and resources on business automation, analytics, AI, and digital transformation for modern businesses.",
+}
+
 export default async function BlogIndex() {
   const posts = await getAllPosts()
   const allTags = Array.from(

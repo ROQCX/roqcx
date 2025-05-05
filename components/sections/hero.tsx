@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react"
 
 export function Hero() {
   return (
-    <section className="relative h-[calc(100vh-7rem)] w-full overflow-hidden">
+    <section className="relative h-[calc(100vh-8rem)] w-full overflow-hidden">
       <div className="relative flex h-full items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -15,20 +15,22 @@ export function Hero() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl text-center translate-y-[-3.5rem]"
         >
+          {/* Pain Point */}
+          <h2 className="text-lg font-semibold text-roq-pink mb-2">
+            Drowning in manual, repetitive business tasks?
+          </h2>
+          {/* Solution & Metric */}
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
             <span className="block">
-              Automate & Elevate
+              Reclaim <span className="text-roq-orange">40%</span> of your workday
             </span>
             <span className="mt-2 block bg-gradient-to-r from-roq-orange via-roq-pink to-roq-blue bg-clip-text text-transparent">
-              Your Business
+              with AI-powered automation
             </span>
           </h1>
-          
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400 sm:text-xl">
-            Free your team from repetitive tasks and gain insights that drive growth.
-            Focus on what matters while we handle the rest.
+            Make manual busywork our job, not yours. ROQ CX helps small businesses automate repetitive tasks, boost productivity, and focus on what matters most, growth.
           </p>
-
           <div className="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -45,7 +47,6 @@ export function Hero() {
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </GlassCard>
             </motion.div>
-
             <motion.a
               href="/solutions"
               className="group flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100"
@@ -56,7 +57,6 @@ export function Hero() {
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </motion.a>
           </div>
-
           {/* Scroll Indicator */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -67,7 +67,7 @@ export function Hero() {
               repeat: Infinity,
               repeatType: "reverse"
             }}
-            className="absolute bottom-8 inset-x-0 hidden sm:flex justify-center"
+            className="absolute bottom-2 inset-x-0 hidden sm:flex justify-center"
           >
             <div className="flex flex-col items-center">
               <span className="text-sm text-zinc-600 dark:text-zinc-400">
