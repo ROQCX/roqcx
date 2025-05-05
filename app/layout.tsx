@@ -84,6 +84,27 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
           `}
         </Script>
+        {/* LinkedIn Tag */}
+        <Script id="linkedin-partner-id" strategy="afterInteractive">
+          {`
+            _linkedin_partner_id = "8341681";
+            window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+            window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+          `}
+        </Script>
+        <Script id="linkedin-insight" strategy="afterInteractive">
+          {`
+            (function(l) {
+              if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+              window.lintrk.q=[]}
+              var s = document.getElementsByTagName("script")[0];
+              var b = document.createElement("script");
+              b.type = "text/javascript";b.async = true;
+              b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+              s.parentNode.insertBefore(b, s);
+            })(window.lintrk);
+          `}
+        </Script>
       </head>
       <body className={`${inter.className} min-h-screen`}>
         {/* Google Tag Manager (noscript) */}
@@ -93,6 +114,16 @@ export default function RootLayout({
             height="0" 
             width="0" 
             style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* LinkedIn Tag (noscript) */}
+        <noscript>
+          <img 
+            height="1" 
+            width="1" 
+            style={{ display: 'none' }} 
+            alt="" 
+            src="https://px.ads.linkedin.com/collect/?pid=8341681&fmt=gif" 
           />
         </noscript>
         <ThemeProvider
