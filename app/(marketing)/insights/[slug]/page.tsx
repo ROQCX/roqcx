@@ -2,6 +2,16 @@ import { notFound } from "next/navigation"
 import { getAllPosts, getPostContent } from "@/lib/blog"
 import { MDXContent } from "@/components/mdx/mdx-content"
 import { StructuredData } from "@/components/seo/structured-data"
+import { Suspense } from "react"
+
+function BlogPostSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="h-[400px] w-full rounded-lg bg-muted animate-pulse" />
+      <div className="h-96 w-full rounded-lg bg-muted animate-pulse" />
+    </div>
+  )
+}
 
 // Generate static pages for all blog posts at build time
 export async function generateStaticParams() {
@@ -73,7 +83,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           } : undefined,
         }}
       />
-      <MDXContent content={post.content} type="blog-post" data={post} />
+      <Suspense fallback={<BlogPostSkeleton />}>
+        <MDXContent content={post.content} type="blog-post" data={post} />
+      </Suspense>
     </>
   )
 } 
