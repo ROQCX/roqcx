@@ -5,6 +5,7 @@ import { ThemeProvider } from "../components/providers/theme-provider";
 import { Toaster } from "sonner";
 import Script from "next/script";
 import { ChatWidget } from "@/components/chat/chat-widget";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -101,8 +102,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Suspense fallback={null}>
+            <ChatWidget />
+          </Suspense>
           <Toaster position="top-center" />
-          <ChatWidget />
         </ThemeProvider>
       </body>
     </html>
