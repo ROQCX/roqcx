@@ -15,6 +15,15 @@ function BlogPostSkeleton() {
   )
 }
 
+function CaseStudySkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="h-[400px] w-full rounded-lg bg-muted animate-pulse" />
+      <div className="h-96 w-full rounded-lg bg-muted animate-pulse" />
+    </div>
+  )
+}
+
 interface MDXContentProps {
   content: string
   type: "case-study" | "blog-post"
@@ -26,8 +35,12 @@ export function MDXContent({ content, type, data }: MDXContentProps) {
     <>
       {type === "case-study" ? (
         <>
-          <CaseStudyHeader caseStudy={data as CaseStudyWithContent} />
-          <CaseStudyContent caseStudy={data as CaseStudyWithContent} />
+          <Suspense fallback={<CaseStudySkeleton />}>
+            <CaseStudyHeader caseStudy={data as CaseStudyWithContent} />
+          </Suspense>
+          <Suspense fallback={<CaseStudySkeleton />}>
+            <CaseStudyContent caseStudy={data as CaseStudyWithContent} />
+          </Suspense>
         </>
       ) : (
         <>

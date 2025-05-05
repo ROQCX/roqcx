@@ -3,6 +3,16 @@ import { getAllCaseStudies, getCaseStudyContent } from "@/lib/case-studies"
 import { StructuredData } from "@/components/seo/structured-data"
 import { CaseStudyRelated } from "@/components/case-studies/case-study-related"
 import { MDXContent } from "@/components/mdx/mdx-content"
+import { Suspense } from "react"
+
+function CaseStudySkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="h-[400px] w-full rounded-lg bg-muted animate-pulse" />
+      <div className="h-96 w-full rounded-lg bg-muted animate-pulse" />
+    </div>
+  )
+}
 
 // Generate static pages for all case studies at build time
 export async function generateStaticParams() {
@@ -66,7 +76,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     .slice(0, 3)
 
   return (
-    <>
+    <div className="container mx-auto px-4">
       <StructuredData
         type="CaseStudy"
         data={{
@@ -81,8 +91,12 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           } : undefined,
         }}
       />
-      <MDXContent content={caseStudy.content} type="case-study" data={caseStudy} />
-      <CaseStudyRelated relatedStudies={relatedStudies} />
-    </>
+      <Suspense fallback={<CaseStudySkeleton />}>
+        <MDXContent content={caseStudy.content} type="case-study" data={caseStudy} />
+      </Suspense>
+      <Suspense fallback={<div>Loading related case studies...</div>}>
+        <CaseStudyRelated relatedStudies={relatedStudies} />
+      </Suspense>
+    </div>
   )
 } 
