@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <>
+    <div className="container mx-auto px-4">
       <StructuredData
         type="BlogPosting"
         data={{
@@ -86,6 +86,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <Suspense fallback={<BlogPostSkeleton />}>
         <MDXContent content={post.content} type="blog-post" data={post} />
       </Suspense>
-    </>
+    </div>
   )
 } 
