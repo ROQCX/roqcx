@@ -15,7 +15,7 @@ interface ChatInputProps {
 export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputProps) {
   return (
     <div className="sticky bottom-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="p-4">
+      <div className="p-2 sm:p-4">
         <form onSubmit={onSubmit} className="relative">
           <div className="relative flex items-center rounded-xl border bg-background/50 backdrop-blur-sm shadow-lg">
             <Input
@@ -23,17 +23,17 @@ export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputPro
               onChange={onChange}
               placeholder="Ask anything"
               disabled={isLoading}
-              className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm sm:text-base"
             />
 
-            <div className="mr-2">
+            <div className="mr-1 sm:mr-2">
               {isLoading ? (
-                <Button disabled variant="ghost" size="icon" className="py-1.5">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                <Button disabled variant="ghost" size="icon" className="py-1 sm:py-1.5 h-8 w-8 sm:h-9 sm:w-9">
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                 </Button>
               ) : (
-                <Button type="submit" variant="ghost" size="icon" className="py-1.5">
-                  <Send className="h-4 w-4" />
+                <Button type="submit" variant="ghost" size="icon" className="py-1 sm:py-1.5 h-8 w-8 sm:h-9 sm:w-9">
+                  <Send className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               )}
             </div>

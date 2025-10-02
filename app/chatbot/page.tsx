@@ -39,8 +39,8 @@ export default function ChatbotPage() {
   }, [])
 
   return (
-    <div className="container mx-auto h-full px-4">
-      <div className="mx-auto max-w-4xl h-full bg-background/60 backdrop-blur-lg rounded-lg border shadow-lg relative">
+    <div className="container mx-auto h-full px-2 sm:px-4">
+      <div className="mx-auto max-w-4xl h-full bg-background/60 backdrop-blur-lg rounded-lg sm:rounded-lg border shadow-lg relative">
         <DynamicChatInterface 
           initialMessages={[]} 
           exampleQuestions={DEMO_QUESTIONS}

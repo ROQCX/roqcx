@@ -57,7 +57,7 @@ export function Messages({
     >
       <AnimatePresence mode="wait">
         {shouldShowWelcome ? (
-          <div className="h-full w-full flex items-center justify-center p-4">
+          <div className="h-full w-full flex items-center justify-center p-2 sm:p-4">
             <div className="max-w-2xl w-full">
               <Welcome 
                 onQuestionClick={handleQuestionClick}
@@ -67,7 +67,7 @@ export function Messages({
             </div>
           </div>
         ) : (
-          <div className="space-y-4 p-4">
+          <div className="space-y-3 sm:space-y-4 p-2 sm:p-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
                 <motion.div

@@ -17,15 +17,15 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ onInfoClick, onNewChat, hasMessages }: ChatHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-4 border-b">
-      <h2 className="text-lg font-semibold">Chat</h2>
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+      <h2 className="text-base sm:text-lg font-semibold">Chat</h2>
+      <div className="flex items-center gap-1 sm:gap-2">
         {onInfoClick && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={onInfoClick}>
-                  <Lightbulb className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={onInfoClick}>
+                  <Lightbulb className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="sr-only">Show help</span>
                 </Button>
               </TooltipTrigger>
@@ -39,8 +39,8 @@ export function ChatHeader({ onInfoClick, onNewChat, hasMessages }: ChatHeaderPr
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={onNewChat}>
-                  <Plus className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={onNewChat}>
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="sr-only">New chat</span>
                 </Button>
               </TooltipTrigger>
