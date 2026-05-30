@@ -1,6 +1,7 @@
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
+import { getContentLastModified } from "./content-last-modified"
 
 
 const CASE_STUDIES_DIR = path.join(process.cwd(), "content/case-studies")
@@ -28,6 +29,7 @@ export interface CaseStudy {
     name: string
     role: string
   }
+  lastModified: Date
 }
 
 export interface CaseStudyWithContent extends CaseStudy {
@@ -35,10 +37,12 @@ export interface CaseStudyWithContent extends CaseStudy {
 }
 
 export async function getAllCaseStudies(): Promise<CaseStudy[]> {
-  const fileNames = fs.readdirSync(CASE_STUDIES_DIR)
+  const fileNames = fs
+    .readdirSync(CASE_STUDIES_DIR)
+    .filter((file) => /\.mdx?$/.test(file))
   const caseStudies = await Promise.all(
     fileNames.map(async (fileName) => {
-      const slug = fileName.replace(/\.mdx$/, "")
+      const slug = fileName.replace(/\.mdx?$/, "")
       const caseStudy = await getCaseStudyBySlug(slug)
       return caseStudy
     })
@@ -68,6 +72,10 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy> {
     technologies: data.technologies,
     results: data.results,
     author: data.author,
+    lastModified: getContentLastModified(filePath, {
+      date: data.date,
+      updated: data.updated,
+    }),
   }
 }
 
@@ -94,5 +102,9 @@ export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithCo
     results: data.results,
     author: data.author,
     content,
+    lastModified: getContentLastModified(filePath, {
+      date: data.date,
+      updated: data.updated,
+    }),
   }
 } 

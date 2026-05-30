@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 import readingTime from "reading-time"
+import { getContentLastModified } from "./content-last-modified"
 
 
 const BLOG_DIR = path.join(process.cwd(), "content/insights")
@@ -27,6 +28,7 @@ export interface BlogPost {
   readingTime: number
   tags: string[]
   coverImage: string
+  lastModified: Date
 }
 
 export interface BlogPostWithContent extends BlogPost {
@@ -69,6 +71,10 @@ export async function getPostBySlug(slug: string): Promise<BlogPost> {
     title: data.title,
     description: data.description,
     date: data.date,
+    lastModified: getContentLastModified(filePath, {
+      date: data.date,
+      updated: data.updated,
+    }),
     author: typeof data.author === 'string' 
       ? {
           name: data.author,
@@ -110,5 +116,9 @@ export async function getPostContent(slug: string): Promise<BlogPostWithContent>
     tags: (data.tags || []).map(normalizeTag),
     coverImage: data.coverImage || data.image,
     content,
+    lastModified: getContentLastModified(filePath, {
+      date: data.date,
+      updated: data.updated,
+    }),
   }
 } 
