@@ -29,7 +29,11 @@ declare global {
   }
 }
 
-export function ContactForm() {
+interface ContactFormProps {
+  compact?: boolean
+}
+
+export function ContactForm({ compact = false }: ContactFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { trackEvent } = useAnalytics()
   
@@ -82,10 +86,14 @@ export function ContactForm() {
     }
   }
 
+  const fieldGap = compact ? "space-y-1" : "space-y-1 md:space-y-2"
+  const formGap = compact ? "space-y-2.5" : "space-y-3 md:space-y-4"
+  const labelClass = compact ? "text-xs font-medium" : "text-xs md:text-sm font-medium"
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 md:space-y-4">
-      <div className="space-y-1 md:space-y-2">
-        <label htmlFor="name" className="text-xs md:text-sm font-medium">
+    <form onSubmit={handleSubmit(onSubmit)} className={formGap}>
+      <div className={fieldGap}>
+        <label htmlFor="name" className={labelClass}>
           Name
         </label>
         <Input
@@ -99,8 +107,8 @@ export function ContactForm() {
         )}
       </div>
 
-      <div className="space-y-1 md:space-y-2">
-        <label htmlFor="email" className="text-xs md:text-sm font-medium">
+      <div className={fieldGap}>
+        <label htmlFor="email" className={labelClass}>
           Email
         </label>
         <Input
@@ -115,15 +123,22 @@ export function ContactForm() {
         )}
       </div>
 
-      <div className="space-y-1 md:space-y-2">
-        <label htmlFor="message" className="text-xs md:text-sm font-medium">
+      <div className={fieldGap}>
+        <label htmlFor="message" className={labelClass}>
           Message
         </label>
         <Textarea
           id="message"
           placeholder="Your message..."
           {...register("message")}
-          className={errors.message ? "border-red-500" : "min-h-[100px] md:min-h-[120px]"}
+          rows={compact ? 3 : undefined}
+          className={
+            errors.message
+              ? "border-red-500"
+              : compact
+                ? "min-h-[72px] resize-none"
+                : "min-h-[100px] md:min-h-[120px]"
+          }
         />
         {errors.message && (
           <p className="text-xs text-red-500">{errors.message.message}</p>
