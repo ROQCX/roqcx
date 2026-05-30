@@ -15,6 +15,7 @@ interface ChatInterfaceProps {
   exampleQuestions?: string[]
   welcomeMessage?: string
   apiRoute?: string
+  hideHeader?: boolean
 }
 
 export function ChatInterface({
@@ -23,6 +24,7 @@ export function ChatInterface({
   exampleQuestions,
   welcomeMessage,
   apiRoute = '/api/chat/roqcx',
+  hideHeader = false,
 }: ChatInterfaceProps) {
   const [showNewChatDialog, setShowNewChatDialog] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
@@ -113,11 +115,13 @@ export function ChatInterface({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <ChatHeader
-        onNewChat={!isReadonly ? handleNewChat : undefined}
-        hasMessages={messages.length > 0}
-      />
+    <div className="flex flex-col h-full min-h-0">
+      {!hideHeader && (
+        <ChatHeader
+          onNewChat={!isReadonly ? handleNewChat : undefined}
+          hasMessages={messages.length > 0}
+        />
+      )}
       <Messages 
         messages={messages}
         isLoading={isLoading}

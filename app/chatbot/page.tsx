@@ -107,12 +107,13 @@ export default function ChatbotPage() {
               <span>session-scoped · 24h memory</span>
             </div>
 
-            <div style={{ flex: 1, minHeight: 0, display: "flex" }}>
+            <div className="flex flex-1 min-h-0">
               <DynamicChatInterface
                 initialMessages={[]}
                 exampleQuestions={DEMO_QUESTIONS}
                 welcomeMessage="Teach me something, then ask me about it. I'll remember anything you tell me for 24 hours."
                 apiRoute="/api/chat/demo"
+                hideHeader
               />
             </div>
           </div>

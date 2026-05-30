@@ -27,7 +27,7 @@ export default function ChatbotLayout({
       <div className="flex-none">
         <Navigation />
       </div>
-      <div className="flex-1 pt-[72px]">{children}</div>
+      <div className="flex-1 pt-[72px] overflow-hidden">{children}</div>
     </div>
   )
 }

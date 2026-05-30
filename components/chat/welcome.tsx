@@ -15,9 +15,9 @@ export function Welcome({
   onQuestionClick 
 }: WelcomeProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <p
-        className="text-2xl font-semibold text-center bg-clip-text text-transparent"
+        className="text-xl sm:text-2xl font-semibold text-center bg-clip-text text-transparent"
         style={{
           backgroundImage: `linear-gradient(90deg, ${RQX.accent} 0%, ${RQX.accent3} 50%, ${RQX.accent2} 100%)`,
         }}

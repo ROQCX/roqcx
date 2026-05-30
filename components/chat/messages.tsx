@@ -18,24 +18,17 @@ interface MessagesProps {
   showWelcome?: boolean
 }
 
-export function Messages({ 
-  messages, 
-  isLoading, 
+export function Messages({
+  messages,
+  isLoading,
   onRegenerate,
   onSelectQuestion,
   exampleQuestions,
-  welcomeMessage = "Hello! How can I help you today?",
-  showWelcome: controlledShowWelcome
+  welcomeMessage = 'Hello! How can I help you today?',
+  showWelcome: controlledShowWelcome,
 }: MessagesProps) {
   const [showWelcome, setShowWelcome] = useState(true)
   const [containerRef, endRef] = useScrollToBottom<HTMLDivElement>()
-
-  // Scroll to bottom when messages change or welcome state changes
-  useEffect(() => {
-    if (endRef.current) {
-      endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    }
-  }, [messages, showWelcome, endRef])
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -48,57 +41,57 @@ export function Messages({
     onSelectQuestion?.(question)
   }
 
-  const shouldShowWelcome = controlledShowWelcome !== undefined ? controlledShowWelcome : showWelcome
+  const shouldShowWelcome =
+    controlledShowWelcome !== undefined ? controlledShowWelcome : showWelcome
+  const hasMessages = messages.length > 0
 
   return (
-    <div 
-      ref={containerRef} 
-      className="flex-1 overflow-y-auto h-full scroll-smooth"
+    <div
+      ref={containerRef}
+      className="flex-1 min-h-0 overflow-y-auto scroll-smooth [scrollbar-gutter:stable]"
     >
-      <AnimatePresence mode="wait">
-        {shouldShowWelcome ? (
-          <div className="h-full w-full flex items-center justify-center p-2 sm:p-4">
-            <div className="max-w-2xl w-full">
-              <Welcome 
+      <div className="space-y-3 sm:space-y-4 p-2 sm:p-4">
+        <AnimatePresence initial={false}>
+          {shouldShowWelcome && !hasMessages && (
+            <motion.div
+              key="welcome"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Welcome
                 onQuestionClick={handleQuestionClick}
                 exampleQuestions={exampleQuestions}
                 message={welcomeMessage}
               />
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3 sm:space-y-4 p-2 sm:p-4">
-            <AnimatePresence mode="popLayout">
-              {messages.map((message, index) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <Message
-                    message={message}
-                    isLast={index === messages.length - 1}
-                    isLoading={false}
-                    onRegenerate={onRegenerate}
-                  />
-                </motion.div>
-              ))}
-              {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <ThinkingMessage />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <div ref={endRef} className="h-4" />
-          </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence initial={false}>
+          {messages.map((message, index) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Message
+                message={message}
+                isLast={index === messages.length - 1}
+                isLoading={false}
+                onRegenerate={onRegenerate}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {isLoading && hasMessages && messages[messages.length - 1].role === 'user' && (
+          <ThinkingMessage />
         )}
-      </AnimatePresence>
+
+        <div ref={endRef} className="h-px shrink-0" aria-hidden />
+      </div>
     </div>
   )
-} 
+}

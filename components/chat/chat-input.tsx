@@ -14,7 +14,7 @@ interface ChatInputProps {
 
 export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputProps) {
   return (
-    <div className="sticky bottom-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="w-full shrink-0 border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="p-2 sm:p-4">
         <form onSubmit={onSubmit} className="relative">
           <div className="relative flex items-center rounded-xl border bg-background/50 backdrop-blur-sm shadow-lg">
