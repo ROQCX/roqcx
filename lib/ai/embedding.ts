@@ -77,7 +77,9 @@ export async function storeEmbedding(
   }
 }
 
-// Find similar chunks based on embedding
+// Find similar chunks based on embedding.
+// vector_distance_cos returns cosine *distance* (0 = identical, 2 = opposite),
+// so we order ASC and convert to a similarity score for callers.
 export async function findSimilarChunks(
   embedding: number[],
   sessionId?: string | null,
@@ -85,12 +87,12 @@ export async function findSimilarChunks(
 ): Promise<{ content: string; similarity: number }[]> {
   const results = await db.execute(
     `
-      SELECT DISTINCT c.content, 
-             vector_distance_cos(e.embedding, vector32(?)) as similarity
+      SELECT DISTINCT c.content,
+             vector_distance_cos(e.embedding, vector32(?)) as distance
       FROM chunks c
       JOIN embeddings e ON c.id = e.chunk_id
       WHERE c.is_global = TRUE OR c.session_id = ?
-      ORDER BY similarity DESC
+      ORDER BY distance ASC
       LIMIT ?
     `,
     [JSON.stringify(embedding), sessionId ?? null, limit]
@@ -98,7 +100,7 @@ export async function findSimilarChunks(
 
   return results.rows.map(row => ({
     content: row.content as string,
-    similarity: row.similarity as number
+    similarity: 1 - (row.distance as number),
   }))
 }
 

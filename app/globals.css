@@ -37,26 +37,26 @@
     --glass-shadow: 0 0% 0%;
     --glass-input: 210 40% 99%;
 
-    /* ROQ Brand Colors */
-    --roq-orange: 39 100% 51%;
-    --roq-pink: 334 91% 54%;
-    --roq-hot-pink: 5 98% 48%;
-    --roq-blue: 248 89% 52%;
-    --roq-navy: 228 20% 17%;
-    --roq-navy-5: 228 20% 97%;
-    --roq-navy-10: 228 20% 92%;
-    --roq-navy-20: 228 20% 82%;
-    --roq-navy-30: 228 20% 72%;
-    --roq-navy-40: 228 20% 62%;
-    --roq-navy-50: 228 20% 52%;
-    --roq-navy-60: 228 20% 42%;
-    --roq-navy-70: 228 20% 32%;
-    --roq-navy-80: 228 20% 22%;
-    --roq-navy-90: 228 20% 12%;
+    /* ROQ Redesign — Prototype Studio palette (light mode) */
+    --rqx-bg: oklch(0.985 0.005 80);
+    --rqx-bg-raised: oklch(0.965 0.006 80);
+    --rqx-bg-card: oklch(0.945 0.008 80);
+    --rqx-line: oklch(0.85 0.01 65);
+    --rqx-line-dim: oklch(0.9 0.008 65);
+    --rqx-fg: oklch(0.2 0.014 65);
+    --rqx-fg-dim: oklch(0.38 0.012 70);
+    --rqx-muted: oklch(0.55 0.012 70);
+    /* Brand ramp (tweak): cyan primary (replace red tints) */
+    --rqx-accent: #2db6ef;
+    --rqx-accent-soft: color-mix(in oklab, var(--rqx-accent) 16%, transparent);
+    --rqx-accent-fg: #ffffff;
+    --rqx-accent2: #1a85bf;
+    --rqx-accent3: #f59f23;
+    --rqx-green: oklch(0.62 0.13 145);
   }
 
   .dark {
-    --background: 228 20% 17%;  /* Using ROQ navy color */
+    --background: 228 20% 17%;
     --foreground: 0 0% 98%;
     --card: 228 20% 17%;
     --card-foreground: 0 0% 98%;
@@ -87,6 +87,24 @@
     --glass-highlight: 220 30% 40%;
     --glass-shadow: 0 0% 0%;
     --glass-input: 220 25% 45%;
+
+    /* ROQ Redesign — Prototype Studio palette (dark mode) */
+    /* Cool slate base (matches redesign handoff) */
+    --rqx-bg: oklch(0.16 0.018 270);
+    --rqx-bg-raised: oklch(0.205 0.02 270);
+    --rqx-bg-card: oklch(0.235 0.022 270);
+    --rqx-line: oklch(0.33 0.025 270);
+    --rqx-line-dim: oklch(0.26 0.022 270);
+    --rqx-fg: oklch(0.97 0.005 270);
+    --rqx-fg-dim: oklch(0.77 0.012 270);
+    --rqx-muted: oklch(0.60 0.018 270);
+    /* Brand ramp (tweak): cyan primary (replace red tints) */
+    --rqx-accent: #2db6ef;
+    --rqx-accent-soft: color-mix(in oklab, var(--rqx-accent) 16%, transparent);
+    --rqx-accent-fg: #ffffff;
+    --rqx-accent2: #1a85bf;
+    --rqx-accent3: #f59f23;
+    --rqx-green: oklch(0.78 0.13 145);
   }
 }
 
@@ -234,5 +252,62 @@
   }
   to {
     height: 0;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   ROQ Redesign — keyframes (from design proposal)
+   ────────────────────────────────────────────────────────────────────── */
+@keyframes rqx-drawIn {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes rqx-travel {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes rqx-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.3); }
+}
+@keyframes rqx-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes rqx-slideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes rqx-fade {
+  from { opacity: 0; }
+  to   { opacity: 0.35; }
+}
+@keyframes rqx-pop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes rqx-blink {
+  0%, 50%      { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@layer utilities {
+  .font-serif-display {
+    font-family: var(--font-instrument-serif), "Times New Roman", serif;
+  }
+  .font-geist-mono {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+  }
+
+  /* Escape any container constraints to span the full viewport width. */
+  .rqx-fullbleed {
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    width: 100vw;
   }
 }

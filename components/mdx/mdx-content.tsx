@@ -30,7 +30,7 @@ interface MDXContentProps {
   data: CaseStudyWithContent | BlogPostWithContent
 }
 
-export function MDXContent({ content, type, data }: MDXContentProps) {
+export function MDXContent({ content: _content, type, data }: MDXContentProps) {
   return (
     <>
       {type === "case-study" ? (

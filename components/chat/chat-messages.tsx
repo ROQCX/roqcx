@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Welcome } from './welcome'
 import { useEffect, useState } from 'react'
 import { useScrollToBottom } from '../../app/hooks/use-scroll-to-bottom'

@@ -1,5 +1,6 @@
 import Image from "next/image"
 import type { CaseStudy } from "../../lib/case-studies"
+import { RQX } from "../redesign/atoms"
 
 interface CaseStudyHeaderProps {
   caseStudy: CaseStudy
@@ -8,18 +9,25 @@ interface CaseStudyHeaderProps {
 export function CaseStudyHeader({ caseStudy }: CaseStudyHeaderProps) {
   return (
     <header className="relative mb-8">
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={caseStudy.coverImage}
-          alt={caseStudy.title}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background" />
-      </div>
+      {!caseStudy.hideCover ? (
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src={caseStudy.coverImage}
+            alt={caseStudy.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(to bottom, color-mix(in oklab, ${RQX.bg} 72%, transparent), ${RQX.bg})`,
+            }}
+          />
+        </div>
+      ) : null}
 
-      <div className="container relative mx-auto px-4 py-12">
+      <div className="relative mx-auto px-0 py-12">
         <div className="mx-auto max-w-3xl text-center">
           <div className="relative mx-auto mb-6 h-16 w-40">
             <Image

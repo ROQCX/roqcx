@@ -2,106 +2,132 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { ThemeToggle } from "../ui/theme-toggle"
+import { BrandLockup } from "../brand/lockup"
+import { RQX } from "../redesign/atoms"
 
-interface MenuItem {
-  href: string
-  label: string
-  target?: string
-  submenu?: MenuItem[]
-}
+type MenuItem = { href: string; label: string }
 
 const menuItems: MenuItem[] = [
-  { href: "/", label: "Home" },
-  {
-    href: "/solutions",
-    label: "Solutions",
-    submenu: [
-      { href: "/solutions/automation", label: "Eliminate Manual Overload" },
-      { href: "/solutions/analytics", label: "Win and Keep More Customers" },
-      { href: "/solutions/ai", label: "Deliver a Consistent Experience" },
-      { href: "/solutions/roqchat", label: "ROQChat AI Assistant" },
-    ],
-  },
+  { href: "/solutions", label: "Sprints" },
+  { href: "/case-studies", label: "Work" },
+  { href: "/chatbot", label: "Chat demo" },
+  { href: "/insights", label: "Journal" },
   { href: "/about", label: "About" },
-  { 
-    href: "/case-studies", 
-    label: "Case Studies",
-    submenu: [
-      { href: "/case-studies", label: "All Case Studies" },
-      { href: "/case-studies/dubai-7s-ticketing", label: "Dubai 7s Ticketing Platform" },
-    ]
-  },
-  { href: "/insights", label: "Insights" },
-  { href: "/chatbot", label: "Demo Chat" },
-  { href: "/contact", label: "Contact" },
 ]
 
 export function Navigation() {
   const [isOpen, setIsOpen] = React.useState(false)
 
   return (
-    <nav className="fixed top-0 z-50 w-full backdrop-blur-lg bg-background/60">
-      <div className="container mx-auto flex h-28 items-center justify-between px-4">
-        <div className="flex-none">
-          <div className="relative h-32 w-32">
-            <Link href="/" className="group">
-              <Image
-                src="/3d_logo.svg"
-                alt="ROQ CX"
-                fill
-                className="object-contain py-4 transition-all duration-200 group-hover:scale-105 filter dark:drop-shadow-[0_2px_4px_rgba(255,255,255,0.1)] drop-shadow-[0_2px_4px_rgba(0,0,32,0.1)]"
-                priority
-                sizes="128px"
-                quality={100}
-              />
-            </Link>
-          </div>
+    <header
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: `color-mix(in oklab, ${RQX.bg} 78%, transparent)`,
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        borderBottom: `1px solid ${RQX.lineDim}`,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px 32px",
+          maxWidth: 1440,
+          margin: "0 auto",
+          position: "relative",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Link
+            href="/"
+            aria-label="ROQ CX"
+            style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
+          >
+            <BrandLockup height={46} variant="3d" priority />
+          </Link>
         </div>
 
-        {/* Desktop Menu */}
-        <div className="hidden items-center space-x-8 md:flex">
+        <nav
+          className="rqx-desktop-nav"
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            alignItems: "center",
+            gap: 26,
+          }}
+        >
           {menuItems.map((item) => (
-            <div key={item.href} className="relative group">
-              <Link
-                href={item.href}
-                className="text-base font-medium transition-colors hover:text-roq-pink"
-                target={item.target}
-              >
-                {item.label}
-              </Link>
-              {item.submenu && (
-                <div className="absolute left-0 hidden pt-4 group-hover:block">
-                  <div className="rounded-md bg-background/80 backdrop-blur-lg p-3 shadow-lg border border-border/50">
-                    {item.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.href}
-                        href={subItem.href}
-                        className="block whitespace-nowrap px-4 py-2.5 text-base hover:text-roq-pink rounded-md hover:bg-foreground/5"
-                        target={subItem.target}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <Link
+              key={item.href}
+              href={item.href}
+              style={{
+                color: RQX.fgDim,
+                fontSize: 13.5,
+                letterSpacing: "-0.005em",
+                fontWeight: 500,
+                textDecoration: "none",
+              }}
+            >
+              {item.label}
+            </Link>
           ))}
+        </nav>
+
+        <div className="rqx-desktop-actions" style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <ThemeToggle />
+          <Link
+            href="/contact"
+            style={{
+              background: RQX.accent,
+              color: RQX.accentFg,
+              border: "none",
+              padding: "10px 16px",
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 13,
+              letterSpacing: "-0.005em",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              textDecoration: "none",
+            }}
+          >
+            Start a prototype sprint <span style={{ fontSize: 14 }}>→</span>
+          </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex items-center space-x-4 md:hidden">
+        {/* Mobile menu button */}
+        <div className="rqx-mobile-actions" style={{ display: "none", alignItems: "center", gap: 12 }}>
           <ThemeToggle />
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
+            style={{
+              background: "transparent",
+              border: `1px solid ${RQX.line}`,
+              color: RQX.fg,
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             <svg
-              className="h-6 w-6"
+              width="18"
+              height="18"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -117,44 +143,67 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="absolute inset-x-0 top-24 bg-background/80 backdrop-blur-lg md:hidden border-t border-border/50"
+          exit={{ opacity: 0, y: -10 }}
+          className="rqx-mobile-menu"
+          style={{
+            background: RQX.bg,
+            borderTop: `1px solid ${RQX.lineDim}`,
+          }}
         >
-          <div className="container mx-auto px-4 py-4">
+          <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: 4 }}>
             {menuItems.map((item) => (
-              <div key={item.href}>
-                <Link
-                  href={item.href}
-                  className="block py-3 text-base font-medium hover:text-roq-pink"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </Link>
-                {item.submenu && (
-                  <div className="ml-4 space-y-1">
-                    {item.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.href}
-                        href={subItem.href}
-                        className="block py-3 text-base hover:text-roq-pink pl-4 rounded-md hover:bg-foreground/5"
-                        onClick={() => setIsOpen(false)}
-                        target={subItem.target}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                style={{
+                  display: "block",
+                  padding: "12px 0",
+                  fontSize: 16,
+                  fontWeight: 500,
+                  color: RQX.fg,
+                  textDecoration: "none",
+                }}
+              >
+                {item.label}
+              </Link>
             ))}
+            <Link
+              href="/contact"
+              onClick={() => setIsOpen(false)}
+              style={{
+                marginTop: 12,
+                background: RQX.accent,
+                color: RQX.accentFg,
+                padding: "14px 16px",
+                borderRadius: 12,
+                textAlign: "center",
+                fontWeight: 600,
+                fontSize: 14,
+                textDecoration: "none",
+              }}
+            >
+              Start a prototype sprint →
+            </Link>
           </div>
         </motion.div>
       )}
-    </nav>
+
+      <style jsx>{`
+        @media (max-width: 880px) {
+          :global(.rqx-desktop-nav),
+          :global(.rqx-desktop-actions) {
+            display: none !important;
+          }
+          :global(.rqx-mobile-actions) {
+            display: inline-flex !important;
+          }
+        }
+      `}</style>
+    </header>
   )
-} 
+}

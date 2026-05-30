@@ -4,23 +4,16 @@ import { Message, useChat } from 'ai/react'
 import { ChatHeader } from './chat-header'
 import { Messages } from './messages'
 import { ChatInput } from './chat-input'
-import { ChatbotInfoOverlay } from './chatbot-info-overlay'
 import { NewChatDialog } from './new-chat-dialog'
 import { useState } from 'react'
 import { useAnalytics } from '../../app/hooks/use-analytics'
 import { toast } from 'sonner'
-
-// Normalize URL by removing duplicate www
-function normalizeUrl(url: string): string {
-  return url.replace(/www\.www\./, 'www.')
-}
 
 interface ChatInterfaceProps {
   initialMessages: Message[]
   isReadonly?: boolean
   exampleQuestions?: string[]
   welcomeMessage?: string
-  showInfoButton?: boolean
   apiRoute?: string
 }
 
@@ -29,10 +22,8 @@ export function ChatInterface({
   isReadonly = false,
   exampleQuestions,
   welcomeMessage,
-  showInfoButton = true,
-  apiRoute = '/api/chat'
+  apiRoute = '/api/chat/roqcx',
 }: ChatInterfaceProps) {
-  const [showOverlay, setShowOverlay] = useState(false)
   const [showNewChatDialog, setShowNewChatDialog] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
   const { trackEvent } = useAnalytics()
@@ -95,7 +86,7 @@ export function ChatInterface({
       })
       // Clear the input after successful message send
       handleInputChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
-    } catch (error) {
+    } catch {
       toast.error("Failed to send message. Please try again.")
     }
   }
@@ -105,7 +96,7 @@ export function ChatInterface({
     trackEvent('chat_regenerate')
     try {
       await reload()
-    } catch (error) {
+    } catch {
       toast.error("Failed to regenerate response. Please try again.")
     }
   }
@@ -123,11 +114,7 @@ export function ChatInterface({
 
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader 
-        onInfoClick={!isReadonly && showInfoButton ? () => {
-          setShowOverlay(true)
-          trackEvent('chat_info_open')
-        } : undefined}
+      <ChatHeader
         onNewChat={!isReadonly ? handleNewChat : undefined}
         hasMessages={messages.length > 0}
       />
@@ -152,15 +139,6 @@ export function ChatInterface({
             e.preventDefault()
             handleSendMessage(input)
           }}
-        />
-      )}
-      {!isReadonly && showOverlay && (
-        <ChatbotInfoOverlay 
-          isOpen={showOverlay}
-          onClose={() => {
-            setShowOverlay(false)
-            trackEvent('chat_info_close')
-          }} 
         />
       )}
       {!isReadonly && (

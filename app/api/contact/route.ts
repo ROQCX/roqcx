@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 const schema = z.object({
   name: z.string().min(1),
@@ -35,6 +35,13 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: 'reCAPTCHA verification failed' },
         { status: 400 }
+      )
+    }
+
+    if (!resend) {
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
       )
     }
 

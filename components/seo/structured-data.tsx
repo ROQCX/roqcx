@@ -4,7 +4,7 @@ type JsonArray = JsonValue[]
 
 interface StructuredDataProps {
   data: JsonObject
-  type?: 'Organization' | 'BlogPosting' | 'Article' | 'FAQPage' | 'Product' | 'BreadcrumbList' | 'LocalBusiness' | 'CaseStudy'
+  type?: 'Organization' | 'BlogPosting' | 'Article' | 'FAQPage' | 'Product' | 'BreadcrumbList' | 'LocalBusiness' | 'CaseStudy' | 'Service' | 'Course' | 'Event' | 'Person' | 'WebPage'| 'ItemList' | 'ListItem'
 }
 
 export function StructuredData({ data, type }: StructuredDataProps) {

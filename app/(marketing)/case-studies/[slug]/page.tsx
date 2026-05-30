@@ -4,6 +4,7 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { CaseStudyRelated } from "@/components/case-studies/case-study-related"
 import { MDXContent } from "@/components/mdx/mdx-content"
 import { Suspense } from "react"
+import { FullBleedSection, GridBg, RQX } from "@/components/redesign/atoms"
 
 function CaseStudySkeleton() {
   return (
@@ -76,7 +77,16 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     .slice(0, 3)
 
   return (
-    <div className="container mx-auto px-4">
+    <FullBleedSection
+      style={{
+        background: RQX.bg,
+        position: "relative",
+        overflow: "hidden",
+      }}
+      className="py-0 px-0"
+    >
+      <GridBg opacity={0.28} />
+
       <StructuredData
         type="CaseStudy"
         data={{
@@ -85,18 +95,25 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           description: caseStudy.description,
           image: caseStudy.coverImage,
           datePublished: caseStudy.date,
-          author: caseStudy.author ? {
-            "@type": "Person",
-            name: caseStudy.author.name
-          } : undefined,
+          author: caseStudy.author
+            ? {
+                "@type": "Person",
+                name: caseStudy.author.name,
+              }
+            : undefined,
         }}
       />
-      <Suspense fallback={<CaseStudySkeleton />}>
-        <MDXContent content={caseStudy.content} type="case-study" data={caseStudy} />
-      </Suspense>
-      <Suspense fallback={<div>Loading related case studies...</div>}>
-        <CaseStudyRelated relatedStudies={relatedStudies} />
-      </Suspense>
-    </div>
+
+      <div className="px-6 sm:px-10 lg:px-14">
+        <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+          <Suspense fallback={<CaseStudySkeleton />}>
+            <MDXContent content={caseStudy.content} type="case-study" data={caseStudy} />
+          </Suspense>
+          <Suspense fallback={<div>Loading related case studies...</div>}>
+            <CaseStudyRelated relatedStudies={relatedStudies} />
+          </Suspense>
+        </div>
+      </div>
+    </FullBleedSection>
   )
 } 

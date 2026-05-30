@@ -24,7 +24,10 @@ export function BlogCard({
 }: BlogCardProps) {
   return (
     <Link href={`/insights/${slug}`} className="block h-full">
-      <GlassCard className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02]">
+      <GlassCard
+        variant="gradient"
+        className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02]"
+      >
         <div className="relative aspect-square w-full overflow-hidden">
           <Image
             src={coverImage}
@@ -34,7 +37,13 @@ export function BlogCard({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={false}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to top, color-mix(in oklab, var(--rqx-bg) 55%, transparent), transparent)",
+            }}
+          />
         </div>
 
         <div className="flex flex-1 flex-col p-6">
@@ -43,7 +52,7 @@ export function BlogCard({
               <Badge
                 key={tag}
                 variant="outline"
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                className="text-xs font-medium text-zinc-600 dark:text-zinc-400 border-[var(--rqx-line)]"
               >
                 {tag}
               </Badge>
@@ -53,7 +62,7 @@ export function BlogCard({
           <h3 className={cn(
             "mt-4 text-xl font-semibold line-clamp-2",
             "bg-gradient-to-r from-zinc-900 to-zinc-900 dark:from-zinc-100 dark:to-zinc-100 bg-clip-text",
-            "group-hover:from-roq-orange group-hover:via-roq-pink group-hover:to-roq-blue",
+            "group-hover:from-[var(--rqx-accent)] group-hover:via-[var(--rqx-accent3)] group-hover:to-[var(--rqx-accent2)]",
             "transition-all duration-300",
             "text-transparent"
           )}>

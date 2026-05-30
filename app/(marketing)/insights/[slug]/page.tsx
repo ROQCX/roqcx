@@ -3,6 +3,7 @@ import { getAllPosts, getPostContent } from "@/lib/blog"
 import { MDXContent } from "@/components/mdx/mdx-content"
 import { StructuredData } from "@/components/seo/structured-data"
 import { Suspense } from "react"
+import { FullBleedSection, GridBg, RQX } from "@/components/redesign/atoms"
 
 function BlogPostSkeleton() {
   return (
@@ -68,7 +69,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <FullBleedSection
+      style={{
+        background: RQX.bg,
+        position: "relative",
+        overflow: "hidden",
+      }}
+      className="py-0 px-0"
+    >
+      <GridBg opacity={0.28} />
+
       <StructuredData
         type="BlogPosting"
         data={{
@@ -77,15 +87,22 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           description: post.description,
           image: post.coverImage,
           datePublished: post.date,
-          author: post.author ? {
-            "@type": "Person",
-            name: post.author.name
-          } : undefined,
+          author: post.author
+            ? {
+                "@type": "Person",
+                name: post.author.name,
+              }
+            : undefined,
         }}
       />
-      <Suspense fallback={<BlogPostSkeleton />}>
-        <MDXContent content={post.content} type="blog-post" data={post} />
-      </Suspense>
-    </div>
+
+      <div className="px-6 sm:px-10 lg:px-14">
+        <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+          <Suspense fallback={<BlogPostSkeleton />}>
+            <MDXContent content={post.content} type="blog-post" data={post} />
+          </Suspense>
+        </div>
+      </div>
+    </FullBleedSection>
   )
 } 

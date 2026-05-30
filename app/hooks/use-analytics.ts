@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
 interface DataLayerEvent {
@@ -16,7 +16,6 @@ declare global {
 
 export function useAnalytics() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (pathname) {
@@ -25,7 +24,7 @@ export function useAnalytics() {
         page: pathname,
       })
     }
-  }, [pathname, searchParams])
+  }, [pathname])
 
   const trackEvent = (eventName: string, properties?: Record<string, unknown>) => {
     window.dataLayer?.push({

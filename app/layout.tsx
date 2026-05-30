@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Instrument_Serif, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../components/providers/theme-provider";
 import { Toaster } from "sonner";
@@ -7,29 +7,34 @@ import Script from "next/script";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { Suspense } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  adjustFontFallback: false,
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 export const metadata: Metadata = {
-  title: "ROQ CX",
-  description: "Transform your business with cutting-edge automation, analytics, and AI solutions tailored for SMBs.",
+  title: "ROQ CX | From idea to live prototype in 2 weeks",
+  description: "The fractional product team for SMEs. We turn napkin sketches into clickable prototypes, validate with real users, and ship to production on a fixed two-week cadence.",
   metadataBase: new URL("https://www.roqcx.com"),
   openGraph: {
-    title: "ROQ CX - Automate & Elevate Your Business",
-    description: "Transform your business with cutting-edge automation, analytics, and AI solutions tailored for SMBs.",
+    title: "ROQ CX | From idea to live prototype in 2 weeks",
+    description: "The fractional product team for SMEs. Two-week prototype sprints, four-week builds, eight-week launches: predictable, fixed-fee, and stop after any milestone.",
     url: "https://www.roqcx.com",
     siteName: "ROQ CX",
     images: [
       {
-        url: "/roqcx.png",
-        width: 1024,
-        height: 1024,
-        alt: "ROQ CX Logo - Business Automation & AI Solutions",
-      },
-      {
-        url: "/roqcx.webp",
-        width: 1024,
-        height: 1024,
-        alt: "ROQ CX Logo - Business Automation & AI Solutions",
+        url: "/og",
+        width: 1200,
+        height: 630,
+        alt: "ROQ CX | From idea to live prototype in two weeks",
       }
     ],
     locale: "en_US",
@@ -37,20 +42,21 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ROQ CX - Automate & Elevate Your Business",
-    description: "Transform your business with cutting-edge automation, analytics, and AI solutions tailored for SMBs.",
-    images: ["/roqcx.png", "/roqcx.webp"],
+    title: "ROQ CX | From idea to live prototype in 2 weeks",
+    description: "The fractional product team for SMEs. Two-week prototype sprints, fixed-fee, stop after any milestone.",
+    images: ["/og"],
     creator: "@roqcx",
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/3d_logo.svg", type: "image/svg+xml" }
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16.png", type: "image/png", sizes: "16x16" },
     ],
     apple: [
-      { url: "/3d_logo.svg", type: "image/svg+xml" }
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: ["/favicon.ico"]
+    shortcut: ["/favicon.ico"],
   },
   manifest: "/site.webmanifest",
   robots: {
@@ -72,7 +78,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
+    >
       <head>
         {/* Google Tag Manager */}
         <Script id="google-tag-manager" strategy="afterInteractive">
@@ -118,6 +128,7 @@ export default function RootLayout({
         </noscript>
         {/* LinkedIn Tag (noscript) */}
         <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element -- LinkedIn tracking pixel requires a raw img in noscript */}
           <img 
             height="1" 
             width="1" 

@@ -5,10 +5,10 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks'
 
 export default [
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
     ignores: [
       'node_modules/**',
       '.next/**',
+      '.tmp/**',
       'out/**',
       'dist/**',
       'build/**',
@@ -17,6 +17,9 @@ export default [
       '*.config.{js,ts}',
       '**/*.d.ts',
     ],
+  },
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       '@next/next': nextPlugin,
       '@typescript-eslint': tsPlugin,
@@ -55,6 +58,12 @@ export default [
 
       // General rules
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+    },
+  },
+  {
+    files: ['scripts/**', 'lib/db/**'],
+    rules: {
+      'no-console': 'off',
     },
   },
 ]

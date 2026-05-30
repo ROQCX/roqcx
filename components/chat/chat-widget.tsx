@@ -2,18 +2,20 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Send, X, MessageSquare, RefreshCw } from "lucide-react"
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
-import { Message, useChat } from 'ai/react'
+import { useChat } from 'ai/react'
 import { useAnalytics } from '@/app/hooks/use-analytics'
 import { toast } from 'sonner'
 
 const ROQ_CX_QUESTIONS = [
-  "How does ROQ CX's AI technology work?",
-  "Can ROQ CX help reduce my customer support costs?",
-  "How can ROQ CX help me understand my customers better?"
+  "What happens in a 14-day prototype sprint?",
+  "How much does a sprint cost?",
+  "What stack do you build in?",
 ]
 
 export function ChatWidget() {
@@ -29,7 +31,7 @@ export function ChatWidget() {
     initialMessages: [
       {
         id: "1",
-        content: "👋 Welcome to ROQ CX Assistant! How can I help you learn about our products and services?",
+        content: "Hi! I'm the ROQ CX assistant. Ask me anything about our prototype sprints, what we build, or how a sprint kicks off.",
         role: "assistant"
       }
     ],
@@ -82,7 +84,7 @@ export function ChatWidget() {
         role: 'user'
       })
       handleInputChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
-    } catch (error) {
+    } catch {
       toast.error("Failed to send message. Please try again.")
     }
   }
@@ -92,7 +94,7 @@ export function ChatWidget() {
     setMessages([
       {
         id: "1",
-        content: "👋 Welcome to ROQ CX Assistant! How can I help you learn about our products and services?",
+        content: "Hi! I'm the ROQ CX assistant. Ask me anything about our prototype sprints, what we build, or how a sprint kicks off.",
         role: "assistant"
       }
     ])
@@ -114,7 +116,10 @@ export function ChatWidget() {
         )}
       >
         {/* Chat header */}
-        <div className="flex items-center justify-between rounded-t-2xl bg-gradient-to-r from-roq-orange to-roq-pink p-2 sm:p-3 text-white">
+        <div
+          className="flex items-center justify-between rounded-t-2xl p-2 sm:p-3 text-white"
+          style={{ background: "var(--rqx-accent)" }}
+        >
           <div className="flex items-center gap-1 sm:gap-2">
             <MessageSquare size={16} className="sm:hidden" />
             <MessageSquare size={20} className="hidden sm:block" />
@@ -158,12 +163,39 @@ export function ChatWidget() {
                 <div
                   className={cn(
                     "rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm",
-                    message.role === "user" 
-                      ? "bg-gradient-to-r from-roq-orange to-roq-pink text-white" 
+                    message.role === "user"
+                      ? "text-white"
                       : "bg-zinc-100 dark:bg-zinc-800"
                   )}
+                  style={message.role === "user" ? { background: "var(--rqx-accent)" } : undefined}
                 >
-                  {message.content}
+                  {message.role === "user" ? (
+                    <span>{message.content}</span>
+                  ) : (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        a: ({ children, ...props }) => (
+                          <a
+                            {...props}
+                            target={props.href?.startsWith('http') ? '_blank' : undefined}
+                            rel={props.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            style={{ color: 'var(--rqx-accent)', textDecoration: 'underline' }}
+                          >
+                            {children}
+                          </a>
+                        ),
+                        p: ({ children }) => <p style={{ margin: '2px 0' }}>{children}</p>,
+                        ul: ({ children }) => (
+                          <ul style={{ margin: '4px 0', paddingLeft: 16, listStyle: 'disc' }}>{children}</ul>
+                        ),
+                        li: ({ children }) => <li>{children}</li>,
+                        strong: ({ children }) => <strong style={{ fontWeight: 600 }}>{children}</strong>,
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             ))}
@@ -219,7 +251,8 @@ export function ChatWidget() {
             <Button 
               type="submit" 
               size="icon"
-              className="bg-gradient-to-r from-roq-orange to-roq-pink text-white hover:opacity-90 h-8 w-8 sm:h-9 sm:w-9"
+              className="text-white hover:opacity-90 h-8 w-8 sm:h-9 sm:w-9"
+              style={{ background: "var(--rqx-accent)" }}
               disabled={isLoading}
             >
               <Send size={14} className="sm:hidden" />
@@ -236,15 +269,16 @@ export function ChatWidget() {
           "h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full shadow-lg transition-all duration-300",
           isOpen 
             ? "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700" 
-            : "bg-gradient-to-r from-roq-orange to-roq-pink hover:opacity-90"
+            : "hover:opacity-90"
         )}
+        style={!isOpen ? { background: "var(--rqx-accent)" } : undefined}
       >
         {isOpen ? (
           <X className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <Avatar className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10">
-              <div className="flex h-full w-full items-center justify-center bg-white text-roq-orange">
+              <div className="flex h-full w-full items-center justify-center bg-white text-[var(--rqx-accent)]">
                 <MessageSquare size={12} className="sm:hidden" />
                 <MessageSquare size={16} className="hidden sm:block md:hidden" />
                 <MessageSquare size={20} className="hidden md:block" />

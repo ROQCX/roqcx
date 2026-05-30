@@ -12,6 +12,7 @@ export interface CaseStudy {
   date: string
   coverImage: string
   logo: string
+  hideCover?: boolean
   tags: string[]
   client: string
   industry: string
@@ -57,6 +58,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy> {
     date: data.date,
     coverImage: data.coverImage,
     logo: data.logo,
+    hideCover: Boolean(data.hideCover),
     tags: data.tags,
     client: data.client,
     industry: data.industry,
@@ -81,6 +83,7 @@ export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithCo
     date: data.date,
     coverImage: data.coverImage,
     logo: data.logo,
+    hideCover: Boolean(data.hideCover),
     tags: data.tags,
     client: data.client,
     industry: data.industry,

@@ -1,5 +1,3 @@
-"use client"
-
 import { GlassCard } from "../ui/glass-card"
 import type { BlogPostWithContent } from "../../lib/blog"
 import Image from "next/image"
@@ -134,7 +132,9 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
         prose-li:marker:text-primary/50 dark:prose-li:marker:text-primary/50
         prose-strong:text-foreground dark:prose-strong:text-foreground
         prose-code:rounded prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm dark:prose-code:bg-zinc-800
-        p-8 lg:prose-lg">
+        p-8 lg:prose-lg
+        bg-gradient-to-br from-[color-mix(in_oklab,var(--rqx-accent)_10%,transparent)] via-[color-mix(in_oklab,var(--rqx-accent3)_10%,transparent)] to-[color-mix(in_oklab,var(--rqx-accent2)_10%,transparent)]
+        dark:from-[color-mix(in_oklab,var(--rqx-accent)_6%,transparent)] dark:via-[color-mix(in_oklab,var(--rqx-accent3)_6%,transparent)] dark:to-[color-mix(in_oklab,var(--rqx-accent2)_6%,transparent)]">
         <MDXRemote 
           source={post.content} 
           components={components}

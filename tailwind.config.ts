@@ -7,7 +7,6 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-    '../../packages/ui/**/*.{ts,tsx}',
   ],
 
   prefix: "",
@@ -21,13 +20,6 @@ const config = {
     },
     extend: {
       colors: {
-        roq: {
-          orange: "#ffa404",
-          pink: "#f42678",
-          "hot-pink": "#f71d02",
-          blue: "#3218f3",
-          navy: "#222634",
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

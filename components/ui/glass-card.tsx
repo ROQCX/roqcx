@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { VariantProps, cva } from "class-variance-authority"
@@ -10,7 +8,8 @@ const glassCardVariants = cva(
     variants: {
       variant: {
         default: "bg-white/50 dark:bg-zinc-900/50",
-        gradient: "bg-gradient-to-br from-roq-orange/10 via-roq-pink/10 to-roq-blue/10 ",
+        gradient:
+          "bg-gradient-to-br from-[color-mix(in_oklab,var(--rqx-accent)_10%,transparent)] via-[color-mix(in_oklab,var(--rqx-accent3)_10%,transparent)] to-[color-mix(in_oklab,var(--rqx-accent2)_10%,transparent)]",
       },
     },
     defaultVariants: {

@@ -1,5 +1,3 @@
-"use client"
-
 import { GlassCard } from "../ui/glass-card"
 import type { CaseStudyWithContent } from "../../lib/case-studies"
 import Image from "next/image"
@@ -7,6 +5,7 @@ import { Target, Lightbulb, LineChart } from "lucide-react"
 import type { ComponentProps } from "react"
 import type { MDXComponents } from "mdx/types"
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import { BrowserSandbox } from "./browser-sandbox"
 
 interface CaseStudyContentProps {
   caseStudy: CaseStudyWithContent
@@ -119,6 +118,9 @@ const components: MDXComponents = {
       {children}
     </tr>
   ),
+  BrowserSandbox: ({ src, alt, url }: { src?: string; alt?: string; url?: string }) => (
+    <BrowserSandbox src={src || ""} alt={alt || ""} url={url} />
+  ),
 }
 
 export function CaseStudyContent({ caseStudy }: CaseStudyContentProps) {
@@ -143,8 +145,8 @@ export function CaseStudyContent({ caseStudy }: CaseStudyContentProps) {
         prose-strong:text-foreground dark:prose-strong:text-foreground
         prose-code:rounded prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm dark:prose-code:bg-zinc-800
         p-8 lg:prose-lg
-        bg-gradient-to-br from-roq-orange/10 via-roq-pink/10 to-roq-blue/10
-        dark:from-roq-orange/5 dark:via-roq-pink/5 dark:to-roq-blue/5">
+        bg-gradient-to-br from-[color-mix(in_oklab,var(--rqx-accent)_10%,transparent)] via-[color-mix(in_oklab,var(--rqx-accent3)_10%,transparent)] to-[color-mix(in_oklab,var(--rqx-accent2)_10%,transparent)]
+        dark:from-[color-mix(in_oklab,var(--rqx-accent)_6%,transparent)] dark:via-[color-mix(in_oklab,var(--rqx-accent3)_6%,transparent)] dark:to-[color-mix(in_oklab,var(--rqx-accent2)_6%,transparent)]">
         <MDXRemote source={caseStudy.content} components={components} />
       </GlassCard>
     </div>
