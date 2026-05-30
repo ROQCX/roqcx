@@ -31,10 +31,11 @@ frontend:
                 - echo "" >> .env
                 - echo "# Google Tag Manager" >> .env
                 - echo "NEXT_PUBLIC_GTM_ID=${NEXT_PUBLIC_GTM_ID}" >> .env
-                - npm install
+                - corepack enable
+                - pnpm install --frozen-lockfile
         build:
             commands:
-                - 'npm run build'
+                - pnpm run build
     artifacts:
         baseDirectory: .next
         files:
@@ -42,4 +43,4 @@ frontend:
     cache:
         paths:
             - '.next/cache/**/*'
-            - 'node_modules/**/*' 
+            - 'node_modules/**/*'
