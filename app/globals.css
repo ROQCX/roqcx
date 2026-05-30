@@ -112,8 +112,17 @@
   * {
     @apply border-border;
   }
+  html {
+    color-scheme: dark;
+  }
+
+  html:not(.dark) {
+    color-scheme: light;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--rqx-bg);
+    color: var(--rqx-fg);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

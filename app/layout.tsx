@@ -81,9 +81,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
+      className={`dark ${inter.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
     >
       <head>
+        {/* Apply stored theme before paint to avoid light/dark flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light")document.documentElement.classList.remove("dark");else document.documentElement.classList.add("dark")}catch(e){}})();`,
+          }}
+        />
         {/* Google Tag Manager */}
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
