@@ -36,75 +36,78 @@ export interface CaseStudyWithContent extends CaseStudy {
   content: string
 }
 
+function caseStudyPath(slug: string) {
+  return path.join(CASE_STUDIES_DIR, `${slug}.mdx`)
+}
+
+function parseCaseStudy(
+  slug: string,
+  fileContent: string,
+  filePath: string,
+  includeContent: boolean,
+): CaseStudy | CaseStudyWithContent {
+  const { data, content } = matter(fileContent)
+  const base: CaseStudy = {
+    slug,
+    title: data.title,
+    description: data.description,
+    date: data.date,
+    coverImage: data.coverImage,
+    logo: data.logo,
+    hideCover: Boolean(data.hideCover),
+    tags: data.tags,
+    client: data.client,
+    industry: data.industry ?? data.industries,
+    duration: data.duration,
+    role: data.role,
+    teamSize: data.teamSize,
+    technologies: data.technologies,
+    results: data.results,
+    author: data.author,
+    lastModified: getContentLastModified(filePath, {
+      date: data.date,
+      updated: data.updated,
+    }),
+  }
+
+  if (includeContent) {
+    return { ...base, content }
+  }
+  return base
+}
+
 export async function getAllCaseStudies(): Promise<CaseStudy[]> {
+  if (!fs.existsSync(CASE_STUDIES_DIR)) return []
+
   const fileNames = fs
     .readdirSync(CASE_STUDIES_DIR)
     .filter((file) => /\.mdx?$/.test(file))
-  const caseStudies = await Promise.all(
-    fileNames.map(async (fileName) => {
-      const slug = fileName.replace(/\.mdx?$/, "")
-      const caseStudy = await getCaseStudyBySlug(slug)
-      return caseStudy
-    })
-  )
+  const caseStudies = (
+    await Promise.all(
+      fileNames.map(async (fileName) => {
+        const slug = fileName.replace(/\.mdx?$/, "")
+        return getCaseStudyBySlug(slug)
+      }),
+    )
+  ).filter((study): study is CaseStudy => study !== null)
+
   return caseStudies.sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
-export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy> {
-  const filePath = path.join(CASE_STUDIES_DIR, `${slug}.mdx`)
-  const fileContent = fs.readFileSync(filePath, "utf8")
-  const { data } = matter(fileContent)
+export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null> {
+  const filePath = caseStudyPath(slug)
+  if (!fs.existsSync(filePath)) return null
 
-  return {
-    slug,
-    title: data.title,
-    description: data.description,
-    date: data.date,
-    coverImage: data.coverImage,
-    logo: data.logo,
-    hideCover: Boolean(data.hideCover),
-    tags: data.tags,
-    client: data.client,
-    industry: data.industry,
-    duration: data.duration,
-    role: data.role,
-    teamSize: data.teamSize,
-    technologies: data.technologies,
-    results: data.results,
-    author: data.author,
-    lastModified: getContentLastModified(filePath, {
-      date: data.date,
-      updated: data.updated,
-    }),
-  }
+  const fileContent = fs.readFileSync(filePath, "utf8")
+  return parseCaseStudy(slug, fileContent, filePath, false) as CaseStudy
 }
 
-export async function getCaseStudyContent(slug: string): Promise<CaseStudyWithContent> {
-  const filePath = path.join(CASE_STUDIES_DIR, `${slug}.mdx`)
-  const fileContent = fs.readFileSync(filePath, "utf8")
-  const { data, content } = matter(fileContent)
+export async function getCaseStudyContent(
+  slug: string,
+): Promise<CaseStudyWithContent | null> {
+  const filePath = caseStudyPath(slug)
+  if (!fs.existsSync(filePath)) return null
 
-  return {
-    slug,
-    title: data.title,
-    description: data.description,
-    date: data.date,
-    coverImage: data.coverImage,
-    logo: data.logo,
-    hideCover: Boolean(data.hideCover),
-    tags: data.tags,
-    client: data.client,
-    industry: data.industry,
-    duration: data.duration,
-    role: data.role,
-    teamSize: data.teamSize,
-    technologies: data.technologies,
-    results: data.results,
-    author: data.author,
-    content,
-    lastModified: getContentLastModified(filePath, {
-      date: data.date,
-      updated: data.updated,
-    }),
-  }
-} 
+  const fileContent = fs.readFileSync(filePath, "utf8")
+  return parseCaseStudy(slug, fileContent, filePath, true) as CaseStudyWithContent
+}

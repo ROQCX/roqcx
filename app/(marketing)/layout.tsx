@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Navigation } from "../../components/layout/navigation";
 import { Footer } from "../../components/footer";
 import { StructuredData } from "../../components/seo/structured-data";
+import { AttributionCapture } from "../../components/analytics/attribution-capture";
 import { formatAed, formatUsd, SPRINTS } from "@/lib/sprints";
 
 const defaultStructuredData = {
@@ -14,6 +16,7 @@ const defaultStructuredData = {
   sameAs: [
     "https://www.linkedin.com/company/roqcx",
     "https://twitter.com/roqcx",
+    "https://www.zaynenair.com",
   ],
   address: {
     "@type": "PostalAddress",
@@ -34,13 +37,16 @@ const defaultStructuredData = {
     {
       "@type": "Person",
       name: "Zayne Nair",
-      jobTitle: "Founder & CEO"
+      jobTitle: "Founder & CEO",
+      url: "https://www.zaynenair.com",
+      sameAs: ["https://www.zaynenair.com"],
     }
   ],
   employees: {
     "@type": "Person",
     name: "Zayne Nair",
-    jobTitle: "Founder & CEO"
+    jobTitle: "Founder & CEO",
+    url: "https://www.zaynenair.com",
   },
   serviceArea: {
     "@type": "GeoCircle",
@@ -136,6 +142,9 @@ export default function MarketingLayout({
 }) {
   return (
     <>
+      <Suspense fallback={null}>
+        <AttributionCapture />
+      </Suspense>
       <StructuredData data={defaultStructuredData} />
       <Navigation />
       <main className="relative z-10 pt-[72px]">{children}</main>

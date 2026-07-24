@@ -9,6 +9,7 @@ import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { toast } from "sonner"
 import { useAnalytics } from "../../app/hooks/use-analytics"
+import { getStoredAttribution } from "@/lib/attribution"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -56,12 +57,14 @@ export function ContactForm({ compact = false }: ContactFormProps) {
         { action: "contact" }
       )
 
+      const attribution = getStoredAttribution()
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...data, token }),
+        body: JSON.stringify({ ...data, token, attribution }),
       })
 
       if (!response.ok) {
@@ -69,7 +72,12 @@ export function ContactForm({ compact = false }: ContactFormProps) {
       }
 
       trackEvent('contact_form_submit', {
-        success: true
+        success: true,
+        utm_source: attribution?.utm_source,
+        utm_medium: attribution?.utm_medium,
+        utm_campaign: attribution?.utm_campaign,
+        utm_content: attribution?.utm_content,
+        has_referrer: Boolean(attribution?.referrer),
       })
       
       toast.success("Message sent successfully!")
@@ -174,4 +182,4 @@ export function ContactForm({ compact = false }: ContactFormProps) {
       </Button>
     </form>
   )
-} 
+}

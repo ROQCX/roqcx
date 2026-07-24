@@ -121,6 +121,38 @@ export default function AboutPage() {
 
         <div style={{ marginTop: 44 }}>
           <SectionHeader
+            kicker="Who leads this"
+            title={
+              <>
+                Senior humans.
+                <br />
+                No agency layers.
+              </>
+            }
+            lede="ROQ CX is led by Zayne Nair — a Dubai-based product builder. Sprint work runs through this studio; personal advisory and day-rate work live on his site."
+          />
+
+          <div style={{ marginTop: 8, maxWidth: 720 }}>
+            <GlassCard variant="gradient" className="p-8">
+              <p style={{ margin: 0, color: "var(--rqx-fg-dim)", lineHeight: 1.6 }}>
+                Need a fractional product team on a fixed sprint? Stay here. Want Zayne personally on advisory
+                or a retainer? Start at{" "}
+                <a
+                  href="https://www.zaynenair.com/?utm_source=roqcx&utm_medium=referral&utm_campaign=about&utm_content=founder"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--rqx-accent)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 3 }}
+                >
+                  zaynenair.com
+                </a>
+                .
+              </p>
+            </GlassCard>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 44 }}>
+          <SectionHeader
             kicker="How we work"
             title={
               <>

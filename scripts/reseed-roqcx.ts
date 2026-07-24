@@ -70,15 +70,17 @@ The diagnostic is bundled as phase 01, not a standalone SKU today. Client owns r
   // ── Selected case studies (for grounding) ──────────────────────────────
   `Selected work, Syntheve: a clickable prototype shipped in 14 days that we then took into a Build & Launch sprint. See https://www.roqcx.com/case-studies/syntheve.`,
 
+  `Selected work, WeNanny: a live UAE care marketplace with structured profiles, compatibility ranking, and explainable match rationale — built as a production product, not a directory. See https://www.roqcx.com/case-studies/wenanny.`,
+
   `Selected work, Mazadak e-Auction: a sprint-built auction platform for an existing SME. See https://www.roqcx.com/case-studies/mazadak-e-auction.`,
 
-  `Selected work, Dubai 7s Ticketing: a high-traffic event ticketing platform and companion app shipped under sprint pressure for the regional rugby championship. Processed 80,000+ ticket passes and millions of app interactions with real-time validation and integrated payments. See https://www.roqcx.com/case-studies/dubai-7s-ticketing.`,
+  `Selected work, Dubai 7s Ticketing: digital wallet passes, QR entry, and live ops for a flagship rugby weekend — 80,000+ ticket passes, millions of app interactions, and peak scanning in the thousands per hour. See https://www.roqcx.com/case-studies/dubai-7s-ticketing.`,
 
   // ── This chat demo itself ──────────────────────────────────────────────
   `This very chat assistant is an example sprint output. It's a streaming, RAG-backed assistant built on a knowledge base, exactly the kind of thing we deliver inside a Prototype Sprint. Sessions are encrypted and deleted after 24 hours.`,
 
   // ── Founder + team ─────────────────────────────────────────────────────
-  `Founded by Zayne Nair (Founder & CEO). Senior team, no junior pyramid, no handoffs. You work directly with the people doing the work.`,
+  `Founded by Zayne Nair (Founder & CEO). Senior team, no junior pyramid, no handoffs. You work directly with the people doing the work. For personal advisory / day-rate work with Zayne, see https://www.zaynenair.com. Sprint team work stays on https://www.roqcx.com.`,
 
   // ── Process beliefs ────────────────────────────────────────────────────
   `How we work: evidence over opinions (we prototype and test with real users, we don't argue features into existence), small senior team (no junior pyramid), and speed with a system (two-week cycles, fixed checkpoints, predictable deliverables). Fast does not mean chaotic.`,

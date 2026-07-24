@@ -90,7 +90,9 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light")document.documentElement.classList.remove("dark");else document.documentElement.classList.add("dark")}catch(e){}})();`,
           }}
         />
-        {/* Google Tag Manager */}
+        {/* Google Tag Manager — same container as zaynenair.com for cross-domain attribution.
+            Confirm linker domains in the shared GTM workspace (GA4 linker):
+            zaynenair.com, www.zaynenair.com, roqcx.com, www.roqcx.com */}
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -98,6 +100,15 @@ export default function RootLayout({
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
+          `}
+        </Script>
+        <Script id="gtm-linker-hint" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: 'gtm_cross_domain_hint',
+              linker_domains: ['zaynenair.com', 'www.zaynenair.com', 'roqcx.com', 'www.roqcx.com']
+            });
           `}
         </Script>
         {/* LinkedIn Tag */}
