@@ -101,7 +101,7 @@ export default function PrototypeSprintPage() {
           "Pivot: reframe and re-scope",
         ]}
         notFor={[
-          "Big-bang website redesigns",
+          "Marketing websites — see Website Sprint",
           "Pure design polish on an existing live product",
           "Compliance-heavy enterprise procurement timelines",
           "Anyone who can't get five users on a call in two weeks",

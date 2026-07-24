@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, Compass, Hammer, Rocket } from "lucide-react"
+import { ArrowRight, Compass, Globe, Hammer, Rocket } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { StructuredData } from "@/components/seo/structured-data"
 import {
@@ -10,88 +10,60 @@ import {
   SectionHeader,
   Tag,
 } from "@/components/redesign/atoms"
+import { formatAed, formatUsd, SPRINTS, WEBSITE_SPRINT_FROM_AED, WEBSITE_SPRINT_FROM_USD } from "@/lib/sprints"
 
 export const metadata: Metadata = {
-  title: "Product sprints for SMEs | ROQ CX",
+  title: "Product and website sprints for SMEs | ROQ CX",
   description:
-    "Three fixed-fee sprints to turn an idea into a live, market-ready product: a 14-day prototype sprint, a 4-week build sprint, and an 8-week launch sprint. Stop after any milestone.",
+    "Four fixed-fee sprints for SMEs: Prototype Sprint, Build & Launch, Website Sprint (from AED 18,000), and Market Launch. Stop after any milestone.",
   alternates: { canonical: "https://www.roqcx.com/solutions" },
   openGraph: {
-    title: "Product sprints for SMEs | ROQ CX",
+    title: "Product and website sprints for SMEs | ROQ CX",
     description:
-      "Three fixed-fee sprints to turn an idea into a live, market-ready product: a 14-day prototype sprint, a 4-week build sprint, and an 8-week launch sprint.",
+      "Four fixed-fee sprints: prototype, build, website, and market launch. Website Sprint from AED 18,000 ($5,000 USD).",
     url: "https://www.roqcx.com/solutions",
     images: ["/og"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Product sprints for SMEs | ROQ CX",
+    title: "Product and website sprints for SMEs | ROQ CX",
     description:
-      "Three fixed-fee sprints to turn an idea into a live, market-ready product.",
+      "Four fixed-fee sprints. Website Sprint from AED 18,000 ($5,000 USD).",
     images: ["/og"],
   },
 }
 
-const services = [
-  {
-    slug: "prototype-sprint",
-    icon: Compass,
-    duration: "14 days",
-    label: "Sprint 01 · Validate",
-    title: "Prototype Sprint",
-    headline: "Turn an idea into a clickable prototype you can test on real users.",
-    bullets: [
-      "Hi-fi clickable prototype on a public URL",
-      "Five recorded user interviews",
-      "Written go / no-go memo, signed",
-    ],
-    keyword: "prototype sprint",
-  },
-  {
-    slug: "build-launch",
-    icon: Hammer,
-    duration: "4 weeks",
-    label: "Sprint 02 · Build",
-    title: "Build & Launch",
-    headline: "Production-grade slice of the validated prototype: auth, data, payments, the lot.",
-    bullets: [
-      "Production codebase in your stack or ours",
-      "Auth, database, payments, CI/CD, staging",
-      "Handoff docs and a 14-day warranty",
-    ],
-    keyword: "MVP build sprint",
-  },
-  {
-    slug: "market-launch",
-    icon: Rocket,
-    duration: "8 weeks",
-    label: "Sprint 03 · Launch",
-    title: "Market Launch",
-    headline: "From shipped product to live customers: landing, onboarding, and a 30-day cohort.",
-    bullets: [
-      "Landing page + onboarding sequence",
-      "Analytics pipeline + cohort dashboard",
-      "30-day post-launch retention readout",
-    ],
-    keyword: "product launch sprint",
-  },
-] as const
+const ICONS = {
+  "prototype-sprint": Compass,
+  "build-launch": Hammer,
+  "website-sprint": Globe,
+  "market-launch": Rocket,
+} as const
 
 const sprintItemListSchema = {
   "@type": "ItemList",
-  name: "ROQ CX Product Sprints",
+  name: "ROQ CX Sprints",
   description:
-    "Three fixed-fee sprints (Prototype Sprint, Build & Launch, and Market Launch) take an SME idea from napkin sketch to live customers.",
-  itemListElement: services.map((s, i) => ({
+    "Four fixed-fee sprints (Prototype Sprint, Build & Launch, Website Sprint, and Market Launch) for SMEs who need a validated product or a website built from a business diagnostic.",
+  itemListElement: SPRINTS.map((s, i) => ({
     "@type": "ListItem",
     position: i + 1,
     item: {
       "@type": "Service",
       name: s.title,
       url: `https://www.roqcx.com/solutions/${s.slug}`,
-      description: s.headline,
+      description: s.hubHeadline,
       provider: { "@type": "Organization", name: "ROQ CX" },
       areaServed: ["AE", "GCC", "Global"],
+      ...(s.priceFrom
+        ? {
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "AED",
+              price: String(s.priceFrom.aed),
+            },
+          }
+        : {}),
     },
   })),
 }
@@ -126,135 +98,152 @@ export default function SolutionsHubPage() {
           kicker="Solutions"
           title={
             <>
-              Three sprints.
+              Four sprints.
               <br />
-              From sketch to live customers.
+              Product or website.
             </>
           }
-          lede="A predictable two-week prototype sprint, a four-week build, and an eight-week market launch. Fixed fee, fixed scope, and you can stop after any milestone."
+          lede={`Prototype, build, and launch for product ideas. Website Sprint when the site is the job. Fixed fee, fixed scope, stop after any milestone. Website Sprint starts from ${formatAed(WEBSITE_SPRINT_FROM_AED)} (${formatUsd(WEBSITE_SPRINT_FROM_USD)}).`}
         />
 
         <div
-          className="rqx-solutions-grid grid grid-cols-1 lg:grid-cols-3"
+          className="rqx-solutions-grid grid grid-cols-1 md:grid-cols-2"
           style={{ display: "grid", gap: 20, marginTop: 8 }}
         >
-          {services.map((s) => (
-            <GlassCard
-              key={s.slug}
-              variant="gradient"
-              className="p-8 flex flex-col"
-            >
-              <div
-                className="font-geist-mono"
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "var(--rqx-muted)",
-                }}
+          {SPRINTS.map((s) => {
+            const Icon = ICONS[s.slug as keyof typeof ICONS]
+            return (
+              <GlassCard
+                key={s.slug}
+                variant="gradient"
+                className="p-8 flex flex-col"
               >
-                {s.label} · {s.duration}
-              </div>
+                <div
+                  className="font-geist-mono"
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: "var(--rqx-muted)",
+                  }}
+                >
+                  {s.hubLabel} · {s.duration}
+                </div>
 
-              <div
-                aria-hidden
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  marginTop: 18,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: `linear-gradient(135deg, ${RQX.accent} 0%, ${RQX.accent2} 100%)`,
-                  color: "#fff",
-                }}
-              >
-                <s.icon size={22} />
-              </div>
+                <div
+                  aria-hidden
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 14,
+                    marginTop: 18,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: `linear-gradient(135deg, ${RQX.accent} 0%, ${RQX.accent2} 100%)`,
+                    color: "#fff",
+                  }}
+                >
+                  <Icon size={22} />
+                </div>
 
-              <h3
-                className="font-serif-display"
-                style={{
-                  margin: "18px 0 10px",
-                  fontSize: 32,
-                  lineHeight: 1.05,
-                  letterSpacing: "-0.02em",
-                  color: "var(--rqx-fg)",
-                }}
-              >
-                {s.title}
-              </h3>
+                <h3
+                  className="font-serif-display"
+                  style={{
+                    margin: "18px 0 10px",
+                    fontSize: 32,
+                    lineHeight: 1.05,
+                    letterSpacing: "-0.02em",
+                    color: "var(--rqx-fg)",
+                  }}
+                >
+                  {s.title}
+                </h3>
 
-              <p
-                style={{
-                  margin: 0,
-                  color: "var(--rqx-fg-dim)",
-                  lineHeight: 1.55,
-                  fontSize: 15,
-                }}
-              >
-                {s.headline}
-              </p>
-
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: "18px 0 0",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                  flex: 1,
-                }}
-              >
-                {s.bullets.map((b) => (
-                  <li
-                    key={b}
+                {s.priceFrom ? (
+                  <div
+                    className="font-geist-mono"
                     style={{
-                      display: "flex",
-                      gap: 10,
-                      color: "var(--rqx-fg-dim)",
-                      fontSize: 14,
-                      lineHeight: 1.5,
+                      marginBottom: 10,
+                      fontSize: 12,
+                      letterSpacing: "0.04em",
+                      color: RQX.accent,
                     }}
                   >
-                    <span
-                      aria-hidden
-                      style={{
-                        marginTop: 8,
-                        width: 5,
-                        height: 5,
-                        borderRadius: "50%",
-                        background: RQX.accent,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+                    from {formatAed(s.priceFrom.aed)} · {formatUsd(s.priceFrom.usd)}
+                  </div>
+                ) : null}
 
-              <Link
-                href={`/solutions/${s.slug}`}
-                style={{
-                  marginTop: 24,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  color: "var(--rqx-fg)",
-                  fontWeight: 500,
-                  fontSize: 14,
-                  textDecoration: "none",
-                  borderBottom: `1px solid ${RQX.accent}`,
-                  paddingBottom: 4,
-                  alignSelf: "flex-start",
-                }}
-              >
-                See the {s.title.toLowerCase()} <ArrowRight size={14} />
-              </Link>
-            </GlassCard>
-          ))}
+                <p
+                  style={{
+                    margin: 0,
+                    color: "var(--rqx-fg-dim)",
+                    lineHeight: 1.55,
+                    fontSize: 15,
+                  }}
+                >
+                  {s.hubHeadline}
+                </p>
+
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: "18px 0 0",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    flex: 1,
+                  }}
+                >
+                  {s.hubBullets.map((b) => (
+                    <li
+                      key={b}
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        color: "var(--rqx-fg-dim)",
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        style={{
+                          marginTop: 8,
+                          width: 5,
+                          height: 5,
+                          borderRadius: "50%",
+                          background: RQX.accent,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={s.href}
+                  style={{
+                    marginTop: 24,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    color: "var(--rqx-fg)",
+                    fontWeight: 500,
+                    fontSize: 14,
+                    textDecoration: "none",
+                    borderBottom: `1px solid ${RQX.accent}`,
+                    paddingBottom: 4,
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  See the {s.title.toLowerCase()} <ArrowRight size={14} />
+                </Link>
+              </GlassCard>
+            )
+          })}
         </div>
 
         <div
@@ -281,12 +270,12 @@ export default function SolutionsHubPage() {
                 color: "var(--rqx-fg)",
               }}
             >
-              The default is a 14-day prototype sprint.
+              Product idea? Prototype Sprint. Need a site? Website Sprint.
             </h2>
             <p style={{ margin: 0, color: "var(--rqx-fg-dim)", lineHeight: 1.6 }}>
-              Most engagements start there. It&apos;s the cheapest way to find out
-              whether an idea earns the build. After day 14 you decide: ship, iterate,
-              kill, or move into the build sprint.
+              Most product engagements start with the 14-day Prototype Sprint.
+              Website buyers start with the diagnostic in Website Sprint. After
+              the first milestone you decide: continue, narrow, or stop.
             </p>
           </div>
 
@@ -309,7 +298,7 @@ export default function SolutionsHubPage() {
               Book a kick-off call <ArrowRight size={16} />
             </Link>
             <Link
-              href="/sample-sprint-plan"
+              href="/solutions/website-sprint"
               style={{
                 border: `1px solid ${RQX.line}`,
                 background: "transparent",
@@ -323,7 +312,7 @@ export default function SolutionsHubPage() {
                 gap: 10,
               }}
             >
-              See a sample plan <ArrowRight size={16} />
+              See Website Sprint <ArrowRight size={16} />
             </Link>
           </div>
         </div>

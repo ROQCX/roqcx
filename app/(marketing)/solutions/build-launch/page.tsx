@@ -119,7 +119,7 @@ export default function BuildLaunchPage() {
         ]}
         notFor={[
           "Mid-build re-platforms with frozen requirements",
-          "Pure marketing site rebuilds",
+          "Marketing websites — see Website Sprint",
           "Compliance-heavy domains (HIPAA, PCI L1) without prior assessment",
           "Anyone who wants estimates by the hour",
         ]}

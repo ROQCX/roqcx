@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { FullBleedSection, GridBg, RQX, Tag } from "./atoms"
+import { currentCohortLabel } from "@/lib/sprints"
 
 export function CtaSection() {
   return (
@@ -32,7 +33,7 @@ export function CtaSection() {
       />
 
       <div style={{ position: "relative", textAlign: "center" }}>
-        <Tag>Now booking · June cohort</Tag>
+        <Tag>{currentCohortLabel()}</Tag>
         <h2
           className="font-serif-display rqx-cta-h2"
           style={{

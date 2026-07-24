@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { FullBleedSection, RQX, SectionHeader } from "./atoms"
+import { formatAed, formatUsd, WEBSITE_SPRINT_FROM_AED, WEBSITE_SPRINT_FROM_USD } from "@/lib/sprints"
 
 const QS = [
   {
@@ -22,7 +23,7 @@ const QS = [
   },
   {
     q: "How is pricing structured?",
-    a: "Fixed fee per two-week sprint. No retainers, no T&M, no scope-creep invoices. You can stop after any sprint without penalty.",
+    a: `Fixed fee per sprint. Website Sprint starts from ${formatAed(WEBSITE_SPRINT_FROM_AED)} (${formatUsd(WEBSITE_SPRINT_FROM_USD)}). Product sprints are quoted on the kick-off call. No retainers, no T&M, no scope-creep invoices. You can stop after any sprint without penalty.`,
   },
   {
     q: "Do you do ongoing development after launch?",
@@ -118,7 +119,7 @@ export function FAQSection() {
               </button>
               <div
                 style={{
-                  maxHeight: isOpen ? 240 : 0,
+                  maxHeight: isOpen ? 320 : 0,
                   overflow: "hidden",
                   transition: "max-height 0.4s cubic-bezier(.2,.7,.2,1)",
                 }}

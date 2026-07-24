@@ -23,6 +23,119 @@ export interface SprintPageProps {
   notFor: string[]
   faq: Array<{ q: string; a: string }>
   next?: { href: string; label: string; sub: string }
+  /** Published floor shown in the hero (AED primary). */
+  price?: { primary: string; secondary?: string }
+  whoFor?: string[]
+  /** Override the default "Week by week" phase header. */
+  phaseKicker?: string
+  phaseTitle?: React.ReactNode
+  phaseLede?: string
+  /** Monospace deliverable chip line, e.g. DIAGNOSTIC.PDF · FIGMA */
+  deliverableChips?: string
+  killRate?: { title: React.ReactNode; body: React.ReactNode }
+  pricing?: { lede: React.ReactNode; movesUp: string[] }
+}
+
+function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul
+      style={{
+        listStyle: "none",
+        padding: 0,
+        margin: 0,
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+      }}
+    >
+      {items.map((it) => (
+        <li
+          key={it}
+          style={{
+            display: "flex",
+            gap: 10,
+            color: "var(--rqx-fg-dim)",
+            lineHeight: 1.5,
+            fontSize: 14,
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              marginTop: 8,
+              width: 5,
+              height: 5,
+              borderRadius: "50%",
+              background: RQX.accent,
+              flexShrink: 0,
+            }}
+          />
+          <span>{it}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function FitBlock({
+  kicker,
+  items,
+}: {
+  kicker: string
+  items: string[]
+}) {
+  return (
+    <div
+      style={{
+        background: RQX.bgRaised,
+        border: `1px solid ${RQX.line}`,
+        borderRadius: 18,
+        padding: "22px 24px",
+      }}
+    >
+      <div
+        className="font-geist-mono"
+        style={{
+          fontSize: 11,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: RQX.muted,
+          marginBottom: 12,
+        }}
+      >
+        {kicker}
+      </div>
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: 0,
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 12,
+        }}
+        className="grid grid-cols-1"
+      >
+        {items.map((n) => (
+          <li
+            key={n}
+            style={{
+              color: RQX.fgDim,
+              fontSize: 14,
+              lineHeight: 1.5,
+              display: "flex",
+              gap: 10,
+            }}
+          >
+            <span aria-hidden style={{ color: RQX.muted }}>
+              ·
+            </span>
+            <span>{n}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }
 
 export function ServiceSprintPage(props: SprintPageProps) {
@@ -39,7 +152,17 @@ export function ServiceSprintPage(props: SprintPageProps) {
     notFor,
     faq,
     next,
+    price,
+    whoFor,
+    phaseKicker = "Week by week",
+    phaseTitle = <>How the sprint runs.</>,
+    phaseLede = "Same shape every time: checkpoints you can plan around and artifacts you can hand to a board.",
+    deliverableChips,
+    killRate,
+    pricing,
   } = props
+
+  const showEarlyFit = Boolean(whoFor?.length)
 
   return (
     <FullBleedSection
@@ -64,14 +187,14 @@ export function ServiceSprintPage(props: SprintPageProps) {
       />
 
       <div style={{ maxWidth: 1440, margin: "0 auto", position: "relative" }}>
-        <SectionHeader
-          kicker={eyebrow}
-          title={<>{title}</>}
-          lede={lede}
-        />
+        <SectionHeader kicker={eyebrow} title={<>{title}</>} lede={lede} />
 
         <div
-          className="rqx-sprint-top grid grid-cols-1 lg:grid-cols-3"
+          className={
+            price
+              ? "rqx-sprint-top grid grid-cols-1 sm:grid-cols-2"
+              : "rqx-sprint-top grid grid-cols-1 lg:grid-cols-3"
+          }
           style={{ display: "grid", gap: 18, marginTop: 4 }}
         >
           <GlassCard variant="gradient" className="p-7">
@@ -100,7 +223,95 @@ export function ServiceSprintPage(props: SprintPageProps) {
             </div>
           </GlassCard>
 
-          <GlassCard variant="gradient" className="p-7 lg:col-span-2">
+          {price ? (
+            <GlassCard variant="gradient" className="p-7">
+              <div
+                className="font-geist-mono"
+                style={{
+                  fontSize: 11,
+                  color: "var(--rqx-muted)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Starting at
+              </div>
+              <div
+                className="font-serif-display"
+                style={{
+                  margin: "10px 0 0",
+                  fontSize: 32,
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.02em",
+                  color: "var(--rqx-fg)",
+                }}
+              >
+                {price.primary}
+              </div>
+              {price.secondary ? (
+                <div
+                  className="font-geist-mono"
+                  style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: "var(--rqx-muted)",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {price.secondary}
+                </div>
+              ) : null}
+            </GlassCard>
+          ) : (
+            <GlassCard variant="gradient" className="p-7 lg:col-span-2">
+              <div
+                className="font-geist-mono"
+                style={{
+                  fontSize: 11,
+                  color: "var(--rqx-muted)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                You walk away with
+              </div>
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  margin: "14px 0 0",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 10,
+                }}
+                className="grid grid-cols-1 sm:grid-cols-2"
+              >
+                {outcomes.map((o) => (
+                  <li
+                    key={o}
+                    style={{
+                      display: "flex",
+                      gap: 10,
+                      color: "var(--rqx-fg-dim)",
+                      fontSize: 14.5,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <CheckCircle2
+                      aria-hidden
+                      size={18}
+                      style={{ color: RQX.accent, flexShrink: 0, marginTop: 2 }}
+                    />
+                    <span>{o}</span>
+                  </li>
+                ))}
+              </ul>
+            </GlassCard>
+          )}
+        </div>
+
+        {price ? (
+          <GlassCard variant="gradient" className="p-7" style={{ marginTop: 18 }}>
             <div
               className="font-geist-mono"
               style={{
@@ -143,15 +354,58 @@ export function ServiceSprintPage(props: SprintPageProps) {
                 </li>
               ))}
             </ul>
+            {deliverableChips ? (
+              <div
+                className="font-geist-mono"
+                style={{
+                  marginTop: 18,
+                  paddingTop: 14,
+                  borderTop: `1px solid ${RQX.lineDim}`,
+                  fontSize: 11,
+                  letterSpacing: "0.06em",
+                  color: RQX.muted,
+                }}
+              >
+                {deliverableChips}
+              </div>
+            ) : null}
           </GlassCard>
-        </div>
+        ) : null}
+
+        {price ? (
+          <div style={{ marginTop: 28 }}>
+            <Link
+              href="/contact"
+              style={{
+                background: `linear-gradient(135deg, ${RQX.accent} 0%, ${RQX.accent2} 100%)`,
+                color: "#fff",
+                padding: "14px 18px",
+                borderRadius: 14,
+                textDecoration: "none",
+                fontWeight: 600,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                boxShadow: `0 24px 50px -16px color-mix(in oklab, ${RQX.accent} 50%, transparent)`,
+              }}
+            >
+              Book the kick-off call <ArrowRight size={16} />
+            </Link>
+          </div>
+        ) : null}
+
+        {showEarlyFit ? (
+          <div
+            className="rqx-sprint-fit grid grid-cols-1 lg:grid-cols-2"
+            style={{ display: "grid", gap: 18, marginTop: 44 }}
+          >
+            <FitBlock kicker="Who this is for" items={whoFor!} />
+            <FitBlock kicker="Not for" items={notFor} />
+          </div>
+        ) : null}
 
         <div style={{ marginTop: 56 }}>
-          <SectionHeader
-            kicker="Week by week"
-            title={<>How the sprint runs.</>}
-            lede="Same shape every time: checkpoints you can plan around and artifacts you can hand to a board."
-          />
+          <SectionHeader kicker={phaseKicker} title={phaseTitle} lede={phaseLede} />
 
           <div
             className="rqx-sprint-weeks grid grid-cols-1 lg:grid-cols-2"
@@ -255,101 +509,102 @@ export function ServiceSprintPage(props: SprintPageProps) {
               >
                 {k}
               </div>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 10,
-                }}
-              >
-                {items.map((it) => (
-                  <li
-                    key={it}
-                    style={{
-                      display: "flex",
-                      gap: 10,
-                      color: "var(--rqx-fg-dim)",
-                      lineHeight: 1.5,
-                      fontSize: 14,
-                    }}
-                  >
-                    <span
-                      aria-hidden
-                      style={{
-                        marginTop: 8,
-                        width: 5,
-                        height: 5,
-                        borderRadius: "50%",
-                        background: RQX.accent,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span>{it}</span>
-                  </li>
-                ))}
-              </ul>
+              <BulletList items={items} />
             </div>
           ))}
         </div>
 
-        <div
-          style={{
-            marginTop: 44,
-            background: RQX.bgRaised,
-            border: `1px solid ${RQX.line}`,
-            borderRadius: 18,
-            padding: "22px 24px",
-          }}
-        >
-          <div
-            className="font-geist-mono"
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: RQX.muted,
-              marginBottom: 12,
-            }}
-          >
-            Not for
+        {killRate ? (
+          <div style={{ marginTop: 56 }}>
+            <SectionHeader
+              kicker="The kill rate"
+              title={killRate.title}
+              lede={killRate.body}
+            />
           </div>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: 12,
-            }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {notFor.map((n) => (
-              <li
-                key={n}
+        ) : null}
+
+        {pricing ? (
+          <div style={{ marginTop: 44 }}>
+            <SectionHeader
+              kicker="Pricing"
+              title={<>Fixed fee. Published floor.</>}
+              lede={pricing.lede}
+            />
+            <GlassCard variant="gradient" className="p-7" style={{ maxWidth: 720 }}>
+              <div
+                className="font-geist-mono"
                 style={{
-                  color: RQX.fgDim,
-                  fontSize: 14,
-                  lineHeight: 1.5,
-                  display: "flex",
-                  gap: 10,
+                  fontSize: 11,
+                  color: "var(--rqx-muted)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  marginBottom: 14,
                 }}
               >
-                <span aria-hidden style={{ color: RQX.muted }}>·</span>
-                <span>{n}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+                What moves the number up
+              </div>
+              <BulletList items={pricing.movesUp} />
+            </GlassCard>
+          </div>
+        ) : null}
+
+        {!showEarlyFit ? (
+          <div
+            style={{
+              marginTop: 44,
+              background: RQX.bgRaised,
+              border: `1px solid ${RQX.line}`,
+              borderRadius: 18,
+              padding: "22px 24px",
+            }}
+          >
+            <div
+              className="font-geist-mono"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: RQX.muted,
+                marginBottom: 12,
+              }}
+            >
+              Not for
+            </div>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: 12,
+              }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {notFor.map((n) => (
+                <li
+                  key={n}
+                  style={{
+                    color: RQX.fgDim,
+                    fontSize: 14,
+                    lineHeight: 1.5,
+                    display: "flex",
+                    gap: 10,
+                  }}
+                >
+                  <span aria-hidden style={{ color: RQX.muted }}>
+                    ·
+                  </span>
+                  <span>{n}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <div style={{ marginTop: 56 }}>
-          <SectionHeader
-            kicker="Common questions"
-            title={<>Quick answers.</>}
-          />
+          <SectionHeader kicker="Common questions" title={<>Quick answers.</>} />
           <div
             style={{
               display: "grid",
@@ -380,7 +635,14 @@ export function ServiceSprintPage(props: SprintPageProps) {
                 >
                   {f.q}
                 </div>
-                <p style={{ margin: 0, color: RQX.fgDim, fontSize: 14.5, lineHeight: 1.55 }}>
+                <p
+                  style={{
+                    margin: 0,
+                    color: RQX.fgDim,
+                    fontSize: 14.5,
+                    lineHeight: 1.55,
+                  }}
+                >
                   {f.a}
                 </p>
               </div>
@@ -415,7 +677,8 @@ export function ServiceSprintPage(props: SprintPageProps) {
               Book a 30-minute kick-off call.
             </div>
             <p style={{ margin: 0, color: RQX.fgDim, lineHeight: 1.6 }}>
-              We&apos;ll pressure-test the idea, agree on the success metric, and decide if a sprint is the right shape.
+              We&apos;ll pressure-test the idea, agree on the success metric, and
+              decide if a sprint is the right shape.
             </p>
           </div>
 
@@ -454,7 +717,15 @@ export function ServiceSprintPage(props: SprintPageProps) {
                 }}
               >
                 <span>
-                  <span style={{ display: "block", fontSize: 11, color: RQX.muted, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: 11,
+                      color: RQX.muted,
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
                     {next.sub}
                   </span>
                   <span>{next.label}</span>

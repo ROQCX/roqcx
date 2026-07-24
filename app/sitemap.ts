@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 import { getAllCaseStudies } from "@/lib/case-studies"
 import { getAllPosts } from "@/lib/blog"
 import { latestDate } from "@/lib/content-last-modified"
+import { SPRINTS } from "@/lib/sprints"
 
 const SITE = "https://www.roqcx.com"
 
@@ -16,9 +17,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE}/solutions`, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE}/solutions/prototype-sprint`, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE}/solutions/build-launch`, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE}/solutions/market-launch`, changeFrequency: "monthly", priority: 0.9 },
+    ...SPRINTS.map((s) => ({
+      url: `${SITE}${s.href}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+    })),
     { url: `${SITE}/sample-sprint-plan`, changeFrequency: "monthly", priority: 0.7 },
     {
       url: `${SITE}/case-studies`,

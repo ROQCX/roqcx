@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { FullBleedSection, GridBg, Marquee, RQX, Tag, useScrambled } from "./atoms"
+import { currentCohortLabel } from "@/lib/sprints"
 
 const CYCLE = ["2 weeks", "14 days", "10 standups", "real hands"]
 
@@ -214,11 +215,11 @@ export function HeroPrototype() {
 
       <Marquee
         items={[
-          "◆ Sprint 042 · Mazadak v3 · day 9/14",
-          "◆ Sprint 041 · DubaiSevens Companion · shipped",
-          "◆ Sprint 043 · ClinicQ Reception · day 3/14",
-          "◆ 23 SMEs in pipeline",
-          "◆ Now booking June cohort",
+          "◆ Recent work · Mazadak v3 · shipped in 14 days",
+          "◆ Recent work · DubaiSevens Companion · shipped",
+          "◆ Recent work · ClinicQ Reception · prototype sprint",
+          "◆ About 30% of sprints end in a deliberate kill",
+          `◆ ${currentCohortLabel()}`,
         ]}
       />
 

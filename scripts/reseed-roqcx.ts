@@ -11,15 +11,16 @@ const CHUNKS = [
 
   `ROQ CX is based in Dubai, UAE and works with SMEs across the UAE, GCC, and globally (remote-first). Contact: hello@roqcx.com · +971 56 252 0720 · roqcx.com.`,
 
-  // ── The three sprints ──────────────────────────────────────────────────
-  `We sell three fixed-fee sprints. You can stop after any one of them with no retainer and no lock-in:
-  - Prototype Sprint: 14 days. Validate the idea.
+  // ── The four sprints ───────────────────────────────────────────────────
+  `We sell four fixed-fee sprints. You can stop after any one of them with no retainer and no lock-in:
+  - Prototype Sprint: 14 days. Validate a product idea.
   - Build & Launch: 4 weeks. Ship a production MVP.
-  - Market Launch: 8 weeks. Take the product to live customers.
-Most engagements start with the Prototype Sprint, then roll into Build & Launch and (optionally) Market Launch. Each one is fixed-fee and fixed-scope; the price is agreed up front.`,
+  - Website Sprint: 4 weeks. Business website built from a paid diagnostic. From AED 18,000 ($5,000 USD).
+  - Market Launch: 8 weeks. Take a shipped product to live customers.
+Product engagements usually start with the Prototype Sprint. Website buyers start with Website Sprint. Each one is fixed-fee and fixed-scope.`,
 
   // ── Prototype Sprint detail ────────────────────────────────────────────
-  `Prototype Sprint (14 days). A fixed-fee fourteen-day sprint that turns a fuzzy idea into a hi-fi clickable prototype, validated through five recorded user interviews, ending with a signed go/no-go memo on day 14. You walk away with: a clickable prototype on a public URL, five interview recordings + transcripts, a written go/no-go memo with rationale, and a clean backlog for the build sprint if you want to keep going.`,
+  `Prototype Sprint (14 days). A fixed-fee fourteen-day sprint that turns a fuzzy idea into a hi-fi clickable prototype, validated through five recorded user interviews, ending with a signed go/no-go memo on day 14. You walk away with: a clickable prototype on a public URL, five interview recordings + transcripts, a written go/no-go memo with rationale, and a clean backlog for the build sprint if you want to keep going. Not for marketing websites — those go to Website Sprint.`,
 
   `Prototype Sprint shape:
   - Week 1: Frame the idea. Day 1 kick-off + success metric agreed. Day 2 map the riskiest assumption. Day 3 lo-fi flows + content draft. Day 4 hi-fi prototype build starts. Day 5 internal review + interview script.
@@ -36,6 +37,18 @@ Most engagements start with the Prototype Sprint, then roll into Build & Launch 
   - Week 3: Hardening. Edge cases, empty/error states, rate limits + abuse protection, admin tools you'll actually use, internal load + smoke tests.
   - Week 4: Handover. Production launch with monitoring, walkthrough + handoff docs, warranty window opens, optional roll into Market Launch.`,
 
+  // ── Website Sprint detail ──────────────────────────────────────────────
+  `Website Sprint (4 weeks). For SMEs that need a business website, not a product prototype. One-line promise: a website built from what actually makes you money, not from a template and a wishlist. Published starting price: from AED 18,000 ($5,000 USD). Fixed fee. No retainers, no T&M, no scope-creep invoices. Details: https://www.roqcx.com/solutions/website-sprint`,
+
+  `Website Sprint phases:
+  - Days 1–3 Business diagnostic (paid, with deliverable either way): working session on the model — what a customer is worth, where enquiries come from, what happens after a form submit, what the site is supposed to move. Ends in DIAGNOSTIC.PDF and a single signed success metric. If the diagnostic says the site is not the constraint, ROQ CX says so and the engagement can stop there.
+  - Days 4–8 Structure + narrative: sitemap, page-by-page argument, copy direction. Two divergent low-fi directions. Artefacts: Figma + copy doc.
+  - Days 9–16 Build: production Next.js + TypeScript + Tailwind + shadcn/ui on Vercel; Supabase where there is data; real content. Artefacts: GitHub repo + staging URL.
+  - Days 17–20 Instrument + hand over: analytics against the success metric, error tracking, CI/CD, design tokens, written handover. Artefacts: HANDOVER.MD · tokens · dashboard.
+The diagnostic is bundled as phase 01, not a standalone SKU today. Client owns repo, Figma, tokens, and content from minute one. No lock-in. Do not promise rankings, traffic numbers, or conversion percentages.`,
+
+  `Website Sprint is not for: five pages by Friday, template skins with stock copy, SEO ranking promises, or hourly estimates. About 30% of ROQ CX sprints end in a deliberate kill — that is evidence the diagnostic is real, not a talking point.`,
+
   // ── Market Launch detail ───────────────────────────────────────────────
   `Market Launch (8 weeks). A fixed-fee eight-week sprint that takes a shipped product to live customers. You get: a high-converting landing page, onboarding sequence + lifecycle email, a paid + organic acquisition baseline with creative, an analytics pipeline, and a 30-day cohort dashboard with the retention curve and a written readout.`,
 
@@ -49,10 +62,10 @@ Most engagements start with the Prototype Sprint, then roll into Build & Launch 
   `Our default stack is Next.js + TypeScript + Supabase + Stripe + Vercel. We'll build in your existing stack if we're competent in it. Just ask. Code lives in your GitHub org from day one. You own everything; no vendor lock-in, no hostage code.`,
 
   // ── Commercials ────────────────────────────────────────────────────────
-  `Commercials. Each sprint is fixed-fee and fixed-scope. You can stop after any milestone and keep everything we've built. There is no monthly retainer. Specific pricing is agreed during the kick-off call. Point visitors at https://www.roqcx.com/contact rather than inventing a number.`,
+  `Commercials. Each sprint is fixed-fee and fixed-scope. You can stop after any milestone and keep everything we've built. There is no monthly retainer. Website Sprint has a published floor: from AED 18,000 ($5,000 USD). Other product sprint prices are agreed on the kick-off call. When asked "How much does a sprint cost?", lead with the Website Sprint floor if relevant, and point visitors at https://www.roqcx.com/contact or https://www.roqcx.com/solutions/website-sprint for the website offer. Do not invent other price numbers.`,
 
   // ── Differentiators ────────────────────────────────────────────────────
-  `Who ROQ CX is for: SMEs that want product velocity without hiring a full in-house team. Who it's not for: enterprises that need long procurement cycles, big-bang website redesigns, pure-design polish on an existing live product, or buyers who want estimates by the hour.`,
+  `Who ROQ CX is for: SMEs that want product velocity without hiring a full in-house team, and SMEs that need a website built from a business diagnostic rather than a template wishlist. Who it's not for: enterprises that need long procurement cycles, five-pages-by-Friday website jobs, pure-design polish on an existing live product, or buyers who want estimates by the hour.`,
 
   // ── Selected case studies (for grounding) ──────────────────────────────
   `Selected work, Syntheve: a clickable prototype shipped in 14 days that we then took into a Build & Launch sprint. See https://www.roqcx.com/case-studies/syntheve.`,

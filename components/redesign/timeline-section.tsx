@@ -3,48 +3,10 @@
 import * as React from "react"
 import Link from "next/link"
 import { FullBleedSection, Reveal, RQX, SectionHeader } from "./atoms"
-
-const MILESTONES = [
-  {
-    week: "02",
-    label: "Validated prototype",
-    headline: "A clickable thing your users actually clicked.",
-    bullets: [
-      "Hi-fi prototype on a public URL",
-      "5 user interviews, recorded",
-      "Go / no-go memo, signed",
-    ],
-    deliverable: "PROTOTYPE.ZIP · FIGMA · MEMO.PDF",
-    href: "/solutions/prototype-sprint",
-  },
-  {
-    week: "04",
-    label: "Production-ready slice",
-    headline: "One real feature, end-to-end, in your stack.",
-    bullets: [
-      "Auth + database + payments wired",
-      "Analytics + error tracking on day one",
-      "CI/CD, staging, handoff docs",
-    ],
-    deliverable: "GITHUB REPO · STAGING ENV · RUNBOOK",
-    href: "/solutions/build-launch",
-  },
-  {
-    week: "08",
-    label: "Market launch",
-    headline: "Live with real customers, measured.",
-    bullets: [
-      "Landing page + paid trial flow",
-      "Onboarding email sequence",
-      "30-day cohort dashboard",
-    ],
-    deliverable: "LAUNCH POST · COHORT METRICS",
-    href: "/solutions/market-launch",
-  },
-]
+import { formatAed, formatUsd, SPRINTS, WEBSITE_SPRINT_FROM_AED } from "@/lib/sprints"
 
 export function TimelineSection() {
-  const stepColors = [RQX.accent, RQX.accent3, RQX.accent2] as const
+  const stepColors = [RQX.accent, RQX.accent3, RQX.green, RQX.accent2] as const
 
   return (
     <FullBleedSection
@@ -73,191 +35,165 @@ export function TimelineSection() {
       />
 
       <SectionHeader
-        kicker="From prototype to market"
+        kicker="Fixed-fee sprints"
         title={
           <>
-            Two weeks to validate.
+            Four sprints.
             <br />
-            Eight weeks to live.
+            Pick the shape that matches the job.
           </>
         }
-        lede="Most agencies sell you the whole house up front. We sell you progress, measured in weeks, not retainers. Stop after any milestone, keep everything you've built."
+        lede="Prototype, build, and launch for product ideas. Website Sprint when the site is the product. Stop after any milestone, keep everything you've built."
       />
 
-      <div style={{ position: "relative", paddingTop: 40 }}>
-        {/* Track line */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            top: 60,
-            left: "8.33%",
-            right: "8.33%",
-            height: 2,
-            background: `linear-gradient(90deg, ${RQX.accent} 0%, ${RQX.accent3} 50%, ${RQX.accent2} 100%)`,
-            borderRadius: 999,
-          }}
-        />
-        {/* Track ticks */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            top: 52,
-            left: 0,
-            right: 0,
-            display: "grid",
-            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-          }}
-        >
-          {MILESTONES.map((m, i) => (
-            <div key={m.week} style={{ display: "flex", justifyContent: "center" }}>
-              {/** 02 → 04 → 08 reads warm-to-cool (red → amber → cyan) */}
-              {/** Matches the redesign handoff timeline progression */}
-              <div
-                style={{
-                  width: 18,
-                  height: 18,
-                  borderRadius: "50%",
-                  background: stepColors[i] ?? RQX.accent,
-                  border: `4px solid ${RQX.bgRaised}`,
-                  boxShadow: `0 0 0 1px ${stepColors[i] ?? RQX.accent}, 0 0 20px color-mix(in oklab, ${stepColors[i] ?? RQX.accent} 53%, transparent)`,
-                }}
-              />
-            </div>
-          ))}
-        </div>
-
+      <div style={{ position: "relative", paddingTop: 24 }}>
         <div className="rqx-timeline-cards">
-          {MILESTONES.map((m, i) => (
-            <Reveal key={m.week} delay={i * 120}>
+          {SPRINTS.map((m, i) => (
+            <Reveal key={m.slug} delay={i * 100}>
               {(() => {
                 const stepColor = stepColors[i] ?? RQX.accent
                 return (
-              <Link
-                href={m.href}
-                className="rqx-timeline-card"
-                style={{
-                  display: "block",
-                  background: RQX.bg,
-                  border: `1px solid ${RQX.line}`,
-                  borderRadius: 18,
-                  padding: "24px 24px",
-                  position: "relative",
-                  textDecoration: "none",
-                  color: "inherit",
-                  transition: "border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 10,
-                    marginBottom: 8,
-                  }}
-                >
-                  <span
-                    className="font-serif-display"
+                  <Link
+                    href={m.href}
+                    className="rqx-timeline-card"
                     style={{
-                      fontSize: 64,
-                      lineHeight: 1,
-                      color: stepColor,
-                      letterSpacing: "-0.04em",
+                      display: "block",
+                      background: RQX.bg,
+                      border: `1px solid ${RQX.line}`,
+                      borderRadius: 18,
+                      padding: "24px 24px",
+                      position: "relative",
+                      textDecoration: "none",
+                      color: "inherit",
+                      transition:
+                        "border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
                     }}
                   >
-                    {m.week}
-                  </span>
-                  <span
-                    className="font-geist-mono"
-                    style={{
-                      fontSize: 11,
-                      color: RQX.muted,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    weeks
-                  </span>
-                </div>
-                <div
-                  className="font-geist-mono"
-                  style={{
-                    fontSize: 11,
-                    color: RQX.fgDim,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    marginBottom: 16,
-                  }}
-                >
-                  {m.label}
-                </div>
-                <div
-                  className="font-serif-display"
-                  style={{
-                    fontSize: 24,
-                    lineHeight: 1.12,
-                    letterSpacing: "-0.015em",
-                    color: RQX.fg,
-                    marginBottom: 16,
-                  }}
-                >
-                  {m.headline}
-                </div>
-                <ul
-                  style={{
-                    listStyle: "none",
-                    margin: 0,
-                    padding: 0,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10,
-                  }}
-                >
-                  {m.bullets.map((b) => (
-                    <li
-                      key={b}
+                    <div
                       style={{
                         display: "flex",
-                        alignItems: "flex-start",
+                        alignItems: "baseline",
                         gap: 10,
-                        fontSize: 14,
-                        lineHeight: 1.45,
-                        color: RQX.fgDim,
+                        marginBottom: 8,
                       }}
                     >
                       <span
+                        className="font-serif-display"
                         style={{
-                          marginTop: 7,
-                          width: 5,
-                          height: 5,
-                          borderRadius: "50%",
-                          background: stepColor,
-                          flexShrink: 0,
+                          fontSize: 56,
+                          lineHeight: 1,
+                          color: stepColor,
+                          letterSpacing: "-0.04em",
                         }}
-                      />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-                <div
-                  className="font-geist-mono"
-                  style={{
-                    marginTop: 22,
-                    paddingTop: 16,
-                    borderTop: `1px solid ${RQX.lineDim}`,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    fontSize: 10.5,
-                    color: RQX.muted,
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  <span>{m.deliverable}</span>
-                  <span style={{ color: stepColor, fontSize: 12 }}>See sprint →</span>
-                </div>
-              </Link>
+                      >
+                        {m.week}
+                      </span>
+                      <span
+                        className="font-geist-mono"
+                        style={{
+                          fontSize: 11,
+                          color: RQX.muted,
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        weeks
+                      </span>
+                    </div>
+                    <div
+                      className="font-geist-mono"
+                      style={{
+                        fontSize: 11,
+                        color: RQX.fgDim,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        marginBottom: 16,
+                      }}
+                    >
+                      {m.ladderLabel}
+                    </div>
+                    <div
+                      className="font-serif-display"
+                      style={{
+                        fontSize: 22,
+                        lineHeight: 1.12,
+                        letterSpacing: "-0.015em",
+                        color: RQX.fg,
+                        marginBottom: 16,
+                      }}
+                    >
+                      {m.ladderHeadline}
+                    </div>
+                    <ul
+                      style={{
+                        listStyle: "none",
+                        margin: 0,
+                        padding: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                      }}
+                    >
+                      {m.ladderBullets.map((b) => (
+                        <li
+                          key={b}
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 10,
+                            fontSize: 14,
+                            lineHeight: 1.45,
+                            color: RQX.fgDim,
+                          }}
+                        >
+                          <span
+                            style={{
+                              marginTop: 7,
+                              width: 5,
+                              height: 5,
+                              borderRadius: "50%",
+                              background: stepColor,
+                              flexShrink: 0,
+                            }}
+                          />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                    {m.priceFrom ? (
+                      <div
+                        className="font-geist-mono"
+                        style={{
+                          marginTop: 16,
+                          fontSize: 11,
+                          letterSpacing: "0.04em",
+                          color: stepColor,
+                        }}
+                      >
+                        from {formatAed(m.priceFrom.aed)} · {formatUsd(m.priceFrom.usd)}
+                      </div>
+                    ) : null}
+                    <div
+                      className="font-geist-mono"
+                      style={{
+                        marginTop: m.priceFrom ? 12 : 22,
+                        paddingTop: 16,
+                        borderTop: `1px solid ${RQX.lineDim}`,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        fontSize: 10.5,
+                        color: RQX.muted,
+                        letterSpacing: "0.06em",
+                        gap: 8,
+                      }}
+                    >
+                      <span>{m.deliverable}</span>
+                      <span style={{ color: stepColor, fontSize: 12, flexShrink: 0 }}>
+                        See sprint →
+                      </span>
+                    </div>
+                  </Link>
                 )
               })()}
             </Reveal>
@@ -277,9 +213,9 @@ export function TimelineSection() {
           }}
         >
           <div style={{ fontSize: 14, color: RQX.fgDim, maxWidth: 600 }}>
-            Fixed-fee per milestone. Cancel between any two. We&apos;ve never had a
-            client stop after Week 2 without something they were proud to show
-            their board.
+            Fixed-fee per milestone. Cancel between any two. Website Sprint starts
+            from {formatAed(WEBSITE_SPRINT_FROM_AED)}. Product sprints are quoted on the
+            kick-off call.
           </div>
           <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
             <Link
@@ -324,9 +260,9 @@ export function TimelineSection() {
         }
         .rqx-timeline-cards {
           display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 24px;
-          margin-top: 84px;
+          margin-top: 48px;
         }
         @media (max-height: 860px) {
           :global(#timeline) {
@@ -334,14 +270,19 @@ export function TimelineSection() {
             padding-bottom: 88px !important;
           }
           .rqx-timeline-cards {
-            margin-top: 64px;
+            margin-top: 36px;
             gap: 18px;
           }
         }
-        @media (max-width: 900px) {
+        @media (min-width: 1100px) {
+          .rqx-timeline-cards {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+        @media (max-width: 700px) {
           .rqx-timeline-cards {
             grid-template-columns: 1fr;
-            margin-top: 60px;
+            margin-top: 40px;
           }
         }
       `}</style>

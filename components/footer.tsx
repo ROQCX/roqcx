@@ -1,14 +1,13 @@
 import Link from "next/link"
 import { RQX } from "./redesign/atoms"
 import { BrandLockup } from "./brand/lockup"
+import { SPRINTS } from "@/lib/sprints"
 
 const COLS: { title: string; items: { label: string; href: string }[] }[] = [
   {
     title: "Sprints",
     items: [
-      { label: "Prototype Sprint", href: "/solutions/prototype-sprint" },
-      { label: "Build & Launch", href: "/solutions/build-launch" },
-      { label: "Market Launch", href: "/solutions/market-launch" },
+      ...SPRINTS.map((s) => ({ label: s.title, href: s.href })),
       { label: "Sample sprint plan", href: "/sample-sprint-plan" },
     ],
   },
