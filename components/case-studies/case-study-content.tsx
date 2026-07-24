@@ -2,13 +2,27 @@ import { GlassCard } from "../ui/glass-card"
 import type { CaseStudyWithContent } from "../../lib/case-studies"
 import Image from "next/image"
 import { Target, Lightbulb, LineChart } from "lucide-react"
-import type { ComponentProps } from "react"
+import { Children, isValidElement, type ComponentProps, type ReactNode } from "react"
 import type { MDXComponents } from "mdx/types"
 import { MDXRemote } from "next-mdx-remote/rsc"
 import { BrowserSandbox } from "./browser-sandbox"
 
 interface CaseStudyContentProps {
   caseStudy: CaseStudyWithContent
+}
+
+/** MDX often wraps JSX/images in <p>; promote to <div> when children include blocks. */
+function paragraphHasBlockChild(children: ReactNode): boolean {
+  return Children.toArray(children).some((child) => {
+    if (!isValidElement(child)) return false
+    if (typeof child.type === "string") {
+      return ["div", "section", "table", "pre", "ul", "ol", "blockquote", "figure"].includes(
+        child.type,
+      )
+    }
+    // Custom components (BrowserSandbox, Next Image wrappers, etc.)
+    return true
+  })
 }
 
 const components: MDXComponents = {
@@ -40,11 +54,13 @@ const components: MDXComponents = {
       {children}
     </h4>
   ),
-  p: ({ children }) => (
-    <p className="my-4 leading-relaxed">
-      {children}
-    </p>
-  ),
+  p: ({ children }) => {
+    const className = "my-4 leading-relaxed"
+    if (paragraphHasBlockChild(children)) {
+      return <div className={className}>{children}</div>
+    }
+    return <p className={className}>{children}</p>
+  },
   a: ({ href, children }) => (
     <a 
       href={href}
@@ -55,17 +71,19 @@ const components: MDXComponents = {
       {children}
     </a>
   ),
+  // Prefer span — MDX may still wrap markdown images in <p>.
   img: ({ src, alt }) => (
-    <div className="relative my-10 w-full overflow-hidden rounded-2xl">
+    <span className="relative my-10 block w-full overflow-hidden rounded-2xl">
       <Image
-        src={src || ''}
-        alt={alt || ''}
+        src={src || ""}
+        alt={alt || ""}
         width={1640}
         height={1198}
         className="h-auto w-full object-contain"
         sizes="(max-width: 768px) 100vw, 960px"
+        unoptimized
       />
-    </div>
+    </span>
   ),
   ul: ({ children }) => (
     <ul className="list-disc space-y-2 my-4 pl-4">
