@@ -72,6 +72,8 @@ The diagnostic is bundled as phase 01, not a standalone SKU today. Client owns r
 
   `Selected work, WeNanny: a live UAE care marketplace with structured profiles, compatibility ranking, and explainable match rationale — built as a production product, not a directory. See https://www.roqcx.com/case-studies/wenanny.`,
 
+  `Selected work, Paul Ries & Sons Ethiopia: design and development of paulriesethiopia.com — a brand site that organises passenger, commercial, aftersales and EV-ready verticals around a trading heritage dating to 1865. See https://www.roqcx.com/case-studies/paul-ries-ethiopia.`,
+
   `Selected work, Mazadak e-Auction: a sprint-built auction platform for an existing SME. See https://www.roqcx.com/case-studies/mazadak-e-auction.`,
 
   `Selected work, Dubai 7s Ticketing: digital wallet passes, QR entry, and live ops for a flagship rugby weekend — 80,000+ ticket passes, millions of app interactions, and peak scanning in the thousands per hour. See https://www.roqcx.com/case-studies/dubai-7s-ticketing.`,

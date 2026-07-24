@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Target, Lightbulb, LineChart } from "lucide-react"
 import type { ComponentProps } from "react"
 import type { MDXComponents } from "mdx/types"
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { MDXRemote } from "next-mdx-remote/rsc"
 import { BrowserSandbox } from "./browser-sandbox"
 
 interface CaseStudyContentProps {
@@ -21,7 +21,7 @@ const components: MDXComponents = {
     const text = typeof children === 'string' ? children : ''
     const icon = text.toLowerCase().includes('challenge') ? <Target className="inline-block w-6 h-6 mr-2" /> :
                  text.toLowerCase().includes('solution') ? <Lightbulb className="inline-block w-6 h-6 mr-2" /> :
-                 text.toLowerCase().includes('impact') ? <LineChart className="inline-block w-6 h-6 mr-2" /> : null
+                 text.toLowerCase().includes('impact') || text.toLowerCase().includes('outcome') ? <LineChart className="inline-block w-6 h-6 mr-2" /> : null
 
     return (
       <h2 className="flex items-center gap-2 text-2xl font-bold mt-8 mb-4">
@@ -56,13 +56,14 @@ const components: MDXComponents = {
     </a>
   ),
   img: ({ src, alt }) => (
-    <div className="relative w-full h-64 my-8">
+    <div className="relative my-10 w-full overflow-hidden rounded-2xl">
       <Image
         src={src || ''}
         alt={alt || ''}
-        fill
-        className="object-cover rounded-lg"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        width={1640}
+        height={1198}
+        className="h-auto w-full object-contain"
+        sizes="(max-width: 768px) 100vw, 960px"
       />
     </div>
   ),
