@@ -259,19 +259,25 @@ export function Reveal({
   children,
   delay = 0,
   y = 24,
+  className,
+  style,
 }: {
   children: React.ReactNode
   delay?: number
   y?: number
+  className?: string
+  style?: React.CSSProperties
 }) {
   const [ref, shown] = useReveal<HTMLDivElement>()
   return (
     <div
       ref={ref}
+      className={className}
       style={{
         opacity: shown ? 1 : 0,
         transform: shown ? "translateY(0)" : `translateY(${y}px)`,
         transition: `opacity 0.7s ${delay}ms cubic-bezier(.2,.7,.2,1), transform 0.7s ${delay}ms cubic-bezier(.2,.7,.2,1)`,
+        ...style,
       }}
     >
       {children}

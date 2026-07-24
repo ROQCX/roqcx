@@ -49,7 +49,7 @@ export function TimelineSection() {
       <div style={{ position: "relative", paddingTop: 24 }}>
         <div className="rqx-timeline-cards">
           {SPRINTS.map((m, i) => (
-            <Reveal key={m.slug} delay={i * 100}>
+            <Reveal key={m.slug} delay={i * 100} className="rqx-timeline-reveal">
               {(() => {
                 const stepColor = stepColors[i] ?? RQX.accent
                 return (
@@ -57,7 +57,9 @@ export function TimelineSection() {
                     href={m.href}
                     className="rqx-timeline-card"
                     style={{
-                      display: "block",
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
                       background: RQX.bg,
                       border: `1px solid ${RQX.line}`,
                       borderRadius: 18,
@@ -108,6 +110,7 @@ export function TimelineSection() {
                         letterSpacing: "0.08em",
                         textTransform: "uppercase",
                         marginBottom: 16,
+                        minHeight: "1.2em",
                       }}
                     >
                       {m.ladderLabel}
@@ -120,6 +123,7 @@ export function TimelineSection() {
                         letterSpacing: "-0.015em",
                         color: RQX.fg,
                         marginBottom: 16,
+                        minHeight: "2.24em",
                       }}
                     >
                       {m.ladderHeadline}
@@ -132,6 +136,7 @@ export function TimelineSection() {
                         display: "flex",
                         flexDirection: "column",
                         gap: 10,
+                        flex: 1,
                       }}
                     >
                       {m.ladderBullets.map((b) => (
@@ -160,38 +165,51 @@ export function TimelineSection() {
                         </li>
                       ))}
                     </ul>
-                    {m.priceFrom ? (
+
+                    <div style={{ marginTop: "auto", paddingTop: 16 }}>
                       <div
                         className="font-geist-mono"
                         style={{
-                          marginTop: 16,
+                          minHeight: 18,
+                          marginBottom: 12,
                           fontSize: 11,
                           letterSpacing: "0.04em",
                           color: stepColor,
                         }}
                       >
-                        from {formatAed(m.priceFrom.aed)} · {formatUsd(m.priceFrom.usd)}
+                        {m.priceFrom
+                          ? `from ${formatAed(m.priceFrom.aed)} · ${formatUsd(m.priceFrom.usd)}`
+                          : "\u00a0"}
                       </div>
-                    ) : null}
-                    <div
-                      className="font-geist-mono"
-                      style={{
-                        marginTop: m.priceFrom ? 12 : 22,
-                        paddingTop: 16,
-                        borderTop: `1px solid ${RQX.lineDim}`,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        fontSize: 10.5,
-                        color: RQX.muted,
-                        letterSpacing: "0.06em",
-                        gap: 8,
-                      }}
-                    >
-                      <span>{m.deliverable}</span>
-                      <span style={{ color: stepColor, fontSize: 12, flexShrink: 0 }}>
-                        See sprint →
-                      </span>
+                      <div
+                        className="font-geist-mono"
+                        style={{
+                          paddingTop: 16,
+                          borderTop: `1px solid ${RQX.lineDim}`,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          fontSize: 10.5,
+                          color: RQX.muted,
+                          letterSpacing: "0.06em",
+                          gap: 8,
+                          minHeight: 36,
+                        }}
+                      >
+                        <span
+                          style={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            minWidth: 0,
+                          }}
+                        >
+                          {m.deliverable}
+                        </span>
+                        <span style={{ color: stepColor, fontSize: 12, flexShrink: 0 }}>
+                          See sprint →
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 )
@@ -263,6 +281,17 @@ export function TimelineSection() {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 24px;
           margin-top: 48px;
+          align-items: stretch;
+        }
+        :global(.rqx-timeline-reveal) {
+          height: 100%;
+          display: flex;
+          min-width: 0;
+        }
+        :global(.rqx-timeline-reveal > *) {
+          flex: 1;
+          min-width: 0;
+          width: 100%;
         }
         @media (max-height: 860px) {
           :global(#timeline) {

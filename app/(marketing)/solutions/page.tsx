@@ -116,7 +116,7 @@ export default function SolutionsHubPage() {
               <GlassCard
                 key={s.slug}
                 variant="gradient"
-                className="p-8 flex flex-col"
+                className="p-8 flex h-full flex-col"
               >
                 <div
                   className="font-geist-mono"
@@ -142,6 +142,7 @@ export default function SolutionsHubPage() {
                     justifyContent: "center",
                     background: `linear-gradient(135deg, ${RQX.accent} 0%, ${RQX.accent2} 100%)`,
                     color: "#fff",
+                    flexShrink: 0,
                   }}
                 >
                   <Icon size={22} />
@@ -155,24 +156,26 @@ export default function SolutionsHubPage() {
                     lineHeight: 1.05,
                     letterSpacing: "-0.02em",
                     color: "var(--rqx-fg)",
+                    minHeight: "2.1em",
                   }}
                 >
                   {s.title}
                 </h3>
 
-                {s.priceFrom ? (
-                  <div
-                    className="font-geist-mono"
-                    style={{
-                      marginBottom: 10,
-                      fontSize: 12,
-                      letterSpacing: "0.04em",
-                      color: RQX.accent,
-                    }}
-                  >
-                    from {formatAed(s.priceFrom.aed)} · {formatUsd(s.priceFrom.usd)}
-                  </div>
-                ) : null}
+                <div
+                  className="font-geist-mono"
+                  style={{
+                    marginBottom: 10,
+                    minHeight: 18,
+                    fontSize: 12,
+                    letterSpacing: "0.04em",
+                    color: RQX.accent,
+                  }}
+                >
+                  {s.priceFrom
+                    ? `from ${formatAed(s.priceFrom.aed)} · ${formatUsd(s.priceFrom.usd)}`
+                    : "\u00a0"}
+                </div>
 
                 <p
                   style={{
@@ -180,6 +183,7 @@ export default function SolutionsHubPage() {
                     color: "var(--rqx-fg-dim)",
                     lineHeight: 1.55,
                     fontSize: 15,
+                    minHeight: "4.65em",
                   }}
                 >
                   {s.hubHeadline}
@@ -226,7 +230,8 @@ export default function SolutionsHubPage() {
                 <Link
                   href={s.href}
                   style={{
-                    marginTop: 24,
+                    marginTop: "auto",
+                    paddingTop: 24,
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 8,
