@@ -2,208 +2,154 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { ThemeToggle } from "../ui/theme-toggle"
 import { BrandLockup } from "../brand/lockup"
-import { RQX } from "../redesign/atoms"
+import { serviceNav } from "@/lib/site-content"
+import { trainingPath } from "@/lib/training-content"
 
-type MenuItem = { href: string; label: string }
+// AI training has its own top-level link, so the Services menu leaves it out.
+const serviceMenu = serviceNav.filter((item) => item.href !== trainingPath)
 
-const menuItems: MenuItem[] = [
-  { href: "/solutions", label: "Sprints" },
+const links = [
+  { href: trainingPath, label: "AI training" },
   { href: "/case-studies", label: "Work" },
   { href: "/chatbot", label: "Chat demo" },
-  { href: "/insights", label: "Journal" },
+  { href: "/insights", label: "Insights" },
   { href: "/about", label: "About" },
 ]
 
 export function Navigation() {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [menuOpen, setMenuOpen] = React.useState(false)
+  const [servicesOpen, setServicesOpen] = React.useState(false)
+  const servicesRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setServicesOpen(false)
+        setMenuOpen(false)
+      }
+    }
+    function onPointer(event: MouseEvent) {
+      if (!servicesRef.current?.contains(event.target as Node)) {
+        setServicesOpen(false)
+      }
+    }
+    document.addEventListener("keydown", onKey)
+    document.addEventListener("mousedown", onPointer)
+    return () => {
+      document.removeEventListener("keydown", onKey)
+      document.removeEventListener("mousedown", onPointer)
+    }
+  }, [])
 
   return (
-    <header
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        background: `color-mix(in oklab, ${RQX.bg} 78%, transparent)`,
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        borderBottom: `1px solid ${RQX.lineDim}`,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px 32px",
-          maxWidth: 1440,
-          margin: "0 auto",
-          position: "relative",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Link
-            href="/"
-            aria-label="ROQ CX"
-            style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
-          >
-            <BrandLockup height={46} variant="3d" priority />
-          </Link>
-        </div>
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-[color-mix(in_srgb,var(--chalk)_12%,transparent)] bg-[var(--void)] text-[var(--chalk)]">
+      <div className="mx-auto flex h-[72px] w-[min(1240px,calc(100%-2.5rem))] items-center gap-6 md:w-[min(1240px,calc(100%-4rem))]">
+        <Link href="/" aria-label="ROQ CX home" className="mr-auto">
+          <BrandLockup height={36} priority onDark />
+        </Link>
 
-        <nav
-          className="rqx-desktop-nav"
-          style={{
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            alignItems: "center",
-            gap: 26,
-          }}
-        >
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                color: RQX.fgDim,
-                fontSize: 13.5,
-                letterSpacing: "-0.005em",
-                fontWeight: 500,
-                textDecoration: "none",
-              }}
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
+          <div className="relative" ref={servicesRef}>
+            <button
+              type="button"
+              className="min-h-11 bg-transparent px-1 text-[var(--chalk)]"
+              aria-expanded={servicesOpen}
+              aria-controls="services-menu"
+              onClick={() => setServicesOpen((open) => !open)}
             >
+              Services
+            </button>
+            {servicesOpen ? (
+              <ul
+                id="services-menu"
+                className="absolute left-0 top-full z-10 m-0 min-w-64 list-none border border-[color-mix(in_srgb,var(--chalk)_16%,transparent)] bg-[var(--void)] p-2 shadow-none"
+              >
+                {serviceMenu.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="block min-h-11 px-3 py-2 text-[var(--chalk)] no-underline hover:bg-[color-mix(in_srgb,var(--signal)_16%,transparent)]"
+                      onClick={() => setServicesOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          {links.map((item) => (
+            <Link key={item.href} href={item.href} className="text-[var(--chalk)] no-underline hover:text-[var(--signal)]">
               {item.label}
             </Link>
           ))}
-        </nav>
-
-        <div className="rqx-desktop-actions" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <ThemeToggle />
           <Link
             href="/contact"
-            style={{
-              background: RQX.accent,
-              color: RQX.accentFg,
-              border: "none",
-              padding: "10px 16px",
-              borderRadius: 999,
-              fontWeight: 600,
-              fontSize: 13,
-              letterSpacing: "-0.005em",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              textDecoration: "none",
-            }}
+            className="btn-signal"
           >
-            Start a prototype sprint <span style={{ fontSize: 14 }}>→</span>
+            Talk to us
           </Link>
-        </div>
+        </nav>
 
-        {/* Mobile menu button */}
-        <div className="rqx-mobile-actions" style={{ display: "none", alignItems: "center", gap: 12 }}>
-          <ThemeToggle />
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-            style={{
-              background: "transparent",
-              border: `1px solid ${RQX.line}`,
-              color: RQX.fg,
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-              />
-            </svg>
-          </button>
-        </div>
+        <button
+          type="button"
+          className="inline-flex size-11 items-center justify-center text-[var(--chalk)] lg:hidden"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className="menu-icon" data-open={menuOpen} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+        </button>
       </div>
 
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="rqx-mobile-menu"
-          style={{
-            background: RQX.bg,
-            borderTop: `1px solid ${RQX.lineDim}`,
-          }}
+      {menuOpen ? (
+        <nav
+          id="mobile-menu"
+          aria-label="Mobile"
+          className="border-t border-[color-mix(in_srgb,var(--chalk)_12%,transparent)] bg-[var(--void)] px-5 py-4 lg:hidden"
         >
-          <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: 4 }}>
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                style={{
-                  display: "block",
-                  padding: "12px 0",
-                  fontSize: 16,
-                  fontWeight: 500,
-                  color: RQX.fg,
-                  textDecoration: "none",
-                }}
-              >
-                {item.label}
-              </Link>
+          <p className="m-0 text-sm text-[color-mix(in_srgb,var(--chalk)_70%,transparent)]">Services</p>
+          <ul className="m-0 mt-2 list-none p-0">
+            {serviceMenu.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="block min-h-11 py-2 text-[var(--chalk)] no-underline"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              </li>
             ))}
-            <Link
-              href="/contact"
-              onClick={() => setIsOpen(false)}
-              style={{
-                marginTop: 12,
-                background: RQX.accent,
-                color: RQX.accentFg,
-                padding: "14px 16px",
-                borderRadius: 12,
-                textAlign: "center",
-                fontWeight: 600,
-                fontSize: 14,
-                textDecoration: "none",
-              }}
-            >
-              Start a prototype sprint →
-            </Link>
-          </div>
-        </motion.div>
-      )}
-
-      <style jsx>{`
-        @media (max-width: 880px) {
-          :global(.rqx-desktop-nav),
-          :global(.rqx-desktop-actions) {
-            display: none !important;
-          }
-          :global(.rqx-mobile-actions) {
-            display: inline-flex !important;
-          }
-        }
-      `}</style>
+          </ul>
+          <ul className="m-0 mt-3 list-none border-t border-[color-mix(in_srgb,var(--chalk)_12%,transparent)] p-0 pt-3">
+            {links.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="block min-h-11 py-2 text-[var(--chalk)] no-underline"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/contact"
+            className="btn-signal mt-3"
+            onClick={() => setMenuOpen(false)}
+          >
+            Talk to us
+          </Link>
+        </nav>
+      ) : null}
     </header>
   )
 }

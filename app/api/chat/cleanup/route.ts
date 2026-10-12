@@ -1,59 +1,54 @@
-import { NextResponse } from 'next/server'
-import { db } from '../../../../lib/db'
+import { NextResponse } from "next/server"
+import { deleteChatSession, purgeExpiredChatSessions } from "../../../../lib/chat-sessions"
+import { purgeOldRequestLimits } from "../../../../lib/rate-limit"
+import { isSessionId } from "../../../../lib/utils/session"
 
-export const runtime = 'edge'
+// Cleanup endpoint. Vercel Cron calls GET with Authorization: Bearer CRON_SECRET.
+// POST can also delete one demo session when the same secret is presented.
 
-// Cleanup endpoint — invoked by an external scheduler (Vercel Cron or similar)
-// using a server-only CRON_SECRET. Never call from the browser.
+function cronAuthorized(req: Request) {
+  const secret =
+    req.headers.get("x-cron-secret") || req.headers.get("authorization")?.replace(/^Bearer\s+/i, "")
+  return Boolean(process.env.CRON_SECRET && secret === process.env.CRON_SECRET)
+}
+
+async function purgeExpired() {
+  await purgeExpiredChatSessions()
+  await purgeOldRequestLimits()
+}
+
+export async function GET(req: Request) {
+  try {
+    if (!cronAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    await purgeExpired()
+    return NextResponse.json({ ok: true, scope: "expired" })
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    const secret = req.headers.get('x-cron-secret') || req.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
-    if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!cronAuthorized(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     let sessionId: string | undefined
-    if (req.headers.get('content-type')?.includes('application/json')) {
+    if (req.headers.get("content-type")?.includes("application/json")) {
       try {
-        sessionId = (await req.json()).sessionId
+        const body = await req.json()
+        if (typeof body.sessionId === "string" && isSessionId(body.sessionId)) sessionId = body.sessionId
       } catch {
         sessionId = undefined
       }
     }
 
-    const cutoffTime = Date.now() - 24 * 60 * 60 * 1000 // 24h
-
     if (sessionId) {
-      await db.batch([
-        {
-          sql: `DELETE FROM embeddings WHERE chunk_id IN (SELECT id FROM chunks WHERE session_id = ?)`,
-          args: [sessionId],
-        },
-        { sql: `DELETE FROM chunks WHERE session_id = ?`, args: [sessionId] },
-      ])
-      return NextResponse.json({ ok: true, scope: 'session', sessionId })
+      await deleteChatSession(sessionId)
+      return NextResponse.json({ ok: true, scope: "session" })
     }
 
-    await db.batch([
-      {
-        sql: `DELETE FROM embeddings WHERE chunk_id IN (
-                SELECT id FROM chunks
-                WHERE (is_global = FALSE OR is_global IS NULL)
-                AND session_id IS NOT NULL
-                AND updated_at < ?
-              )`,
-        args: [cutoffTime],
-      },
-      {
-        sql: `DELETE FROM chunks
-              WHERE (is_global = FALSE OR is_global IS NULL)
-              AND session_id IS NOT NULL
-              AND updated_at < ?`,
-        args: [cutoffTime],
-      },
-    ])
-    return NextResponse.json({ ok: true, scope: 'expired', cutoff: cutoffTime })
+    await purgeExpired()
+    return NextResponse.json({ ok: true, scope: "expired" })
   } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

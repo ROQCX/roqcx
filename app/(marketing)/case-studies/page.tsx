@@ -1,20 +1,20 @@
-import { getAllCaseStudies } from "../../../lib/case-studies"
-import { CaseStudySearch } from "../../../components/case-studies/case-study-search"
 import { Suspense } from "react"
-import { FullBleedSection, GridBg, RQX, SectionHeader } from "../../../components/redesign/atoms"
+import { getAllCaseStudies } from "../../../lib/case-studies"
+import { DeviceScreen } from "../../../components/case-studies/work-cover"
+import { CaseStudySearch } from "../../../components/case-studies/case-study-search"
+import { ClosingCta, PageHero, wrap } from "../../../components/studio/page-hero"
+import { TangleLine } from "../../../components/studio/illustrations"
+import { pageSeo } from "@/lib/seo"
 
-function CaseStudySearchSkeleton() {
-  return (
-    <div className="space-y-8">
-      <div className="h-12 w-full rounded-md bg-muted animate-pulse" />
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-[400px] rounded-lg bg-muted animate-pulse" />
-        ))}
-      </div>
-    </div>
-  )
-}
+const collage: { src: string; className: string; loading?: "eager" }[] = [
+  {
+    src: "/case-studies/paul-ries-cover.webp",
+    className: "left-0 top-8 w-[52%] -rotate-2",
+    loading: "eager",
+  },
+  { src: "/case-studies/wenanny-hero.webp", className: "right-0 top-0 w-[50%] rotate-2" },
+  { src: "/case-studies/syntheve-fullpage-cover.webp", className: "bottom-2 left-[16%] w-[52%] rotate-1" },
+]
 
 export default async function CaseStudiesPage() {
   const caseStudies = await getAllCaseStudies()
@@ -23,71 +23,46 @@ export default async function CaseStudiesPage() {
   ).sort()
 
   return (
-    <FullBleedSection
-      style={{
-        background: RQX.bg,
-        position: "relative",
-        overflow: "hidden",
-      }}
-      className="py-[88px] pb-[120px] px-6 sm:px-10 lg:px-14"
-    >
-      <GridBg opacity={0.45} />
-
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: -220,
-          right: -220,
-          width: 720,
-          height: 720,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, color-mix(in oklab, ${RQX.accent} 16%, transparent) 0%, transparent 60%)`,
-          filter: "blur(70px)",
-          pointerEvents: "none",
-          opacity: 0.85,
-        }}
+    <article>
+      <PageHero
+        title="Work you can look at."
+        lede="Customer tools, marketplaces and the operational work behind them. Each one is a project we delivered."
+        plate={false}
+        art={
+          <div className="relative mx-auto aspect-[5/4] w-full max-w-[560px]" aria-hidden>
+            {collage.map((item) => (
+              <DeviceScreen
+                key={item.src}
+                src={item.src}
+                showPhone={false}
+                sizes="(min-width: 1024px) 280px, 50vw"
+                loading={item.loading}
+                className={`absolute drop-shadow-[0_24px_40px_rgba(0,0,0,0.45)] ${item.className}`}
+              />
+            ))}
+          </div>
+        }
       />
-
-      <div style={{ maxWidth: 1440, margin: "0 auto", position: "relative" }}>
-        <div style={{ maxWidth: 1100 }}>
-          <SectionHeader
-            kicker="Selected work"
-            title={
-              <>
-                Case studies
-                <br />
-                shipped under pressure.
-              </>
-            }
-            lede="A handful of builds where speed was the point. Clear scope, tight feedback loops, and real-world usage."
+      <div className={`${wrap} py-14 md:py-20`}>
+        <Suspense fallback={<div className="h-[600px] rounded-[18px] bg-[var(--chalk)]" />}>
+          <CaseStudySearch
+            caseStudies={caseStudies}
+            availableIndustries={allIndustries}
+            eagerCovers={collage.flatMap((item) => (item.loading === "eager" ? [item.src] : []))}
           />
-        </div>
-
-        <div style={{ marginTop: 48 }}>
-          <Suspense fallback={<CaseStudySearchSkeleton />}>
-            <CaseStudySearch caseStudies={caseStudies} availableIndustries={allIndustries} />
-          </Suspense>
-        </div>
+        </Suspense>
       </div>
-    </FullBleedSection>
+      <ClosingCta
+        title="Want something like this?"
+        body="Tell us where things get stuck. We’ll say whether a build, an automation or a training session makes sense."
+        art={<TangleLine className="mb-10 block h-auto w-full max-w-[720px]" />}
+      />
+    </article>
   )
 }
 
-export const metadata = {
-  title: "Case studies | Prototype sprints in the wild | ROQ CX",
-  description: "Real builds shipped on the two-week ROQ CX sprint cadence: clear scope, tight feedback loops, and live URLs you can click on day 14.",
-  alternates: { canonical: "https://www.roqcx.com/case-studies" },
-  openGraph: {
-    title: "Case studies | Prototype sprints in the wild | ROQ CX",
-    description: "Real builds shipped on the two-week ROQ CX sprint cadence: clear scope, tight feedback loops, and live URLs you can click on day 14.",
-    url: "https://www.roqcx.com/case-studies",
-    images: ["/og"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Case studies | Prototype sprints in the wild | ROQ CX",
-    description: "Real builds shipped on the two-week ROQ CX sprint cadence.",
-    images: ["/og"],
-  },
-}
+export const metadata = pageSeo({
+  title: "Work | ROQ CX",
+  description: "Selected ROQ CX work: customer tools, marketplaces and operational builds.",
+  path: "/case-studies",
+})

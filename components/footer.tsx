@@ -1,135 +1,76 @@
 import Link from "next/link"
-import { RQX } from "./redesign/atoms"
 import { BrandLockup } from "./brand/lockup"
-import { SPRINTS } from "@/lib/sprints"
+import { serviceNav } from "@/lib/site-content"
 
-const COLS: { title: string; items: { label: string; href: string }[] }[] = [
-  {
-    title: "Sprints",
-    items: [
-      ...SPRINTS.map((s) => ({ label: s.title, href: s.href })),
-      { label: "Sample sprint plan", href: "/sample-sprint-plan" },
-    ],
-  },
-  {
-    title: "Studio",
-    items: [
-      { label: "Work", href: "/case-studies" },
-      { label: "Journal", href: "/insights" },
-      { label: "Chat demo", href: "/chatbot" },
-      { label: "About", href: "/about" },
-    ],
-  },
-  {
-    title: "Get in touch",
-    items: [
-      { label: "hello@roqcx.com", href: "mailto:hello@roqcx.com" },
-      { label: "+971 56 252 0720", href: "https://wa.me/971562520720" },
-      { label: "Dubai, UAE", href: "https://maps.google.com" },
-    ],
-  },
+const studio = [
+  { label: "Work", href: "/case-studies" },
+  { label: "Insights", href: "/insights" },
+  { label: "Chat demo", href: "/chatbot" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy" },
 ]
 
 export function Footer() {
   return (
-    <footer
-      style={{
-        background: RQX.bgRaised,
-        borderTop: `1px solid ${RQX.lineDim}`,
-        padding: "56px 56px 32px",
-        color: RQX.fg,
-      }}
-      className="rqx-fullbleed"
-    >
-      <div
-        className="rqx-footer-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
-          gap: 56,
-          marginBottom: 48,
-          maxWidth: 1440,
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        <div>
-          <BrandLockup height={50} variant="3d" />
-          <p
-            style={{
-              marginTop: 16,
-              maxWidth: 320,
-              fontSize: 14,
-              lineHeight: 1.55,
-              color: RQX.fgDim,
-            }}
-          >
-            ROQ CX is the fractional product team for SMEs who want to build,
-            test, and ship without hiring a full one.
+    <footer className="bg-[var(--void)] text-[var(--chalk)]">
+      <div className="mx-auto grid w-[min(1240px,calc(100%-2.5rem))] gap-10 py-14 md:w-[min(1240px,calc(100%-4rem))] md:grid-cols-12">
+        <div className="md:col-span-5">
+          <BrandLockup height={40} onDark />
+          <p className="mb-0 mt-4 max-w-sm leading-relaxed text-[color-mix(in_srgb,var(--chalk)_78%,transparent)]">
+            ROQ CX helps SMEs move from ad hoc AI use to practical solutions that improve customer experience and reduce operational overhead.
           </p>
         </div>
-        {COLS.map((col) => (
-          <div key={col.title}>
-            <div
-              className="font-geist-mono"
-              style={{
-                fontSize: 11,
-                color: RQX.muted,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                marginBottom: 14,
-              }}
-            >
-              {col.title}
-            </div>
-            <ul
-              style={{
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
-              {col.items.map((it) => (
-                <li key={it.label}>
-                  <Link
-                    href={it.href}
-                    style={{
-                      color: RQX.fgDim,
-                      fontSize: 14,
-                      textDecoration: "none",
-                    }}
-                  >
-                    {it.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      <div
-        className="font-geist-mono"
-        style={{
-          maxWidth: 1440,
-          marginLeft: "auto",
-          marginRight: "auto",
-          borderTop: `1px solid ${RQX.lineDim}`,
-          paddingTop: 24,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: 11,
-          color: RQX.muted,
-          letterSpacing: "0.04em",
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <span>© {new Date().getFullYear()} ROQ CX · Built in 14-day sprints, naturally.</span>
-        <span>Dubai · UAE</span>
+        <div className="md:col-span-3">
+          <h2 className="m-0 text-sm text-[color-mix(in_srgb,var(--chalk)_62%,transparent)]">Services</h2>
+          <ul className="m-0 mt-3 list-none p-0">
+            {serviceNav.map((item) => (
+              <li key={item.href} className="py-1">
+                <Link href={item.href} className="text-[var(--chalk)] no-underline">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="md:col-span-2">
+          <h2 className="m-0 text-sm text-[color-mix(in_srgb,var(--chalk)_62%,transparent)]">Studio</h2>
+          <ul className="m-0 mt-3 list-none p-0">
+            {studio.map((item) => (
+              <li key={item.href} className="py-1">
+                <Link href={item.href} className="text-[var(--chalk)] no-underline">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="md:col-span-2">
+          <h2 className="m-0 text-sm text-[color-mix(in_srgb,var(--chalk)_62%,transparent)]">Contact</h2>
+          <ul className="m-0 mt-3 list-none p-0 leading-relaxed">
+            <li>
+              <a href="mailto:hello@roqcx.com" className="text-[var(--chalk)]">
+                hello@roqcx.com
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/971562520720" className="text-[var(--chalk)]">
+                +971 56 252 0720
+              </a>
+            </li>
+            <li>Dubai, UAE. Working with SMEs remotely as well.</li>
+            <li className="pt-2">
+              <a href="https://www.linkedin.com/company/roqcx" className="text-[var(--chalk)]">
+                LinkedIn
+              </a>
+            </li>
+            <li>
+              <a href="https://www.zaynenair.com" className="text-[var(--chalk)]">
+                zaynenair.com
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </footer>
   )

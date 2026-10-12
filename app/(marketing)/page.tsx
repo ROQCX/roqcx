@@ -1,27 +1,21 @@
-import { HeroPrototype } from "@/components/redesign/hero-prototype"
-import { ProcessSection } from "@/components/redesign/process-section"
-import { TimelineSection } from "@/components/redesign/timeline-section"
-import { CapabilitiesSection } from "@/components/redesign/capabilities-section"
-import { CasesSection } from "@/components/redesign/cases-section"
-import { FAQSection } from "@/components/redesign/faq-section"
-import { CtaSection } from "@/components/redesign/cta-section"
+import type { Metadata } from "next"
+import { HomePage } from "@/components/studio/home-page"
+import { getAllCaseStudies } from "@/lib/case-studies"
+import { defaultDescription, defaultTitle, pageSeo } from "@/lib/seo"
 
-export default function Home() {
-  return (
-    <>
-      <HeroPrototype />
-      <ProcessSection />
-      <TimelineSection />
-      <CapabilitiesSection />
-      <CasesSection />
-      <FAQSection />
-      <CtaSection />
-    </>
-  )
-}
+const featuredSlugs = ["lets-talk-early-years", "syntheve", "dubai-7s-ticketing", "wenanny"]
 
-export const metadata = {
-  title: "ROQ CX | From idea to live prototype in 2 weeks",
-  description:
-    "The fractional product team for SMEs. We turn napkin sketches into clickable prototypes, validate with real users, and ship to production on a fixed two-week cadence.",
+export const metadata: Metadata = pageSeo({
+  title: defaultTitle,
+  description: defaultDescription,
+  path: "/",
+})
+
+export default async function Home() {
+  const studies = await getAllCaseStudies()
+  const featured = featuredSlugs
+    .map((slug) => studies.find((study) => study.slug === slug))
+    .filter((study) => study !== undefined)
+
+  return <HomePage studies={featured} />
 }

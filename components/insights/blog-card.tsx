@@ -1,96 +1,32 @@
-"use client"
-
-import Image from "next/image"
 import Link from "next/link"
-import { Calendar, Clock, User } from "lucide-react"
-import { GlassCard } from "../ui/glass-card"
-import { Badge } from "../ui/badge"
-import { cn } from "../../lib/utils"
+import { ArrowRight } from "lucide-react"
 import type { BlogPost } from "../../lib/blog"
+import { InsightArt } from "../studio/illustrations"
 
-interface BlogCardProps extends Omit<BlogPost, 'coverImage'> {
-  coverImage?: string
-}
+type BlogCardProps = Pick<BlogPost, "slug" | "title" | "description" | "date" | "readingTime" | "tags">
 
-export function BlogCard({
-  slug,
-  title,
-  description,
-  date,
-  author,
-  readingTime,
-  tags,
-  coverImage = "/insights/default-cover.jpg",
-}: BlogCardProps) {
+export function BlogCard({ slug, title, description, date, readingTime, tags }: BlogCardProps) {
   return (
-    <Link href={`/insights/${slug}`} className="block h-full">
-      <GlassCard
-        variant="gradient"
-        className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02]"
-      >
-        <div className="relative aspect-square w-full overflow-hidden">
-          <Image
-            src={coverImage}
-            alt={title}
-            fill
-            className="object-cover transition-all duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, color-mix(in oklab, var(--rqx-bg) 55%, transparent), transparent)",
-            }}
-          />
+    <Link
+      href={`/insights/${slug}`}
+      className="plate lift group flex h-full flex-col bg-[var(--chalk)] text-[var(--ink)] no-underline"
+    >
+      <div className="paper-grid border-b border-[var(--rule)] px-6 py-5">
+        <InsightArt slug={slug} />
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <p className="m-0 font-geist-mono text-xs uppercase tracking-[0.16em] text-[var(--forest)]">
+          {tags.slice(0, 2).join(" · ")}
+        </p>
+        <h3 className="m-0 mt-2 text-xl font-medium leading-snug">{title}</h3>
+        <p className="mb-0 mt-2 flex-1 text-sm leading-relaxed text-[var(--ink-soft)]">{description}</p>
+        <div className="mt-5 flex items-center justify-between gap-4 border-t border-[var(--rule)] pt-4 text-sm text-[var(--ink-soft)]">
+          <span>
+            {date} · {readingTime} min read
+          </span>
+          <ArrowRight className="h-4 w-4 flex-none text-[var(--forest)] transition-transform group-hover:translate-x-1" aria-hidden />
         </div>
-
-        <div className="flex flex-1 flex-col p-6">
-          <div className="flex flex-wrap gap-2 max-h-[3.5rem] overflow-hidden">
-            {tags.map((tag) => (
-              <Badge
-                key={tag}
-                variant="outline"
-                className="text-xs font-medium text-zinc-600 dark:text-zinc-400 border-[var(--rqx-line)]"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
-          <h3 className={cn(
-            "mt-4 text-xl font-semibold line-clamp-2",
-            "bg-gradient-to-r from-zinc-900 to-zinc-900 dark:from-zinc-100 dark:to-zinc-100 bg-clip-text",
-            "group-hover:from-[var(--rqx-accent)] group-hover:via-[var(--rqx-accent3)] group-hover:to-[var(--rqx-accent2)]",
-            "transition-all duration-300",
-            "text-transparent"
-          )}>
-            {title}
-          </h3>
-
-          <p className="mt-2 flex-grow text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3">
-            {description}
-          </p>
-
-          <div className="mt-6 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
-            <div className="flex items-center gap-2">
-              <User className="h-3 w-3" />
-              <span>{author.name}</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-3 w-3" />
-                <span>{date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-3 w-3" />
-                <span>{readingTime}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </GlassCard>
+      </div>
     </Link>
   )
-} 
+}

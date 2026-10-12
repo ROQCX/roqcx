@@ -16,6 +16,8 @@ interface BrandLockupProps {
   variant?: Variant
   /** Render priority for above-the-fold placements like nav. */
   priority?: boolean
+  /** Use the white wordmark on a dark bar. */
+  onDark?: boolean
   className?: string
 }
 
@@ -23,6 +25,7 @@ export function BrandLockup({
   height = 32,
   variant = "flat",
   priority = false,
+  onDark = false,
   className,
 }: BrandLockupProps) {
   const markAR = variant === "flat" ? FLAT_AR : 1
@@ -52,7 +55,7 @@ export function BrandLockup({
         width={textW}
         height={textH}
         priority={priority}
-        className="block dark:hidden"
+        className={onDark ? "hidden" : "block dark:hidden"}
         style={{ height: textH, width: textW }}
       />
       <Image
@@ -61,7 +64,7 @@ export function BrandLockup({
         width={textW}
         height={textH}
         priority={priority}
-        className="hidden dark:block"
+        className={onDark ? "block" : "hidden dark:block"}
         style={{ height: textH, width: textW }}
       />
     </span>

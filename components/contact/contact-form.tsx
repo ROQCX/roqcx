@@ -3,183 +3,203 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { Textarea } from "../ui/textarea"
 import { toast } from "sonner"
 import { useAnalytics } from "../../app/hooks/use-analytics"
 import { getStoredAttribution } from "@/lib/attribution"
+import { contactFormSchema, enquiryErrorMessage, shownEnquiryError, type ContactFormValues } from "@/lib/enquiry"
+import { executeRecaptcha } from "@/lib/recaptcha"
 
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-  // Honeypot field - should always be empty
-  website: z.string().max(0, "This field should be empty"),
-})
+type FormData = ContactFormValues
 
-type FormData = z.infer<typeof formSchema>
+const fieldClass =
+  "w-full border border-[var(--rule)] bg-[var(--paper)] px-3 py-2 text-[var(--ink)] outline-none"
 
-declare global {
-  interface Window {
-    grecaptcha: {
-      ready: (callback: () => void) => void
-      execute: (siteKey: string, options: { action: string }) => Promise<string>
-    }
-  }
-}
-
-interface ContactFormProps {
-  compact?: boolean
-}
-
-export function ContactForm({ compact = false }: ContactFormProps) {
+export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [started, setStarted] = useState(false)
+  const [submitError, setSubmitError] = useState("")
   const { trackEvent } = useAnalytics()
-  
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: { interest: "", timing: "", companyUrlHp: "" },
   })
+
+  function onFocus() {
+    if (started) return
+    setStarted(true)
+    trackEvent("form_start")
+  }
 
   async function onSubmit(data: FormData) {
     setIsSubmitting(true)
-    
+    setSubmitError("")
+
     try {
-      // Get reCAPTCHA token
-      const token = await window.grecaptcha.execute(
-        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
-        { action: "contact" }
-      )
+      const token = await executeRecaptcha("contact")
 
       const attribution = getStoredAttribution()
 
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, token, attribution }),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to send message")
+        throw new Error(enquiryErrorMessage(response.status))
       }
 
-      trackEvent('contact_form_submit', {
-        success: true,
+      trackEvent("form_submit_success", {
+        interest: data.interest || "unset",
         utm_source: attribution?.utm_source,
         utm_medium: attribution?.utm_medium,
         utm_campaign: attribution?.utm_campaign,
-        utm_content: attribution?.utm_content,
-        has_referrer: Boolean(attribution?.referrer),
       })
-      
-      toast.success("Message sent successfully!")
+
+      toast.success("Message sent. We’ll reply by email.")
       reset()
     } catch (error) {
-      trackEvent('contact_form_submit', {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+      const message = shownEnquiryError(error)
+      setSubmitError(message)
+      trackEvent("form_submit_error", {
+        error: error instanceof Error ? error.message : "Unknown error",
       })
-      
-      toast.error("Failed to send message. Please try again.")
+      toast.error(message)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const fieldGap = compact ? "space-y-1" : "space-y-1 md:space-y-2"
-  const formGap = compact ? "space-y-2.5" : "space-y-3 md:space-y-4"
-  const labelClass = compact ? "text-xs font-medium" : "text-xs md:text-sm font-medium"
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={formGap}>
-      <div className={fieldGap}>
-        <label htmlFor="name" className={labelClass}>
+    <form onSubmit={handleSubmit(onSubmit)} onFocus={onFocus} className="grid gap-4" noValidate>
+      <div>
+        <label htmlFor="name" className="text-sm">
           Name
         </label>
-        <Input
+        <input
           id="name"
-          placeholder="Your name"
+          autoComplete="name"
+          aria-invalid={errors.name ? true : undefined}
+          aria-describedby={errors.name ? "name-error" : undefined}
+          className={fieldClass}
           {...register("name")}
-          className={errors.name ? "border-red-500" : ""}
         />
-        {errors.name && (
-          <p className="text-xs text-red-500">{errors.name.message}</p>
-        )}
+        {errors.name ? (
+          <p id="name-error" className="mt-1 text-sm text-[var(--clay)]">
+            {errors.name.message}
+          </p>
+        ) : null}
       </div>
 
-      <div className={fieldGap}>
-        <label htmlFor="email" className={labelClass}>
+      <div>
+        <label htmlFor="email" className="text-sm">
           Email
         </label>
-        <Input
+        <input
           id="email"
           type="email"
-          placeholder="your@email.com"
+          autoComplete="email"
+          aria-invalid={errors.email ? true : undefined}
+          aria-describedby={errors.email ? "email-error" : undefined}
+          className={fieldClass}
           {...register("email")}
-          className={errors.email ? "border-red-500" : ""}
         />
-        {errors.email && (
-          <p className="text-xs text-red-500">{errors.email.message}</p>
-        )}
+        {errors.email ? (
+          <p id="email-error" className="mt-1 text-sm text-[var(--clay)]">
+            {errors.email.message}
+          </p>
+        ) : null}
       </div>
 
-      <div className={fieldGap}>
-        <label htmlFor="message" className={labelClass}>
-          Message
+      <div>
+        <label htmlFor="businessName" className="text-sm">
+          Business name
         </label>
-        <Textarea
-          id="message"
-          placeholder="Your message..."
-          {...register("message")}
-          rows={compact ? 3 : undefined}
-          className={
-            errors.message
-              ? "border-red-500"
-              : compact
-                ? "min-h-[72px] resize-none"
-                : "min-h-[100px] md:min-h-[120px]"
-          }
+        <input
+          id="businessName"
+          autoComplete="organization"
+          aria-invalid={errors.businessName ? true : undefined}
+          aria-describedby={errors.businessName ? "business-error" : undefined}
+          className={fieldClass}
+          {...register("businessName")}
         />
-        {errors.message && (
-          <p className="text-xs text-red-500">{errors.message.message}</p>
-        )}
+        {errors.businessName ? (
+          <p id="business-error" className="mt-1 text-sm text-[var(--clay)]">
+            {errors.businessName.message}
+          </p>
+        ) : null}
       </div>
 
-      {/* Honeypot field - hidden from users but visible to bots */}
-      <div className="hidden">
-        <label htmlFor="website">Website</label>
-        <Input
-          id="website"
+      <div>
+        <label htmlFor="improvement" className="text-sm">
+          What would you like to improve?
+        </label>
+        <textarea
+          id="improvement"
+          rows={5}
+          aria-invalid={errors.improvement ? true : undefined}
+          aria-describedby={errors.improvement ? "improvement-error" : undefined}
+          className={fieldClass}
+          {...register("improvement")}
+        />
+        {errors.improvement ? (
+          <p id="improvement-error" className="mt-1 text-sm text-[var(--clay)]">
+            {errors.improvement.message}
+          </p>
+        ) : null}
+      </div>
+
+      <div>
+        <label htmlFor="interest" className="text-sm">
+          Area of interest <span className="text-[var(--ink-soft)]">(optional)</span>
+        </label>
+        <select id="interest" className={fieldClass} {...register("interest")}>
+          <option value="">Select</option>
+          <option value="build">Build</option>
+          <option value="automate">Automate</option>
+          <option value="train">Train</option>
+          <option value="unsure">Not sure</option>
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="timing" className="text-sm">
+          Timing <span className="text-[var(--ink-soft)]">(optional)</span>
+        </label>
+        <input id="timing" className={fieldClass} {...register("timing")} />
+      </div>
+
+      <div className="sr-only" aria-hidden="true">
+        <label htmlFor="companyUrlHp">Company URL</label>
+        <input
+          id="companyUrlHp"
           type="text"
-          {...register("website")}
           tabIndex={-1}
           autoComplete="off"
+          {...register("companyUrlHp")}
         />
-        {errors.website && (
-          <p className="text-xs text-red-500">{errors.website.message}</p>
-        )}
       </div>
 
-      <Button
+      <p className="m-0 text-sm leading-relaxed text-[var(--ink-soft)]">
+        Please don’t include passwords, customer records or confidential documents.
+      </p>
+
+      <button
         type="submit"
-        className="w-full mt-2"
+        className="btn-signal justify-center disabled:opacity-60"
         disabled={isSubmitting}
-        onClick={() => {
-          if (!isSubmitting) {
-            trackEvent('contact_form_submit_click')
-          }
-        }}
       >
-        {isSubmitting ? "Sending..." : "Send Message"}
-      </Button>
+        {isSubmitting ? "Sending…" : "Send"}
+      </button>
+      <p role="status" className="m-0 text-sm text-[var(--clay)]" aria-live="polite">
+        {submitError}
+      </p>
     </form>
   )
 }

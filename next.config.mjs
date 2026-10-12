@@ -10,25 +10,39 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  agentRules: false,
+  turbopack: {
+    root: import.meta.dirname,
+  },
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   async redirects() {
     return [
-      // Old solutions taxonomy → new sprint pages
-      { source: '/solutions/automation', destination: '/solutions/build-launch', permanent: true },
-      { source: '/solutions/analytics', destination: '/solutions/market-launch', permanent: true },
-      { source: '/solutions/ai', destination: '/solutions/prototype-sprint', permanent: true },
+      // Specific legacy paths before the sprint-catalog wildcard.
       { source: '/solutions/roqchat', destination: '/chatbot', permanent: true },
-
-      // Deprecated training section
-      { source: '/training', destination: '/solutions', permanent: true },
-      { source: '/training/:path*', destination: '/solutions', permanent: true },
-
-      // Deprecated lead-magnet resources
-      { source: '/resources', destination: '/solutions', permanent: true },
-      { source: '/resources/:path*', destination: '/solutions', permanent: true },
-
-      // Deprecated UAE landing page — keep traffic flowing to the home page
+      { source: '/solutions/automation', destination: '/services/ai-automation', permanent: true },
+      { source: '/solutions/ai', destination: '/services/ai-automation', permanent: true },
+      { source: '/solutions/analytics', destination: '/services', permanent: true },
+      { source: '/solutions', destination: '/services', permanent: true },
+      { source: '/solutions/:path*', destination: '/services/websites-web-apps', permanent: true },
+      { source: '/sample-sprint-plan', destination: '/services/websites-web-apps', permanent: true },
+      { source: '/training', destination: '/services/ai-training', permanent: true },
+      { source: '/training/:path*', destination: '/services/ai-training', permanent: true },
+      { source: '/resources', destination: '/insights', permanent: true },
+      { source: '/resources/:path*', destination: '/insights', permanent: true },
       { source: '/uae-ai-consulting', destination: '/', permanent: true },
+    ]
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
     ]
   },
 }

@@ -1,128 +1,230 @@
 import 'dotenv/config'
-import { db } from '../lib/db'
-import { generateEmbedding, storeEmbedding } from '../lib/ai/embedding'
+import { OpenAI } from 'openai'
+import { homeFaqs, opportunityReview, services, type Faq, type ProofLink } from '../lib/site-content'
+import {
+  audiences,
+  corporateIncludes,
+  curriculum,
+  exercises,
+  outcomes,
+  principles,
+  trainingFaqs,
+  trainingPath,
+} from '../lib/training-content'
+import { getAllCaseStudies, getCaseStudyContent } from '../lib/case-studies'
+import { getAllPosts } from '../lib/blog'
 
-// Knowledge base for the ROQ CX chat assistant.
-// Mirrors the positioning shipped across the site (solutions hub, sprint pages,
-// system prompt at app/api/chat/roqcx/route.ts).
-const CHUNKS = [
-  // ── Brand + positioning ────────────────────────────────────────────────
-  `ROQ CX is a fractional product team for SMEs. We turn napkin sketches into clickable prototypes, validate them with real users, and ship the ones that earn their place to production on a fixed two-week cadence. We are not an automation consultancy, an AI agency, or a training provider; we run product sprints.`,
+// Knowledge base for the ROQ CX chat assistant (/api/chat/roqcx).
+// Most chunks are generated from the same content the pages render, so the
+// assistant stays in step with the site. Keep it aligned with the system prompt
+// in app/api/chat/roqcx/route.ts. Do not restore retired sprint offers.
+//
+//   pnpm seed-db            replace the global knowledge base
+//   pnpm seed-db --dry-run  print the chunks without touching the database
 
-  `ROQ CX is based in Dubai, UAE and works with SMEs across the UAE, GCC, and globally (remote-first). Contact: hello@roqcx.com · +971 56 252 0720 · roqcx.com.`,
+const SITE = 'https://www.roqcx.com'
 
-  // ── The four sprints ───────────────────────────────────────────────────
-  `We sell four fixed-fee sprints. You can stop after any one of them with no retainer and no lock-in:
-  - Prototype Sprint: 14 days. Validate a product idea.
-  - Build & Launch: 4 weeks. Ship a production MVP.
-  - Website Sprint: 4 weeks. Business website built from a paid diagnostic. From AED 18,000 ($5,000 USD).
-  - Market Launch: 8 weeks. Take a shipped product to live customers.
-Product engagements usually start with the Prototype Sprint. Website buyers start with Website Sprint. Each one is fixed-fee and fixed-scope.`,
+/** Facts that live outside the page content. */
+const STUDIO = [
+  `ROQ CX is a studio in Dubai that helps small and medium-sized businesses put AI to work, for better customer experiences and less operational overhead. It identifies the opportunities worth pursuing, builds the websites, apps and automations to support them, and trains the team to use them with clear boundaries. It works with SMEs in the UAE, the GCC and remotely elsewhere. Not every engagement needs all three services.`,
 
-  // ── Prototype Sprint detail ────────────────────────────────────────────
-  `Prototype Sprint (14 days). A fixed-fee fourteen-day sprint that turns a fuzzy idea into a hi-fi clickable prototype, validated through five recorded user interviews, ending with a signed go/no-go memo on day 14. You walk away with: a clickable prototype on a public URL, five interview recordings + transcripts, a written go/no-go memo with rationale, and a clean backlog for the build sprint if you want to keep going. Not for marketing websites — those go to Website Sprint.`,
+  `How to start with ROQ CX: send a few lines through the contact form at ${SITE}/contact describing where things get stuck. The studio reads it and replies by email. You can also email hello@roqcx.com or WhatsApp +971 56 252 0720. Please do not include passwords, customer records or confidential documents in the form or in chat.`,
 
-  `Prototype Sprint shape:
-  - Week 1: Frame the idea. Day 1 kick-off + success metric agreed. Day 2 map the riskiest assumption. Day 3 lo-fi flows + content draft. Day 4 hi-fi prototype build starts. Day 5 internal review + interview script.
-  - Week 2: Validate. Day 6 recruit interview participants and polish prototype. Days 7–9 run five real-user interviews, recorded. Day 10 synthesize what actually happened vs. expectations. Days 11–12 iterate where signal was clear. Day 13 write the go/no-go memo. Day 14 readout, signed memo, handover.`,
+  `How ROQ CX chooses what to do: understand the problem before naming a tool; prefer the smaller change that still helps the work; keep a person able to approve, stop or correct it; and agree what will be measured before starting. If a clearer page, a form or a plain workflow would do the job, ROQ CX says so instead of recommending AI.`,
 
-  `Prototype Sprint inputs (what we need from you on day 1): a one-page problem statement, a target segment plus access to five candidate users, one defensible success metric, and a decision-maker available on the call. Decision on day 14 is one of: ship (move to Build & Launch), iterate (a second short sprint), kill (cleanly with notes), or pivot (reframe and re-scope).`,
+  `Before anything is connected, ROQ CX agrees five things with the client: what the solution can access, what it is allowed to do, where a person has to approve, how activity is reviewed, and who owns it after launch.`,
 
-  // ── Build & Launch detail ──────────────────────────────────────────────
-  `Build & Launch (4 weeks). A fixed-fee four-week sprint that takes a validated prototype to a production codebase. You get: a production codebase in your repo, auth + database + payments + integrations wired, CI/CD, staging environment, monitoring, handoff docs (architecture + runbook), and a 14-day post-handover warranty on shipped scope.`,
+  `Pricing: ROQ CX quotes after it understands the work, and confirms any fee before paid work begins.`,
 
-  `Build & Launch shape (week by week):
-  - Week 1: Scaffold. Confirm stack (default Next.js + Supabase or yours), spin up repo + CI/CD + staging + error tracking, wire schema + auth, ship first production deploy by end of week.
-  - Week 2: Core flows. Primary user flow end-to-end, payments + receipts (Stripe by default), transactional email + auth flows, analytics events instrumented.
-  - Week 3: Hardening. Edge cases, empty/error states, rate limits + abuse protection, admin tools you'll actually use, internal load + smoke tests.
-  - Week 4: Handover. Production launch with monitoring, walkthrough + handoff docs, warranty window opens, optional roll into Market Launch.`,
+  `Zayne Nair founded ROQ CX. Studio delivery (websites, applications, automations and training) is hired through ROQ CX at ${SITE}. Fractional product leadership with Zayne is a separate practice at https://www.zaynenair.com.`,
 
-  // ── Website Sprint detail ──────────────────────────────────────────────
-  `Website Sprint (4 weeks). For SMEs that need a business website, not a product prototype. One-line promise: a website built from what actually makes you money, not from a template and a wishlist. Published starting price: from AED 18,000 ($5,000 USD). Fixed fee. No retainers, no T&M, no scope-creep invoices. Details: https://www.roqcx.com/solutions/website-sprint`,
+  `ROQ CX does not promise delivery in two weeks, and it quotes after it understands the work. It no longer offers Prototype Sprint, Website Sprint, Build & Launch, Market Launch or a sample sprint plan. A prototype is available when you need to learn something before a larger build, as part of websites and web apps: ${SITE}/services/websites-web-apps.`,
 
-  `Website Sprint phases:
-  - Days 1–3 Business diagnostic (paid, with deliverable either way): working session on the model — what a customer is worth, where enquiries come from, what happens after a form submit, what the site is supposed to move. Ends in DIAGNOSTIC.PDF and a single signed success metric. If the diagnostic says the site is not the constraint, ROQ CX says so and the engagement can stop there.
-  - Days 4–8 Structure + narrative: sitemap, page-by-page argument, copy direction. Two divergent low-fi directions. Artefacts: Figma + copy doc.
-  - Days 9–16 Build: production Next.js + TypeScript + Tailwind + shadcn/ui on Vercel; Supabase where there is data; real content. Artefacts: GitHub repo + staging URL.
-  - Days 17–20 Instrument + hand over: analytics against the success metric, error tracking, CI/CD, design tokens, written handover. Artefacts: HANDOVER.MD · tokens · dashboard.
-The diagnostic is bundled as phase 01, not a standalone SKU today. Client owns repo, Figma, tokens, and content from minute one. No lock-in. Do not promise rankings, traffic numbers, or conversion percentages.`,
+  `The chat demo at ${SITE}/chatbot lets you tell it something, then ask for it back. It answers from what you gave it. Those notes are stored for that browser session. Delete notes removes them immediately, and a daily cleanup removes anything older than 24 hours. What you type is sent so it can reply, so do not share anything private. The chat on other pages is sent to OpenAI to reply and is not stored in the website database. The same idea, using information a business has approved, can answer customer questions from sources the business controls. Project enquiries go through ${SITE}/contact.`,
 
-  `Website Sprint is not for: five pages by Friday, template skins with stock copy, SEO ranking promises, or hourly estimates. About 30% of ROQ CX sprints end in a deliberate kill — that is evidence the diagnostic is real, not a talking point.`,
+  `What happens to an enquiry: the contact form asks for a name, email, business name, and what you would like to improve. Google reCAPTCHA checks the submission. If it passes, the message is emailed to hello@roqcx.com. The website does not keep a copy in a database. The studio keeps the email so it can reply, and will delete it on request. Privacy: ${SITE}/privacy.`,
 
-  // ── Market Launch detail ───────────────────────────────────────────────
-  `Market Launch (8 weeks). A fixed-fee eight-week sprint that takes a shipped product to live customers. You get: a high-converting landing page, onboarding sequence + lifecycle email, a paid + organic acquisition baseline with creative, an analytics pipeline, and a 30-day cohort dashboard with the retention curve and a written readout.`,
+  `Why ROQ CX exists: many smaller businesses have a few people trying ChatGPT and no clear next step. The studio starts from the business problem and builds the smallest thing that changes the work. Sometimes that is an automation, a website or a prototype. Sometimes the right answer is not AI. ROQ CX is based in Dubai, works across the GCC, and also works remotely. About: ${SITE}/about.`,
 
-  `Market Launch shape:
-  - Weeks 1–2 Positioning: messaging tightened against real users, landing wireframe + copy, brand assets audited or produced, channels chosen.
-  - Weeks 3–4 Funnel: landing page shipped + A/B ready, in-product onboarding, lifecycle email (welcome / activation / win-back), activation + retention events.
-  - Weeks 5–6 Launch: soft launch to a private cohort, paid acquisition live, daily funnel-health standup, iterate on the highest-leverage step.
-  - Weeks 7–8 Read the data: cohort retention dashboard, 30-day readout of what scaled and what didn't, recommendation on the next investment.`,
+  `How an engagement is chosen: map where the work waits, find what holds it up, agree a small test, run it, then keep, change or stop based on what happened. A person can approve, stop or correct what is put in place. What will be measured is agreed before the work starts.`,
+]
 
-  // ── Stack / engineering ────────────────────────────────────────────────
-  `Our default stack is Next.js + TypeScript + Supabase + Stripe + Vercel. We'll build in your existing stack if we're competent in it. Just ask. Code lives in your GitHub org from day one. You own everything; no vendor lock-in, no hostage code.`,
+const list = (items: string[]) => items.map((item) => `- ${item}`).join('\n')
+const faqs = (items: Faq[]) => items.map((faq) => `Q: ${faq.question}\nA: ${faq.answer}`).join('\n\n')
+const proof = (items: ProofLink[]) => items.map((item) => `- ${item.title}: ${item.note} (${SITE}${item.href})`).join('\n')
 
-  // ── Commercials ────────────────────────────────────────────────────────
-  `Commercials. Each sprint is fixed-fee and fixed-scope. You can stop after any milestone and keep everything we've built. There is no monthly retainer. Website Sprint has a published floor: from AED 18,000 ($5,000 USD). Other product sprint prices are agreed on the kick-off call. When asked "How much does a sprint cost?", lead with the Website Sprint floor if relevant, and point visitors at https://www.roqcx.com/contact or https://www.roqcx.com/solutions/website-sprint for the website offer. Do not invent other price numbers.`,
-
-  // ── Differentiators ────────────────────────────────────────────────────
-  `Who ROQ CX is for: SMEs that want product velocity without hiring a full in-house team, and SMEs that need a website built from a business diagnostic rather than a template wishlist. Who it's not for: enterprises that need long procurement cycles, five-pages-by-Friday website jobs, pure-design polish on an existing live product, or buyers who want estimates by the hour.`,
-
-  // ── Selected case studies (for grounding) ──────────────────────────────
-  `Selected work, Syntheve: a clickable prototype shipped in 14 days that we then took into a Build & Launch sprint. See https://www.roqcx.com/case-studies/syntheve.`,
-
-  `Selected work, WeNanny: a live UAE care marketplace with structured profiles, compatibility ranking, and explainable match rationale — built as a production product, not a directory. See https://www.roqcx.com/case-studies/wenanny.`,
-
-  `Selected work, Paul Ries & Sons Ethiopia: design and development of paulriesethiopia.com — a brand site that organises passenger, commercial, aftersales and EV-ready verticals around a trading heritage dating to 1865. See https://www.roqcx.com/case-studies/paul-ries-ethiopia.`,
-
-  `Selected work, Mazadak e-Auction: a sprint-built auction platform for an existing SME. See https://www.roqcx.com/case-studies/mazadak-e-auction.`,
-
-  `Selected work, Dubai 7s Ticketing: digital wallet passes, QR entry, and live ops for a flagship rugby weekend — 80,000+ ticket passes, millions of app interactions, and peak scanning in the thousands per hour. See https://www.roqcx.com/case-studies/dubai-7s-ticketing.`,
-
-  // ── This chat demo itself ──────────────────────────────────────────────
-  `This very chat assistant is an example sprint output. It's a streaming, RAG-backed assistant built on a knowledge base, exactly the kind of thing we deliver inside a Prototype Sprint. Sessions are encrypted and deleted after 24 hours.`,
-
-  // ── Founder + team ─────────────────────────────────────────────────────
-  `Founded by Zayne Nair (Founder & CEO). Senior team, no junior pyramid, no handoffs. You work directly with the people doing the work. For personal advisory / day-rate work with Zayne, see https://www.zaynenair.com. Sprint team work stays on https://www.roqcx.com.`,
-
-  // ── Process beliefs ────────────────────────────────────────────────────
-  `How we work: evidence over opinions (we prototype and test with real users, we don't argue features into existence), small senior team (no junior pyramid), and speed with a system (two-week cycles, fixed checkpoints, predictable deliverables). Fast does not mean chaotic.`,
-] as const
-
-async function main() {
-  console.log('DB URL:', process.env.TURSO_DB_URL)
-
-  const before = await db.execute({
-    sql: 'SELECT COUNT(*) AS count FROM chunks WHERE is_global = TRUE',
-    args: [],
-  })
-  console.log('Before, global rows:', before.rows[0])
-
-  await db.execute({
-    sql: 'DELETE FROM embeddings WHERE chunk_id IN (SELECT id FROM chunks WHERE is_global = TRUE)',
-    args: [],
-  })
-  await db.execute({
-    sql: 'DELETE FROM chunks WHERE is_global = TRUE',
-    args: [],
-  })
-
-  console.log(`Inserting ${CHUNKS.length} global chunks...`)
-
-  for (const content of CHUNKS) {
-    const embedding = await generateEmbedding(content)
-    await storeEmbedding(content, embedding, null)
-    console.log('  +', content.slice(0, 72).replace(/\s+/g, ' ') + '...')
-  }
-
-  const after = await db.execute({
-    sql: 'SELECT COUNT(*) AS count FROM chunks WHERE is_global = TRUE',
-    args: [],
-  })
-  console.log('\nAfter, global rows:', after.rows[0])
-  process.exit(0)
+function offerChunks(offer: {
+  path: string
+  label?: string
+  eyebrow: string
+  title: string
+  lede: string
+  situation: string
+  problems: string[]
+  deliverables: string[]
+  process: { title: string; body: string }[]
+  boundaries: string[]
+  proof: ProofLink[]
+  faqs: Faq[]
+}) {
+  const name = offer.label ?? 'AI Opportunity Review'
+  const url = `${SITE}${offer.path}`
+  const chunks = [
+    `${name} (${offer.eyebrow}). ${offer.title} ${offer.lede} Who it is for: ${offer.situation} Page: ${url}`,
+    `${name}: if this sounds familiar\n${list(offer.problems)}\n\nWhat you get\n${list(offer.deliverables)}\n\nPage: ${url}`,
+    `${name}: how an engagement runs\n${offer.process.map((step, i) => `${i + 1}. ${step.title}: ${step.body}`).join('\n')}\n\nWhat we agree up front\n${list(offer.boundaries)}`,
+  ]
+  if (offer.faqs.length) chunks.push(`${name}: questions\n\n${faqs(offer.faqs)}`)
+  if (offer.proof.length) chunks.push(`${name}: related work\n${proof(offer.proof)}`)
+  return chunks
 }
 
-main().catch((error) => {
-  console.error('Reseed failed:', error)
-  process.exit(1)
-})
+function trainingChunks() {
+  const url = `${SITE}${trainingPath}`
+  return [
+    `AI in Practice is a one-day masterclass for professionals and teams. It runs from 10:00 to 16:00, live and interactive, in Dubai or on-site for an organisation. It is beginner-friendly and does not require coding. Register your interest at ${url}. A corporate workshop is tailored to the team's functions, tools and everyday work.`,
+    `AI in Practice, what you take away\n${outcomes.map((item) => `- ${item.title}: ${item.body}`).join('\n')}\n\nPage: ${url}`,
+    `AI in Practice modules\n${curriculum.map((module, index) => `${index + 1}. ${module.title}: ${module.body}`).join('\n')}\n\nPage: ${url}`,
+    `AI in Practice exercises\n${exercises.map((exercise) => `- ${exercise.title}: ${exercise.body.join(' ')}`).join('\n')}\n\nWho it is for\n${audiences.map((item) => `- ${item.title}: ${item.body}`).join('\n')}\n\nPage: ${url}`,
+    `AI in Practice principles\n${principles.map((item) => `- ${item.title} ${item.body}`).join('\n')}\n\nA corporate workshop can include\n${list(corporateIncludes)}\n\nPage: ${url}`,
+    `AI in Practice questions\n\n${faqs(trainingFaqs)}`,
+  ]
+}
+
+/** Plain text for the assistant. Drops page components and retired offer names. */
+function forKnowledge(markdown: string) {
+  return markdown
+    .replace(/<[A-Z][\s\S]*?\/>/g, '')
+    .replace(/!\[[^\]]*]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)]\(([^)]+)\)/g, '$1 ($2)')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/(^|[\s])\*([^*\n]+)\*(?=[\s]|$)/g, '$1$2')
+    .replace(/^[ \t]*[-*]\s+/gm, '- ')
+    .replace(/^[ \t]*\d+\.\s+/gm, '- ')
+    .replace(/^---$/gm, '')
+    .replace(/\s*[—–]\s*/g, ', ')
+    .replace(/Build & Launch sprint/gi, 'build engagement')
+    .replace(/sprint scope/gi, 'first scope')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+function workSections(markdown: string) {
+  return markdown
+    .split(/\n(?=## )/)
+    .map((part) => {
+      const match = part.match(/^##\s+(.+)\n([\s\S]*)$/)
+      if (!match) return { heading: 'Overview', text: forKnowledge(part) }
+      return { heading: match[1].trim(), text: forKnowledge(match[2]) }
+    })
+    .filter((section) => section.text.length > 0)
+}
+
+async function workChunks() {
+  const studies = await getAllCaseStudies()
+  const full = (await Promise.all(studies.map((study) => getCaseStudyContent(study.slug)))).filter(
+    (study) => study !== null,
+  )
+
+  return full.flatMap((study) => {
+    const url = `${SITE}/case-studies/${study.slug}`
+    const reported = study.results?.length
+      ? ` The published study states: ${study.results.map((result) => `${result.title}: ${result.value}`).join('; ')}.`
+      : ''
+    const facts = [
+      `Work: ${study.title}.`,
+      `Client: ${study.client}.`,
+      study.description,
+      study.role ? `ROQ CX role: ${study.role}.` : '',
+      study.duration ? `Duration: ${study.duration}.` : '',
+      study.teamSize ? `Team: ${study.teamSize}.` : '',
+      study.technologies?.length ? `Technologies: ${study.technologies.join(', ')}.` : '',
+      study.industry.length ? `Industry: ${study.industry.join(', ')}.` : '',
+      `Read it at ${url}.`,
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    const sections = workSections(study.content).map(
+      (section) => `Work: ${study.title} (${url})\n${section.heading}\n${section.text}`,
+    )
+    return [`${facts}${reported}`, ...sections]
+  })
+}
+
+async function buildChunks() {
+  const [studies, posts, work] = await Promise.all([getAllCaseStudies(), getAllPosts(), workChunks()])
+
+  return [
+    ...STUDIO,
+    `ROQ CX services: AI automation (${SITE}/services/ai-automation), websites and web apps (${SITE}/services/websites-web-apps), and AI training (${SITE}/services/ai-training). The AI Opportunity Review (${SITE}/ai-opportunity-review) is the suggested place to start when you are not sure which you need. Overview: ${SITE}/services`,
+    ...services.flatMap(offerChunks),
+    ...trainingChunks(),
+    ...offerChunks(opportunityReview),
+    ...homeFaqs.map((faq) => `Q: ${faq.question}\nA: ${faq.answer}`),
+    ...work,
+    `Work you can read is at ${SITE}/case-studies: ${studies.map((study) => study.client).join(', ')}.`,
+    ...posts.map((post) => `Insight article: ${post.title}. ${post.description} Read it at ${SITE}/insights/${post.slug}`),
+  ]
+}
+
+async function main() {
+  const dryRun = process.argv.includes('--dry-run')
+  const chunks = await buildChunks()
+
+  const banned = chunks.filter((chunk) =>
+    /—|AED|18,000|two-week sprint|30% of sprints|delivery evidence|this page|this site|rate card|not described as free/i.test(chunk),
+  )
+  if (banned.length) {
+    throw new Error(`Chunks contain retired claims, em dashes, or page captions:\n${banned.map((c) => c.slice(0, 160)).join('\n')}`)
+  }
+
+  if (dryRun) {
+    chunks.forEach((chunk, i) => console.log(`\n[${i + 1}/${chunks.length}]\n${chunk}`))
+    console.log(`\nDry run: ${chunks.length} chunks, nothing written.`)
+    return
+  }
+
+  // Embed everything first, so a failure leaves the current knowledge base intact.
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  const { data } = await openai.embeddings.create({ model: 'text-embedding-3-small', input: chunks })
+  const embeddings = data.sort((a, b) => a.index - b.index).map((item) => item.embedding)
+
+  const { db } = await import('../lib/db')
+  const before = await db.execute('SELECT COUNT(*) AS count FROM chunks WHERE is_global = TRUE')
+  console.log('Global chunks before:', before.rows[0].count)
+
+  const now = Date.now()
+  await db.batch(
+    [
+      'DELETE FROM embeddings WHERE chunk_id IN (SELECT id FROM chunks WHERE is_global = TRUE)',
+      'DELETE FROM chunks WHERE is_global = TRUE',
+      ...chunks.flatMap((content, i) => {
+        const chunkId = crypto.randomUUID()
+        return [
+          {
+            sql: 'INSERT INTO chunks (id, content, session_id, is_global, created_at, updated_at) VALUES (?, ?, NULL, TRUE, ?, ?)',
+            args: [chunkId, content, now, now],
+          },
+          {
+            sql: 'INSERT INTO embeddings (id, chunk_id, session_id, embedding, created_at, updated_at) VALUES (?, ?, NULL, vector32(?), ?, ?)',
+            args: [crypto.randomUUID(), chunkId, JSON.stringify(embeddings[i]), now, now],
+          },
+        ]
+      }),
+    ],
+    'write',
+  )
+
+  const after = await db.execute('SELECT COUNT(*) AS count FROM chunks WHERE is_global = TRUE')
+  console.log('Global chunks after:', after.rows[0].count)
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('Reseed failed:', error)
+    process.exit(1)
+  })

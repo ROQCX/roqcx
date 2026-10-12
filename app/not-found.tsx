@@ -1,89 +1,64 @@
-"use client"
-
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { Navigation } from "@/components/layout/navigation"
 import { Footer } from "@/components/footer"
-import { FullBleedSection, GridBg, RQX, Tag } from "@/components/redesign/atoms"
+import { Glyph, LostArt } from "@/components/studio/illustrations"
+import { wrap } from "@/components/studio/page-hero"
+import { serviceNav } from "@/lib/site-content"
+import type { Metadata } from "next"
+import { pageSeo } from "@/lib/seo"
+
+export const metadata: Metadata = {
+  ...pageSeo({
+    title: "Page not found | ROQ CX",
+    description: "That page isn’t on roqcx.com. Start from home, or get in touch.",
+    path: "/",
+    includeCanonical: false,
+  }),
+  robots: { index: false, follow: false },
+}
 
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navigation />
-      <main className="relative z-10 pt-[72px]">
-        <FullBleedSection
-          style={{ background: RQX.bg, position: "relative", overflow: "hidden" }}
-          className="px-6 sm:px-10 lg:px-14 py-[120px]"
-        >
-          <GridBg opacity={0.45} />
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              top: -260,
-              right: -260,
-              width: 720,
-              height: 720,
-              borderRadius: "50%",
-              background: `radial-gradient(circle, color-mix(in oklab, ${RQX.accent} 16%, transparent) 0%, transparent 60%)`,
-              filter: "blur(80px)",
-              pointerEvents: "none",
-              opacity: 0.75,
-            }}
-          />
-
-          <div
-            style={{
-              maxWidth: 720,
-              margin: "0 auto",
-              position: "relative",
-              textAlign: "center",
-            }}
-          >
-            <Tag>404 · sprint not found</Tag>
-            <h1
-              className="font-serif-display"
-              style={{
-                margin: "20px 0 12px",
-                fontSize: "clamp(56px, 8vw, 96px)",
-                lineHeight: 0.98,
-                letterSpacing: "-0.03em",
-                color: RQX.fg,
-              }}
-            >
-              This page got cut from scope.
+      <main className="relative z-10 flex-1 pt-[72px]">
+        <section className={`${wrap} grid items-center gap-12 py-16 md:py-24 lg:grid-cols-12`}>
+          <div className="lg:col-span-6">
+            <h1 className="font-serif-display m-0 text-[clamp(2.6rem,5.6vw,5rem)] font-light leading-[0.98] tracking-[-0.03em]">
+              That page isn’t here.
             </h1>
-            <p
-              style={{
-                margin: "0 auto 28px",
-                maxWidth: 480,
-                color: RQX.fgDim,
-                fontSize: 17,
-                lineHeight: 1.55,
-              }}
-            >
-              Either we shipped without it or it never made the backlog. Head back home and we&apos;ll start a real one.
+            <p className="mb-0 mt-5 max-w-[30rem] text-lg leading-relaxed text-[var(--ink-soft)]">
+              The link may be old, or the page may have moved. Start from home, or tell us what you were looking for.
             </p>
-            <Link
-              href="/"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-                background: RQX.fg,
-                color: RQX.bg,
-                padding: "14px 22px",
-                borderRadius: 12,
-                textDecoration: "none",
-                fontWeight: 600,
-                fontSize: 15,
-              }}
-            >
-              <ArrowLeft size={16} />
-              Back to home
-            </Link>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/" className="btn-forest">
+                <Glyph name="arrow" size={18} className="rotate-180" />
+                Back to home
+              </Link>
+              <Link href="/contact" className="btn-signal">
+                Talk to us
+              </Link>
+            </div>
           </div>
-        </FullBleedSection>
+          <div className="plate paper-grid p-6 md:p-10 lg:col-span-6">
+            <LostArt />
+          </div>
+        </section>
+        <section className="border-t border-[var(--rule)] bg-[var(--chalk)]">
+          <div className={`${wrap} py-12`}>
+            <h2 className="m-0 text-sm text-[var(--ink-soft)]">Services</h2>
+            <ul className="m-0 mt-4 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
+              {serviceNav.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="plate lift flex min-h-14 items-center justify-between gap-3 bg-[var(--paper)] px-5 py-4 text-[var(--ink)] no-underline">
+                    {item.label}
+                    <Glyph name="arrow" size={16} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

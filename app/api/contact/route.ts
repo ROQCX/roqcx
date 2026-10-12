@@ -5,35 +5,26 @@ import {
   formatAttributionForEmail,
   sanitizeAttributionValue,
 } from '@/lib/attribution'
+import { enquiryRequestSchema } from '@/lib/enquiry'
+import { rejectOffsiteContact } from '@/lib/ai/chat-request'
+import { budgetResponse, takeContactSlot } from '@/lib/rate-limit'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
-const attributionSchema = z
-  .object({
-    referrer: z.string().max(500).optional(),
-    landingPath: z.string().max(500).optional(),
-    landingUrl: z.string().max(500).optional(),
-    utm_source: z.string().max(200).optional(),
-    utm_medium: z.string().max(200).optional(),
-    utm_campaign: z.string().max(200).optional(),
-    utm_content: z.string().max(200).optional(),
-    utm_term: z.string().max(200).optional(),
-    capturedAt: z.string().max(100).optional(),
-  })
-  .optional()
+const trainingLabels = {
+  public: 'Public masterclass',
+  corporate: 'Training for their organisation',
+} as const
 
-const schema = z.object({
-  name: z.string().min(1).max(200),
-  email: z.string().email().max(320),
-  message: z.string().min(1).max(5000),
-  token: z.string().min(1).max(4000),
-  website: z.string().max(0).optional(),
-  attribution: attributionSchema,
-})
+function plainText(value: string) {
+  return value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim()
+}
 
-function cleanAttribution(
-  attribution: z.infer<typeof attributionSchema>,
-) {
+function singleLine(value: string) {
+  return plainText(value).replace(/[\r\n\t]+/g, ' ').replace(/ {2,}/g, ' ').trim()
+}
+
+function cleanAttribution(attribution: z.infer<typeof enquiryRequestSchema>['attribution']) {
   if (!attribution) return null
   return {
     referrer: sanitizeAttributionValue(attribution.referrer),
@@ -44,80 +35,97 @@ function cleanAttribution(
     utm_campaign: sanitizeAttributionValue(attribution.utm_campaign) || undefined,
     utm_content: sanitizeAttributionValue(attribution.utm_content) || undefined,
     utm_term: sanitizeAttributionValue(attribution.utm_term) || undefined,
-    capturedAt:
-      sanitizeAttributionValue(attribution.capturedAt) || new Date().toISOString(),
+    capturedAt: sanitizeAttributionValue(attribution.capturedAt) || new Date().toISOString(),
   }
 }
 
 async function verifyRecaptcha(token: string) {
+  const secret = process.env.RECAPTCHA_SECRET_KEY
+  if (!secret) return false
+
   const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ secret, response: token }),
   })
 
   const data = await response.json()
-  return data.success && data.score >= 0.5
+  const action = data.action
+  const knownAction = action === 'contact' || action === 'training_interest'
+  return data.success === true && knownAction && typeof data.score === 'number' && data.score >= 0.5
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const parsed = schema.parse(body)
+    const denied = rejectOffsiteContact(req)
+    if (denied) return denied
 
-    // Honeypot: reject if filled
-    if (parsed.website) {
+    const body = await req.json()
+    const parsed = enquiryRequestSchema.parse(body)
+
+    if (parsed.companyUrlHp) {
       return NextResponse.json({ message: 'Message sent successfully' })
     }
 
-    const { name, email, message, token } = parsed
+    const limited = budgetResponse(await takeContactSlot(req))
+    if (limited) return limited
+
+    const name = singleLine(parsed.name)
+    const email = singleLine(parsed.email)
+    const businessName = parsed.businessName ? singleLine(parsed.businessName) : parsed.businessName
+    const improvement = parsed.improvement ? plainText(parsed.improvement) : parsed.improvement
+    const { interest, timing, trainingTrack, token } = parsed
     const attribution = cleanAttribution(parsed.attribution)
 
-    // Verify reCAPTCHA token
     const isHuman = await verifyRecaptcha(token)
     if (!isHuman) {
-      return NextResponse.json(
-        { error: 'reCAPTCHA verification failed' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'reCAPTCHA verification failed' }, { status: 400 })
     }
 
     if (!resend) {
-      return NextResponse.json(
-        { error: 'Email service not configured' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
     }
+
+    const text = trainingTrack
+      ? `
+Name: ${name}
+Email: ${email}
+Interested in: ${trainingLabels[trainingTrack]}
+Organisation: ${businessName || 'Not specified'}
+Notes:
+${improvement || 'None'}
+
+${formatAttributionForEmail(attribution)}
+      `
+      : `
+Name: ${name}
+Email: ${email}
+Business: ${businessName}
+Interest: ${interest || 'Not specified'}
+Timing: ${timing || 'Not specified'}
+What they want to improve:
+${improvement}
+
+${formatAttributionForEmail(attribution)}
+      `
 
     await resend.emails.send({
       from: 'ROQ CX <hello@updates.roqcx.com>',
       to: ['hello@roqcx.com'],
-      subject: `New Contact Form Submission from ${name}`,
-      text: `
-Name: ${name}
-Email: ${email}
-Message: ${message}
-
-${formatAttributionForEmail(attribution)}
-      `.trim(),
+      subject: trainingTrack
+        ? `AI in Practice: ${trainingLabels[trainingTrack]} from ${name.slice(0, 80) || 'a visitor'}`
+        : `New Contact Form Submission from ${name.slice(0, 80) || 'a visitor'}`,
+      text: text.trim(),
     })
 
     return NextResponse.json({ message: 'Message sent successfully' })
   } catch (error) {
     console.error('Failed to send message:', error)
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid form data' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid form data' }, { status: 400 })
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to send message' },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
   }
 }

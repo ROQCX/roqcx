@@ -4,7 +4,6 @@ import { db } from '../lib/db'
 async function resetDatabase() {
   try {
     console.log('Starting database reset...')
-    console.log('Database URL:', process.env.TURSO_DB_URL)
     
     // Delete all data from both tables
     const result = await db.batch([

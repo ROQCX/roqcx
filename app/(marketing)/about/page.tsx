@@ -1,272 +1,165 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, CheckCircle2, FlaskConical, Users, Zap } from "lucide-react"
-import { GlassCard } from "../../../components/ui/glass-card"
-import { FullBleedSection, GridBg, RQX, SectionHeader, Tag } from "../../../components/redesign/atoms"
+import { AboutArt, Glyph, TangleLine, type GlyphName } from "@/components/studio/illustrations"
+import { PageHero, sectionTitle, wrap } from "@/components/studio/page-hero"
+import { pageSeo } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "About ROQ CX | Prototype sprints for SMEs",
-  description:
-    "ROQ CX is the fractional product team for SMEs. We run 14-day prototype sprints to validate ideas fast, then build and launch the ones that earn it.",
-}
+// The bounded improvement cycle from The Adaptive Enterprise Loop white paper.
+const whitePaper = "https://www.zaynenair.com/papers/adaptive-enterprise-loop"
 
-const values = [
-  {
-    icon: FlaskConical,
-    title: "Evidence over opinions",
-    description:
-      "We don’t “believe” features into existence. We prototype, test with humans, and decide based on what happened."
-  },
-  {
-    icon: Users,
-    title: "Small team, senior humans",
-    description:
-      "You work with the people doing the work. No handoffs, no layers, no junior pyramid."
-  },
-  {
-    icon: Zap,
-    title: "Speed with a system",
-    description:
-      "Two-week cycles, predictable deliverables, fixed checkpoints. Fast doesn’t mean chaotic."
-  }
+const cycle: { icon: GlyphName; title: string; body: string }[] = [
+  { icon: "eye", title: "Map the flow", body: "See where the work goes and where it waits, before anyone names a tool." },
+  { icon: "search", title: "Find the constraint", body: "Find what actually holds the work up, and test that explanation." },
+  { icon: "pen", title: "Design a test", body: "Agree the hypothesis, owner, measures and decision rule before we build." },
+  { icon: "flag", title: "Run the pilot", body: "Build the smallest version that could work, bounded in scope and risk." },
+  { icon: "gauge", title: "Review the evidence", body: "Judge it on customer outcomes, flow, quality and risk, not on activity." },
+  { icon: "handoff", title: "Keep, change or stop", body: "Decide from the evidence, then go round again on the next constraint." },
 ]
+
+const aiNative = [
+  {
+    title: "Research",
+    body: "We use AI to read faster and wider, then check what matters by hand before it reaches a client.",
+  },
+  {
+    title: "Design and build",
+    body: "Prototypes, websites and applications are built with AI in the loop, so a working version arrives early and gets tested on real people.",
+  },
+  {
+    title: "Operations",
+    body: "Our own admin, follow-ups and reporting run on the same kind of automations we build for clients.",
+  },
+]
+
+export const metadata: Metadata = pageSeo({
+  title: "About | ROQ CX",
+  description:
+    "ROQ CX is an AI-native studio in Dubai. We help small and medium-sized businesses put AI to work through websites, web apps, automation and practical training.",
+  path: "/about",
+})
 
 export default function AboutPage() {
   return (
-    <FullBleedSection
-      style={{
-        background: RQX.bg,
-        position: "relative",
-        overflow: "hidden",
-      }}
-      className="py-[88px] pb-[120px] px-6 sm:px-10 lg:px-14"
-    >
-      <GridBg opacity={0.45} />
-
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: -260,
-          left: -260,
-          width: 760,
-          height: 760,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, color-mix(in oklab, ${RQX.accent2} 16%, transparent) 0%, transparent 60%)`,
-          filter: "blur(80px)",
-          pointerEvents: "none",
-          opacity: 0.75,
-        }}
+    <article>
+      <PageHero
+        title="A studio built to put AI to work."
+        lede="ROQ CX helps small and medium-sized businesses use AI for better customer experiences and less operational overhead. We find the opportunities worth pursuing, build the websites, apps and automations to support them, and train teams to use them well."
+        art={<AboutArt />}
+        plate={false}
       />
 
-      <div style={{ maxWidth: 1440, margin: "0 auto", position: "relative" }}>
-        <SectionHeader
-          kicker="About"
-          title={
-            <>
-              A fractional product team
-              <br />
-              built for SMEs.
-            </>
-          }
-          lede="We run 14-day prototype sprints to help you validate ideas fast, then build and launch the ones that earn it."
-        />
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
-            gap: 20,
-            alignItems: "start",
-            marginTop: 24,
-          }}
-          className="rqx-about-top grid grid-cols-1 lg:grid-cols-2"
-        >
-          <GlassCard variant="gradient" className="p-8">
-            <div className="font-geist-mono" style={{ color: "var(--rqx-muted)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              What we are
-            </div>
-            <h2 className="font-serif-display" style={{ margin: "14px 0 10px", fontSize: 34, lineHeight: 1.08, letterSpacing: "-0.02em", color: "var(--rqx-fg)" }}>
-              A sprint machine.
-            </h2>
-            <p style={{ margin: 0, color: "var(--rqx-fg-dim)", lineHeight: 1.6 }}>
-              ROQ CX is a small senior team that ships prototypes and production slices on a predictable cadence.
-              You get a repeatable method, not an open-ended “project.”
+      <section className={`${wrap} grid gap-10 py-14 md:grid-cols-12 md:py-20`}>
+        <h2 className={`${sectionTitle} md:col-span-4`}>Why the studio exists</h2>
+        <div className="grid gap-4 text-lg leading-relaxed text-[var(--ink-soft)] md:col-span-7 md:col-start-6">
+          <p className="m-0 text-[var(--ink)]">
+            Large organisations have AI teams, consultancies and budgets for long programmes. Most smaller businesses have a few people trying ChatGPT on their own, and no clear idea of what is worth doing next.
+          </p>
+          <p className="m-0">
+            That gap is where ROQ CX works. We start from the business problem, not the tool, and build the smallest thing that changes how the work gets done. Sometimes that is an automation. Sometimes it is a better website or a working prototype. Sometimes the right answer is not AI at all.
+          </p>
+          <div className="plate mt-6 bg-[var(--void)] px-6 py-8 md:px-10">
+            <TangleLine />
+            <p className="mb-0 mt-6 max-w-[34rem] text-base text-[color-mix(in_srgb,var(--chalk)_80%,transparent)]">
+              From scattered experiments to one clear path a team can run.
             </p>
-            <div style={{ height: 18 }} />
-            <Tag>Fixed milestones · clear handoffs · no lock‑in</Tag>
-          </GlassCard>
-
-          <GlassCard variant="gradient" className="p-8">
-            <div className="font-geist-mono" style={{ color: "var(--rqx-muted)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              What you get in 14 days
-            </div>
-            <h2 className="font-serif-display" style={{ margin: "14px 0 10px", fontSize: 34, lineHeight: 1.08, letterSpacing: "-0.02em", color: "var(--rqx-fg)" }}>
-              A real decision.
-            </h2>
-            <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0", display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                "Hi‑fi clickable prototype on a public URL",
-                "Five user interviews, recorded",
-                "Written go / no‑go memo, signed",
-              ].map((t) => (
-                <li key={t} style={{ display: "flex", gap: 10, color: "var(--rqx-fg-dim)", lineHeight: 1.55 }}>
-                  <CheckCircle2 aria-hidden size={18} style={{ color: "var(--rqx-accent)", marginTop: 3, flexShrink: 0 }} />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </GlassCard>
+          </div>
         </div>
+      </section>
 
-        <div style={{ marginTop: 44 }}>
-          <SectionHeader
-            kicker="Who leads this"
-            title={
-              <>
-                Senior humans.
-                <br />
-                No agency layers.
-              </>
-            }
-            lede="ROQ CX is led by Zayne Nair — a Dubai-based product builder. Sprint work runs through this studio; personal advisory and day-rate work live on his site."
-          />
+      <section className="border-y border-[var(--rule)] bg-[var(--chalk)]">
+        <div className={`${wrap} grid gap-10 py-14 md:grid-cols-12 md:py-20`}>
+          <h2 className={`${sectionTitle} md:col-span-4`}>Why Dubai</h2>
+          <div className="grid gap-4 text-lg leading-relaxed text-[var(--ink-soft)] md:col-span-7 md:col-start-6">
+            <p className="m-0 text-[var(--ink)]">
+              Few places have committed to AI as openly as the UAE. Government services, regulators and large employers are already moving, and the expectation is spreading to every business that serves them.
+            </p>
+            <p className="m-0">
+              Dubai is also a city of small and medium-sized businesses: founder-led, multilingual, serving customers from everywhere and competing on service. They feel the pressure to adopt AI first, often without the people to do it.
+            </p>
+            <p className="m-0">
+              Being here means we understand that context, can sit in the room when it helps, and work across the GCC. We also work with businesses elsewhere, remotely.
+            </p>
+          </div>
+        </div>
+      </section>
 
-          <div style={{ marginTop: 8, maxWidth: 720 }}>
-            <GlassCard variant="gradient" className="p-8">
-              <p style={{ margin: 0, color: "var(--rqx-fg-dim)", lineHeight: 1.6 }}>
-                Need a fractional product team on a fixed sprint? Stay here. Want Zayne personally on advisory
-                or a retainer? Start at{" "}
-                <a
-                  href="https://www.zaynenair.com/?utm_source=roqcx&utm_medium=referral&utm_campaign=about&utm_content=founder"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--rqx-accent)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 3 }}
-                >
-                  zaynenair.com
-                </a>
-                .
+      <section className={`${wrap} py-14 md:py-20`}>
+        <div className="grid gap-10 md:grid-cols-12">
+          <h2 className={`${sectionTitle} md:col-span-4`}>AI native, in practice</h2>
+          <div className="grid gap-4 text-lg leading-relaxed text-[var(--ink-soft)] md:col-span-7 md:col-start-6">
+            <p className="m-0 text-[var(--ink)]">
+              ROQ CX was set up around AI from the start. It is not a service line added to an existing agency. It is how the studio works every day.
+            </p>
+            <p className="m-0">
+              That keeps the team small and the work fast. It also means we know where AI helps and where it fails, because we rely on it ourselves. What we recommend to clients, we have already used.
+            </p>
+          </div>
+        </div>
+        <ul className="m-0 mt-12 grid list-none gap-4 p-0 md:grid-cols-3">
+          {aiNative.map((item) => (
+            <li key={item.title} className="plate bg-[var(--chalk)] p-6">
+              <h3 className="m-0 text-xl font-medium">{item.title}</h3>
+              <p className="mb-0 mt-2 leading-relaxed text-[var(--ink-soft)]">{item.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="border-t border-[var(--rule)]">
+        <div className={`${wrap} py-14 md:py-20`}>
+          <div className="grid gap-10 md:grid-cols-12">
+            <h2 className={`${sectionTitle} md:col-span-4`}>How we choose what to build</h2>
+            <div className="grid gap-4 text-lg leading-relaxed text-[var(--ink-soft)] md:col-span-7 md:col-start-6">
+              <p className="m-0 text-[var(--ink)]">
+                We run our own work, and every client engagement, on the improvement cycle from{" "}
+                <Link href={whitePaper} className="text-[var(--ink)] underline decoration-[var(--signal)] decoration-2 underline-offset-4">
+                  The Adaptive Enterprise Loop
+                </Link>
+                . It keeps each commitment small enough to test, and lets evidence decide what happens next.
               </p>
-            </GlassCard>
-          </div>
-        </div>
-
-        <div style={{ marginTop: 44 }}>
-          <SectionHeader
-            kicker="How we work"
-            title={
-              <>
-                Tight loops.
-                <br />
-                Visible progress.
-              </>
-            }
-            lede="A sprint is a sequence of checkpoints. You see work early, react fast, and we converge without surprises."
-          />
-
-          <div
-            style={{
-              display: "grid",
-              gap: 20,
-            }}
-            className="rqx-about-values grid grid-cols-1 lg:grid-cols-3"
-          >
-            {values.map((v, i) => (
-              <GlassCard key={v.title} variant="gradient" className="p-8">
-                <div className="font-geist-mono" style={{ fontSize: 11, color: "var(--rqx-muted)", letterSpacing: "0.08em" }}>
-                  0{i + 1} · PRINCIPLE
-                </div>
-                <div style={{ height: 14 }} />
-                <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                  <div
-                    aria-hidden
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 12,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: `linear-gradient(135deg, ${RQX.accent} 0%, ${RQX.accent2} 100%)`,
-                      color: "#fff",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <v.icon size={20} />
-                  </div>
-                  <div>
-                    <div className="font-serif-display" style={{ fontSize: 26, lineHeight: 1.1, color: "var(--rqx-fg)", letterSpacing: "-0.015em" }}>
-                      {v.title}
-                    </div>
-                    <p style={{ margin: "10px 0 0", color: "var(--rqx-fg-dim)", lineHeight: 1.6 }}>
-                      {v.description}
-                    </p>
-                  </div>
-                </div>
-              </GlassCard>
-            ))}
-          </div>
-        </div>
-
-        <div
-          style={{
-            marginTop: 56,
-            borderTop: `1px solid ${RQX.lineDim}`,
-            paddingTop: 36,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 16,
-            flexWrap: "wrap",
-          }}
-        >
-          <div style={{ maxWidth: 720 }}>
-            <div className="font-serif-display" style={{ fontSize: 44, lineHeight: 1.02, letterSpacing: "-0.02em", color: "var(--rqx-fg)" }}>
-              Want to see what a sprint looks like?
+              <p className="m-0">
+                A person stays able to approve, stop or correct anything we put in place. We agree what we will measure before we start.
+              </p>
             </div>
-            <p style={{ margin: "10px 0 0", color: "var(--rqx-fg-dim)", lineHeight: 1.6 }}>
-              Book a 30‑minute call. We’ll pressure-test the idea, define a week‑2 test plan, and decide if a sprint is the right shape.
-            </p>
           </div>
+          <ol className="m-0 mt-12 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+            {cycle.map((step, index) => (
+              <li key={step.title} className="plate flex gap-4 bg-[var(--chalk)] p-6">
+                <span className="grid h-11 w-11 flex-none place-items-center rounded-full border border-[var(--ink)] bg-[var(--paper)]">
+                  <Glyph name={step.icon} size={20} />
+                </span>
+                <span>
+                  <h3 className="m-0 text-lg font-medium">
+                    <span className="mr-2 text-[var(--forest)]">{index + 1}.</span>
+                    {step.title}
+                  </h3>
+                  <p className="mb-0 mt-1 leading-relaxed text-[var(--ink-soft)]">{step.body}</p>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Link
-              href="/contact"
-              style={{
-                background: `linear-gradient(135deg, ${RQX.accent} 0%, ${RQX.accent2} 100%)`,
-                color: "#fff",
-                padding: "14px 18px",
-                borderRadius: 14,
-                textDecoration: "none",
-                fontWeight: 600,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-                boxShadow: `0 24px 50px -16px color-mix(in oklab, ${RQX.accent} 50%, transparent)`,
-              }}
-            >
-              Book the kick-off call <ArrowRight size={16} />
+      <section className="hero-stage">
+        <div className="aurora" aria-hidden="true" />
+        <div className={`${wrap} relative z-10 py-16 md:py-24`}>
+          <h2 className="font-serif-display m-0 max-w-[20ch] text-[clamp(2.2rem,4.4vw,3.75rem)] font-light leading-[1] text-[var(--chalk)]">
+            Have something AI could make easier?
+          </h2>
+          <p className="mb-0 mt-5 max-w-[38rem] text-lg leading-relaxed text-[color-mix(in_srgb,var(--chalk)_82%,transparent)]">
+            Tell us what slows your team down. We will tell you honestly whether AI is the answer.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/contact" className="btn-signal">
+              Talk to us
             </Link>
-            <Link
-              href="/#chat-demo"
-              style={{
-                border: `1px solid ${RQX.line}`,
-                background: "transparent",
-                color: "var(--rqx-fg)",
-                padding: "14px 18px",
-                borderRadius: 14,
-                textDecoration: "none",
-                fontWeight: 500,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              Try the chat demo <ArrowRight size={16} />
+            <Link href="/case-studies" className="btn-line text-[var(--chalk)]">
+              See our work
             </Link>
           </div>
         </div>
-      </div>
-    </FullBleedSection>
+      </section>
+    </article>
   )
-} 
+}

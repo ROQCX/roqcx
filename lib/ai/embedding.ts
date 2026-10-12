@@ -80,37 +80,31 @@ export async function storeEmbedding(
 // Find similar chunks based on embedding.
 // vector_distance_cos returns cosine *distance* (0 = identical, 2 = opposite),
 // so we order ASC and convert to a similarity score for callers.
+// A session id searches only that session. No session id searches the global base.
 export async function findSimilarChunks(
   embedding: number[],
   sessionId?: string | null,
   limit: number = 5
 ): Promise<{ content: string; similarity: number }[]> {
+  const args: Array<string | number> = [JSON.stringify(embedding)]
+  if (sessionId) args.push(sessionId)
+  args.push(limit)
+
   const results = await db.execute(
     `
       SELECT DISTINCT c.content,
              vector_distance_cos(e.embedding, vector32(?)) as distance
       FROM chunks c
       JOIN embeddings e ON c.id = e.chunk_id
-      WHERE c.is_global = TRUE OR c.session_id = ?
+      WHERE ${sessionId ? "c.session_id = ?" : "c.is_global = TRUE"}
       ORDER BY distance ASC
       LIMIT ?
     `,
-    [JSON.stringify(embedding), sessionId ?? null, limit]
+    args
   )
 
   return results.rows.map(row => ({
     content: row.content as string,
     similarity: 1 - (row.distance as number),
   }))
-}
-
-// Clear session data
-export async function clearSessionData(sessionId: string): Promise<void> {
-  await db.execute(
-    `
-      DELETE FROM chunks
-      WHERE session_id = ?
-    `,
-    [sessionId]
-  )
 } 

@@ -1,292 +1,182 @@
 'use client'
 
-import { useState, useRef, useEffect } from "react"
-import { Send, X, MessageSquare, RefreshCw } from "lucide-react"
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
+import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { useChat } from 'ai/react'
-import { useAnalytics } from '@/app/hooks/use-analytics'
 import { toast } from 'sonner'
+import { useAnalytics } from '@/app/hooks/use-analytics'
+import { chatApiKey } from '@/lib/chat-api-key'
+import { Glyph } from '@/components/studio/illustrations'
+import { AssistantMark, ChatBubble, ChatComposer, TypingBubble } from './chat-parts'
 
 const ROQ_CX_QUESTIONS = [
-  "What happens in a 14-day prototype sprint?",
-  "How much does a sprint cost?",
-  "What stack do you build in?",
+  "Where should we start with AI?",
+  "Can you work with the tools we already use?",
+  "Do we need a solution in mind?",
 ]
 
+const GREETING = {
+  id: "1",
+  role: "assistant" as const,
+  content: "Hi. Ask about websites, automation, training, or where to start. For a project enquiry, the contact page is the better place.",
+}
+
 export function ChatWidget() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
+  const launcherRef = useRef<HTMLButtonElement>(null)
   const { trackEvent } = useAnalytics()
 
-  const { messages, input, handleInputChange, isLoading, append, setMessages } = useChat({
+  const { messages, input, setInput, append, status, setMessages } = useChat({
     api: '/api/chat/roqcx',
-    headers: {
-      'x-api-key': (process.env.NEXT_PUBLIC_API_KEY || '').trim().replace(/^['"](.+)['"]$/, '$1'),
-    },
-    initialMessages: [
-      {
-        id: "1",
-        content: "Hi! I'm the ROQ CX assistant. Ask me anything about our prototype sprints, what we build, or how a sprint kicks off.",
-        role: "assistant"
-      }
-    ],
+    headers: { 'x-api-key': chatApiKey },
+    initialMessages: [GREETING],
     onResponse: (response) => {
       if (response.ok) {
-        trackEvent('chat_message_received', {
-          responseLength: response.headers.get('content-length')
-        })
+        trackEvent('chat_message_received', { responseLength: response.headers.get('content-length') })
       } else {
-        switch (response.status) {
-          case 403:
-            toast.error("Access denied. Please check your API key and permissions.")
-            break
-          case 401:
-            toast.error("Unauthorized. Please check your API key.")
-            break
-          case 429:
-            toast.error("Too many requests. Please try again later.")
-            break
-          default:
-            toast.error("An error occurred. Please try again.")
-        }
+        toast.error(response.status === 429 ? "Too many messages in a short time. Try again in a minute." : response.status === 503 ? "The assistant is unavailable right now. Please try again shortly." : "Something went wrong. Please try again.")
       }
     },
-    onFinish: (message) => {
-      trackEvent('chat_message_complete', {
-        responseLength: message.content.length
-      })
-    },
+    onFinish: (message) => trackEvent('chat_message_complete', { responseLength: message.content.length }),
     onError: (error) => {
-      trackEvent('chat_error', {
-        error: error.message
-      })
-      toast.error("An error occurred. Please try again.")
-    }
+      trackEvent('chat_error', { error: error.message })
+      toast.error("Something went wrong. Please try again.")
+    },
   })
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim()) return
+  const busy = status === 'submitted' || status === 'streaming'
 
-    trackEvent('chat_message_send', {
-      messageLength: input.length,
-      isQuestion: input.endsWith('?')
-    })
+  useEffect(() => {
+    const el = logRef.current
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [messages, status, isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+        launcherRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [isOpen])
+
+  // The demo page has its own, larger chat.
+  if (pathname === '/chatbot') return null
+
+  const send = async (content: string, example = false) => {
+    if (busy || !content.trim()) return
+    trackEvent('chat_message_send', { messageLength: content.length, isQuestion: content.endsWith('?') })
+    if (example) trackEvent('chat_example_question', { question: content })
+    setInput('')
     try {
-      await append({
-        content: input,
-        role: 'user'
-      })
-      handleInputChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
+      await append({ role: 'user', content })
     } catch {
-      toast.error("Failed to send message. Please try again.")
+      toast.error("That message did not send. Please try again.")
     }
   }
 
-  const handleRefresh = () => {
+  const reset = () => {
     trackEvent('chat_refresh')
-    setMessages([
-      {
-        id: "1",
-        content: "Hi! I'm the ROQ CX assistant. Ask me anything about our prototype sprints, what we build, or how a sprint kicks off.",
-        role: "assistant"
-      }
-    ])
+    setMessages([GREETING])
   }
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
-
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
-      {/* Chat window */}
-      <div
-        className={cn(
-          "mb-2 flex w-[calc(100vw-1rem)] flex-col rounded-2xl bg-white dark:bg-zinc-950 shadow-2xl border border-zinc-200 dark:border-zinc-800 transition-all duration-300 ease-in-out",
-          "sm:w-96",
-          isOpen ? "h-[calc(100vh-6rem)] sm:h-[500px] opacity-100" : "h-0 opacity-0 pointer-events-none",
-        )}
-      >
-        {/* Chat header */}
-        <div
-          className="flex items-center justify-between rounded-t-2xl p-2 sm:p-3 text-white"
-          style={{ background: "var(--rqx-accent)" }}
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
+      {isOpen ? (
+        <section
+          id="studio-chat"
+          aria-label="Ask ROQ CX"
+          className="flex h-[min(560px,calc(100dvh-7rem))] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[20px] border border-[var(--ink)] bg-[var(--paper)] shadow-[0_30px_60px_-24px_rgba(18,21,19,0.55)]"
         >
-          <div className="flex items-center gap-1 sm:gap-2">
-            <MessageSquare size={16} className="sm:hidden" />
-            <MessageSquare size={20} className="hidden sm:block" />
-            <h3 className="font-medium text-sm sm:text-base">ROQ CX Assistant</h3>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 sm:h-8 sm:w-8 rounded-full text-white hover:bg-white/10"
-              onClick={handleRefresh}
-              title="Reset chat"
-            >
-              <RefreshCw size={14} className="sm:hidden" />
-              <RefreshCw size={18} className="hidden sm:block" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 sm:h-8 sm:w-8 rounded-full text-white hover:bg-white/10"
-              onClick={() => setIsOpen(false)}
-              title="Close chat"
-            >
-              <X size={14} className="sm:hidden" />
-              <X size={18} className="hidden sm:block" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Chat messages */}
-        <div className="flex-1 overflow-y-auto p-2 sm:p-3">
-          <div className="flex flex-col gap-2 sm:gap-3">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex max-w-[90%] sm:max-w-[85%] flex-col",
-                  message.role === "user" ? "ml-auto items-end" : "mr-auto items-start",
-                )}
-              >
-                <div
-                  className={cn(
-                    "rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm",
-                    message.role === "user"
-                      ? "text-white"
-                      : "bg-zinc-100 dark:bg-zinc-800"
-                  )}
-                  style={message.role === "user" ? { background: "var(--rqx-accent)" } : undefined}
-                >
-                  {message.role === "user" ? (
-                    <span>{message.content}</span>
-                  ) : (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        a: ({ children, ...props }) => (
-                          <a
-                            {...props}
-                            target={props.href?.startsWith('http') ? '_blank' : undefined}
-                            rel={props.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                            style={{ color: 'var(--rqx-accent)', textDecoration: 'underline' }}
-                          >
-                            {children}
-                          </a>
-                        ),
-                        p: ({ children }) => <p style={{ margin: '2px 0' }}>{children}</p>,
-                        ul: ({ children }) => (
-                          <ul style={{ margin: '4px 0', paddingLeft: 16, listStyle: 'disc' }}>{children}</ul>
-                        ),
-                        li: ({ children }) => <li>{children}</li>,
-                        strong: ({ children }) => <strong style={{ fontWeight: 600 }}>{children}</strong>,
-                      }}
-                    >
-                      {message.content}
-                    </ReactMarkdown>
-                  )}
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex max-w-[90%] sm:max-w-[85%] flex-col mr-auto items-start">
-                <div className="rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 bg-zinc-100 dark:bg-zinc-800">
-                  <div className="flex gap-1">
-                    <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-zinc-400" />
-                    <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:0.2s]" />
-                    <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:0.4s]" />
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        {/* Example questions */}
-        {messages.length === 1 && (
-          <div className="px-2 sm:px-3 py-1.5 sm:py-2 border-t border-zinc-200 dark:border-zinc-800">
-            <div className="flex flex-wrap gap-1 sm:gap-2">
-              {ROQ_CX_QUESTIONS.map((question) => (
-                <Button
-                  key={question}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs whitespace-normal h-auto py-1 sm:py-1.5 px-2 sm:px-3"
-                  onClick={() => {
-                    trackEvent('chat_example_question', { question })
-                    append({
-                      content: question,
-                      role: 'user'
-                    })
-                  }}
-                >
-                  {question}
-                </Button>
-              ))}
+          <header className="flex items-center gap-3 bg-[var(--void)] px-4 py-3 text-[var(--chalk)]">
+            <AssistantMark size={32} />
+            <div className="min-w-0 flex-1">
+              <p className="m-0 font-medium leading-tight">Ask ROQ CX</p>
+              <p className="m-0 text-xs text-[color-mix(in_srgb,var(--chalk)_70%,transparent)]">Websites, automation and training</p>
             </div>
-          </div>
-        )}
-
-        {/* Chat input */}
-        <form onSubmit={handleSendMessage} className="border-t border-zinc-200 dark:border-zinc-800 p-2 sm:p-3">
-          <div className="flex gap-1 sm:gap-2">
-            <Input
-              placeholder="Type your message..."
-              value={input}
-              onChange={handleInputChange}
-              className="flex-1 text-xs sm:text-sm"
-            />
-            <Button 
-              type="submit" 
-              size="icon"
-              className="text-white hover:opacity-90 h-8 w-8 sm:h-9 sm:w-9"
-              style={{ background: "var(--rqx-accent)" }}
-              disabled={isLoading}
+            <button
+              type="button"
+              onClick={reset}
+              aria-label="Start a new conversation"
+              className="grid h-10 w-10 place-items-center rounded-full hover:bg-[color-mix(in_srgb,var(--chalk)_12%,transparent)]"
             >
-              <Send size={14} className="sm:hidden" />
-              <Send size={18} className="hidden sm:block" />
-            </Button>
-          </div>
-        </form>
-      </div>
+              <Glyph name="refresh" size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close chat"
+              className="grid h-10 w-10 place-items-center rounded-full hover:bg-[color-mix(in_srgb,var(--chalk)_12%,transparent)]"
+            >
+              <Glyph name="cross" size={18} />
+            </button>
+          </header>
 
-      {/* Chat button */}
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full shadow-lg transition-all duration-300",
-          isOpen 
-            ? "bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700" 
-            : "hover:opacity-90"
-        )}
-        style={!isOpen ? { background: "var(--rqx-accent)" } : undefined}
+          <div ref={logRef} role="log" aria-live="polite" className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="grid gap-4">
+              {messages.map((message) =>
+                message.role === 'user' || message.role === 'assistant' ? (
+                  <ChatBubble key={message.id} role={message.role} content={message.content} compact />
+                ) : null,
+              )}
+              {status === 'submitted' ? <TypingBubble compact /> : null}
+            </div>
+            {messages.length === 1 ? (
+              <ul className="m-0 mt-4 grid list-none gap-2 p-0 pl-10">
+                {ROQ_CX_QUESTIONS.map((question) => (
+                  <li key={question}>
+                    <button
+                      type="button"
+                      onClick={() => send(question, true)}
+                      className="min-h-10 w-full rounded-[12px] border border-[var(--rule)] bg-[var(--chalk)] px-3 py-2 text-left text-sm text-[var(--ink)] hover:border-[var(--forest)]"
+                    >
+                      {question}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+
+          <div className="border-t border-[var(--rule)] bg-[var(--chalk)] p-3">
+            <ChatComposer
+              id="studio-chat-message"
+              label="Your question"
+              labelHidden
+              value={input}
+              onChange={setInput}
+              onSubmit={() => send(input)}
+              busy={busy}
+              placeholder="Ask about a problem you’re stuck on"
+            />
+          </div>
+        </section>
+      ) : null}
+
+      <button
+        ref={launcherRef}
+        type="button"
+        onClick={() => setIsOpen((open) => !open)}
+        aria-expanded={isOpen}
+        aria-controls="studio-chat"
+        className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--void)] py-1.5 pl-1.5 pr-4 text-sm text-[var(--chalk)] shadow-[0_14px_30px_-14px_rgba(18,21,19,0.7)] hover:bg-[var(--forest)]"
       >
         {isOpen ? (
-          <X className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--chalk)] text-[var(--ink)]">
+            <Glyph name="cross" size={16} />
+          </span>
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Avatar className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10">
-              <div className="flex h-full w-full items-center justify-center bg-white text-[var(--rqx-accent)]">
-                <MessageSquare size={12} className="sm:hidden" />
-                <MessageSquare size={16} className="hidden sm:block md:hidden" />
-                <MessageSquare size={20} className="hidden md:block" />
-              </div>
-            </Avatar>
-          </div>
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--signal)] text-[var(--ink)]">
+            <Glyph name="chat" size={18} />
+          </span>
         )}
-      </Button>
+        {isOpen ? 'Close' : 'Ask ROQ CX'}
+      </button>
     </div>
   )
-} 
+}
