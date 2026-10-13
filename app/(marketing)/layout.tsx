@@ -10,14 +10,13 @@ const defaultStructuredData = {
   "@context": "https://schema.org",
   "@type": ["Organization", "ProfessionalService"],
   name: "ROQ CX",
+  legalName: "ROQ CX - FZCO",
   url: "https://www.roqcx.com",
   logo: "https://www.roqcx.com/brand/mark-3d.png",
-  description:
-    "ROQ CX helps SMEs turn scattered AI experimentation into practical improvements: websites, web apps, workflow automation and team training.",
+  description: defaultDescription,
   sameAs: [
     "https://www.linkedin.com/company/roqcx",
     "https://twitter.com/roqcx",
-    "https://www.zaynenair.com",
   ],
   address: {
     "@type": "PostalAddress",

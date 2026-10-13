@@ -5,7 +5,7 @@ export const siteName = "ROQ CX"
 
 export const defaultTitle = "AI Automation & Digital Products for SMEs | ROQ CX"
 export const defaultDescription =
-  "Turn scattered AI experimentation into practical business improvements. ROQ CX builds digital tools, automates workflows and trains SME teams."
+  "You have something worth building, work that needs simplifying, or a team putting AI to use. ROQ CX is an AI-native studio that gets you there."
 
 export const ogImage = {
   url: "/og",
@@ -54,7 +54,7 @@ export function pageSeo({
       url,
       siteName,
       images: [ogImage],
-      locale: "en_US",
+      locale: "en_AE",
       type,
     },
     twitter: {

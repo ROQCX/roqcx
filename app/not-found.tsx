@@ -14,7 +14,8 @@ export const metadata: Metadata = {
     path: "/",
     includeCanonical: false,
   }),
-  robots: { index: false, follow: false },
+  // Next.js already emits noindex for 404s; null stops the root "index, follow" leaking in.
+  robots: null,
 }
 
 export default function NotFound() {

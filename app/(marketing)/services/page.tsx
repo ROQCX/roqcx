@@ -5,7 +5,7 @@ import { Glyph, ReviewArt, TriadArt, serviceArt } from "@/components/studio/illu
 import { pageSeo } from "@/lib/seo"
 
 export const metadata: Metadata = pageSeo({
-  title: "Services | ROQ CX",
+  title: "AI Automation, Websites & AI Training for SMEs | ROQ CX",
   description:
     "Build websites and web apps, automate repetitive work, and train the team. Not every engagement needs all three.",
   path: "/services",

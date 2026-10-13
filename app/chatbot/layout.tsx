@@ -3,12 +3,15 @@ import { Navigation } from "../../components/layout/navigation"
 import { Footer } from "../../components/footer"
 import { pageSeo } from "@/lib/seo"
 
-export const metadata: Metadata = pageSeo({
-  title: "Chat demo | ROQ CX",
-  description:
-    "Tell it something, then ask for it back. See how an assistant can answer from information you have given it.",
-  path: "/chatbot",
-})
+export const metadata: Metadata = {
+  ...pageSeo({
+    title: "Chat demo | ROQ CX",
+    description:
+      "Tell it something, then ask for it back. See how an assistant can answer from information you have given it.",
+    path: "/chatbot",
+  }),
+  robots: { index: false, follow: true },
+}
 
 export default function ChatbotLayout({
   children,

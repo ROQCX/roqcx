@@ -40,7 +40,7 @@ export interface CaseStudy {
     name: string
     role: string
   }
-  lastModified: Date
+  lastModified?: Date
 }
 
 export interface CaseStudyWithContent extends CaseStudy {
@@ -80,7 +80,6 @@ function resolveSurface(data: {
 function parseCaseStudy(
   slug: string,
   fileContent: string,
-  filePath: string,
   includeContent: boolean,
 ): CaseStudy | CaseStudyWithContent {
   const { data, content } = matter(fileContent)
@@ -105,10 +104,7 @@ function parseCaseStudy(
     technologies: data.technologies,
     results: data.results,
     author: data.author,
-    lastModified: getContentLastModified(filePath, {
-      date: data.date,
-      updated: data.updated,
-    }),
+    lastModified: getContentLastModified(data.updated),
   }
 
   if (includeContent) {
@@ -140,7 +136,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
   if (!filePath || !fs.existsSync(filePath)) return null
 
   const fileContent = fs.readFileSync(filePath, "utf8")
-  return parseCaseStudy(slug, fileContent, filePath, false) as CaseStudy
+  return parseCaseStudy(slug, fileContent, false) as CaseStudy
 }
 
 export async function getCaseStudyContent(
@@ -150,5 +146,5 @@ export async function getCaseStudyContent(
   if (!filePath || !fs.existsSync(filePath)) return null
 
   const fileContent = fs.readFileSync(filePath, "utf8")
-  return parseCaseStudy(slug, fileContent, filePath, true) as CaseStudyWithContent
+  return parseCaseStudy(slug, fileContent, true) as CaseStudyWithContent
 }

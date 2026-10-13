@@ -112,13 +112,15 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   return (
     <article>
       <StructuredData
-        type="CaseStudy"
+        type="Article"
         data={{
-          "@type": "CaseStudy",
+          "@type": "Article",
           headline: caseStudy.title,
           description: caseStudy.description,
           image: caseStudy.coverImage,
           datePublished: caseStudy.date,
+          dateModified: caseStudy.lastModified?.toISOString(),
+          url: `${siteUrl}/case-studies/${caseStudy.slug}`,
           author: caseStudy.author
             ? {
                 "@type": "Person",

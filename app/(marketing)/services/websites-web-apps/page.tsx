@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { ServiceView } from "@/components/studio/service-view"
+import { ServiceStructuredData } from "@/components/seo/service-structured-data"
 import { services } from "@/lib/site-content"
 import { pageSeo } from "@/lib/seo"
 
@@ -12,5 +13,10 @@ export const metadata: Metadata = pageSeo({
 })
 
 export default function WebsitesPage() {
-  return <ServiceView {...service} />
+  return (
+    <>
+      <ServiceStructuredData service={service} serviceType="Web design and development" />
+      <ServiceView {...service} />
+    </>
+  )
 }

@@ -33,7 +33,7 @@ export interface BlogPost {
   readingTime: number
   tags: string[]
   coverImage: string
-  lastModified: Date
+  lastModified?: Date
 }
 
 export interface BlogPostWithContent extends BlogPost {
@@ -76,17 +76,14 @@ function postPath(slug: string) {
   return path.join(BLOG_DIR, `${slug}.mdx`)
 }
 
-function parsePost(slug: string, fileContent: string, filePath: string, includeContent: boolean) {
+function parsePost(slug: string, fileContent: string, includeContent: boolean) {
   const { data, content } = matter(fileContent)
   const post: BlogPost = {
     slug,
     title: data.title,
     description: data.description,
     date: data.date,
-    lastModified: getContentLastModified(filePath, {
-      date: data.date,
-      updated: data.updated,
-    }),
+    lastModified: getContentLastModified(data.updated),
     author: authorFrom(data.author),
     readingTime: Math.ceil(readingTime(content).minutes),
     tags: tagsFrom(data.tags),
@@ -107,7 +104,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       const slug = file.replace(/\.mdx?$/, "")
       const filePath = postPath(slug)
       if (!filePath) return null
-      return parsePost(slug, fs.readFileSync(filePath, "utf8"), filePath, false)
+      return parsePost(slug, fs.readFileSync(filePath, "utf8"), false)
     })
     .filter((post): post is BlogPost => post !== null)
 
@@ -117,11 +114,11 @@ export async function getAllPosts(): Promise<BlogPost[]> {
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   const filePath = postPath(slug)
   if (!filePath || !fs.existsSync(filePath)) return null
-  return parsePost(slug, fs.readFileSync(filePath, "utf8"), filePath, false)
+  return parsePost(slug, fs.readFileSync(filePath, "utf8"), false)
 }
 
 export async function getPostContent(slug: string): Promise<BlogPostWithContent | null> {
   const filePath = postPath(slug)
   if (!filePath || !fs.existsSync(filePath)) return null
-  return parsePost(slug, fs.readFileSync(filePath, "utf8"), filePath, true) as BlogPostWithContent
+  return parsePost(slug, fs.readFileSync(filePath, "utf8"), true) as BlogPostWithContent
 }

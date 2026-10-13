@@ -1,0 +1,35 @@
+# ROQ CX
+
+> You have something worth building, work that needs simplifying, or a team that needs help putting AI to use. ROQ CX is an AI-native studio that gets you there.
+
+ROQ CX is based in Dubai, UAE. It helps small and medium-sized businesses put AI to work for better customer experiences and less repetitive work. It offers three services: Automate (workflow automation and AI agents with human approval points), Build (websites and web apps) and Train (practical AI training for teams).
+
+ROQ CX works with SMEs in the UAE and the wider GCC, and remotely elsewhere. Engagements usually start with an AI Opportunity Review of one real workflow. Not every engagement needs all three services, and sometimes the useful answer is to leave AI out.
+
+Legal name: ROQ CX - FZCO, Dubai, UAE. Contact: hello@roqcx.com, +971 56 252 0720. Founder: Zayne Nair (https://www.zaynenair.com).
+
+## Services
+
+- [AI automation (Automate)](https://www.roqcx.com/services/ai-automation): Automates the copying, chasing and re-entering between the tools a business already uses, with a person still able to stop, edit or approve.
+- [Websites and web apps (Build)](https://www.roqcx.com/services/websites-web-apps): Business sites, customer-facing applications, internal tools and prototypes.
+- [AI training (Train)](https://www.roqcx.com/services/ai-training): AI 101 and AI in Practice, a one-day masterclass for professionals and teams. Also run as a tailored corporate workshop.
+- [AI Opportunity Review](https://www.roqcx.com/ai-opportunity-review): A short look at one workflow, where AI might help and where it should not, ending in a recommended next step.
+
+## Case studies
+
+- [Emirates Dubai 7s](https://www.roqcx.com/case-studies/dubai-7s-ticketing): Digital wallet passes, QR entry and live event operations; 80,000+ passes issued.
+- [WeNanny](https://www.roqcx.com/case-studies/wenanny): A live UAE care marketplace that matches families with nannies.
+- [Let's Talk Early Years](https://www.roqcx.com/case-studies/lets-talk-early-years): A platform for an early years community: podcast, events and tickets.
+- [Mazadak](https://www.roqcx.com/case-studies/mazadak-e-auction): A luxury e-auction mobile platform with real-time bidding.
+- [Syntheve](https://www.roqcx.com/case-studies/syntheve): An ATS resume checker and builder.
+- [Paul Ries & Sons Ethiopia](https://www.roqcx.com/case-studies/paul-ries-ethiopia): A brand site for a mobility portfolio.
+- [zaynenair.com](https://www.roqcx.com/case-studies/zaynenair): A personal site with a scroll-led hero.
+
+## About
+
+- [About ROQ CX](https://www.roqcx.com/about): How the studio works and who is behind it.
+- [Contact](https://www.roqcx.com/contact): Enquiry form, email and phone.
+
+## Optional
+
+- [Insights](https://www.roqcx.com/insights): Articles on AI, automation, customer experience and digital transformation for SMEs.

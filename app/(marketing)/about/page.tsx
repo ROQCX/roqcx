@@ -32,7 +32,7 @@ const aiNative = [
 ]
 
 export const metadata: Metadata = pageSeo({
-  title: "About | ROQ CX",
+  title: "About ROQ CX | AI-Native Studio in Dubai",
   description:
     "ROQ CX is an AI-native studio in Dubai. We help small and medium-sized businesses put AI to work through websites, web apps, automation and practical training.",
   path: "/about",

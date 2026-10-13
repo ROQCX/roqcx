@@ -62,7 +62,7 @@ export default async function CaseStudiesPage() {
 }
 
 export const metadata = pageSeo({
-  title: "Work | ROQ CX",
+  title: "Case Studies: Web Apps, Platforms & Automation | ROQ CX",
   description: "Selected ROQ CX work: customer tools, marketplaces and operational builds.",
   path: "/case-studies",
 })

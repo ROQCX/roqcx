@@ -54,11 +54,16 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a href="https://wa.me/971562520720" className="text-[var(--chalk)]">
+              <a href="tel:+971562520720" className="text-[var(--chalk)]">
                 +971 56 252 0720
               </a>
             </li>
-            <li>Dubai, UAE. Working with SMEs remotely as well.</li>
+            <li>
+              <a href="https://wa.me/971562520720" className="text-[var(--chalk)]">
+                WhatsApp
+              </a>
+            </li>
+            <li>ROQ CX - FZCO, Dubai, UAE. Working with SMEs remotely as well.</li>
             <li className="pt-2">
               <a href="https://www.linkedin.com/company/roqcx" className="text-[var(--chalk)]">
                 LinkedIn

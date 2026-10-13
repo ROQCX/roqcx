@@ -5,7 +5,7 @@ import { ReplyArt } from "@/components/studio/illustrations"
 import { pageSeo } from "@/lib/seo"
 
 export const metadata: Metadata = pageSeo({
-  title: "Contact | ROQ CX",
+  title: "Contact ROQ CX | Talk Through Your AI or Web Project",
   description:
     "Tell us where things get stuck. We’ll say whether a build, an automation or a training session makes sense.",
   path: "/contact",

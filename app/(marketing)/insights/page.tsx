@@ -6,7 +6,7 @@ import { NotesArt, TangleLine } from "../../../components/studio/illustrations"
 import { pageSeo } from "@/lib/seo"
 
 export const metadata = pageSeo({
-  title: "Insights | ROQ CX",
+  title: "AI & Automation Insights for SMEs | ROQ CX",
   description: "Notes on practical AI use, customer experience and the work of choosing a first project.",
   path: "/insights",
 })
