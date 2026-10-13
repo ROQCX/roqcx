@@ -12,10 +12,19 @@ function hasWebGL() {
   }
 }
 
+/** Matches the `lg` layout: below this the scene stays centred above the copy. */
+const WIDE = "(min-width: 1024px)"
+
+function visibleAnchor(section: HTMLElement) {
+  const node = [...section.querySelectorAll<HTMLElement>("[data-hero-anchor]")].find((el) => el.getClientRects().length > 0)
+  return node?.getBoundingClientRect()
+}
+
 /**
- * Decorative 3D backdrop for the homepage hero. It loads only on wide
- * screens with WebGL and without a reduced-motion preference; otherwise the
- * hero shows its copy alone. The scene sits over `[data-hero-anchor]`;
+ * Decorative 3D backdrop for the homepage hero. It loads on any screen with
+ * WebGL and without a reduced-motion preference; otherwise the hero shows its
+ * copy alone. The scene sits over the visible `[data-hero-anchor]` — the
+ * upper portion on narrow screens, the opposite column on wide ones.
  * `progress` comes from the hero's native-scroll story.
  */
 export function WorkflowHero({ progress }: { progress: MotionValue<number> }) {
@@ -25,6 +34,7 @@ export function WorkflowHero({ progress }: { progress: MotionValue<number> }) {
     visible: true,
     pointer: { x: 0, y: 0 },
     anchor: { x: 0, y: 0, width: 0, height: 0 },
+    compact: false,
     font: "sans-serif",
     wake: () => {},
   })
@@ -35,9 +45,13 @@ export function WorkflowHero({ progress }: { progress: MotionValue<number> }) {
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
-    const wide = window.matchMedia("(min-width: 1024px)")
+    const wide = window.matchMedia(WIDE)
     const webgl = hasWebGL()
-    const update = () => setEnabled(webgl && wide.matches && !motion.matches)
+    const update = () => {
+      state.current.compact = !wide.matches
+      setEnabled(webgl && !motion.matches)
+      state.current.wake()
+    }
     update()
     motion.addEventListener("change", update)
     wide.addEventListener("change", update)
@@ -69,8 +83,8 @@ export function WorkflowHero({ progress }: { progress: MotionValue<number> }) {
   useEffect(() => {
     const host = hostRef.current
     const section = host?.closest<HTMLElement>(".hero-stage")
-    const anchor = section?.querySelector<HTMLElement>("[data-hero-anchor]")
-    if (!mounted || !section || !anchor) return
+    const anchors = section?.querySelectorAll<HTMLElement>("[data-hero-anchor]")
+    if (!mounted || !section || !anchors?.length) return
 
     let visible = true
     const wake = () => {
@@ -79,7 +93,8 @@ export function WorkflowHero({ progress }: { progress: MotionValue<number> }) {
 
     const measure = () => {
       const outer = section.getBoundingClientRect()
-      const inner = anchor.getBoundingClientRect()
+      const inner = visibleAnchor(section)
+      if (!inner) return
       state.current.anchor = {
         x: inner.left - outer.left,
         y: inner.top - outer.top,
@@ -106,7 +121,7 @@ export function WorkflowHero({ progress }: { progress: MotionValue<number> }) {
       wake()
     })
     resize.observe(section)
-    resize.observe(anchor)
+    anchors.forEach((node) => resize.observe(node))
 
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting

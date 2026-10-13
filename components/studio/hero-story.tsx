@@ -15,9 +15,10 @@ const wrap = "mx-auto w-[min(1240px,calc(100%-2.5rem))] md:w-[min(1240px,calc(10
 const muted = "text-[color-mix(in_srgb,var(--chalk)_82%,transparent)]"
 
 /**
- * The homepage hero. On wide screens without a reduced-motion preference the
- * hero pins while the copy steps through four stages and the workflow scene
- * follows the same scroll. Otherwise it is an ordinary static hero.
+ * The homepage hero. Without a reduced-motion preference the hero pins while
+ * the copy steps through four stages and the workflow scene follows the same
+ * scroll — full bleed, with the copy along the bottom on narrow screens, and
+ * swapping columns on wide ones. Otherwise it is an ordinary static hero.
  */
 export function HeroStory() {
   const track = useRef<HTMLElement>(null)
@@ -29,7 +30,7 @@ export function HeroStory() {
   const [stage, setStage] = useState(0)
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 1024px) and (prefers-reduced-motion: no-preference)")
+    const query = window.matchMedia("(prefers-reduced-motion: no-preference)")
     const update = () => setPinned(query.matches)
     update()
     query.addEventListener("change", update)
@@ -74,11 +75,16 @@ export function HeroStory() {
     <section
       ref={track}
       aria-label="Introduction"
-      className="relative bg-[var(--void)] lg:motion-safe:h-[400svh]"
+      className="relative bg-[var(--void)] motion-safe:h-[400svh]"
     >
-      <div className="hero-stage lg:motion-safe:sticky lg:motion-safe:top-[72px] lg:motion-safe:h-[calc(100svh-72px)]">
+      <div className="hero-stage flex flex-col motion-safe:sticky motion-safe:top-[72px] motion-safe:h-[calc(100svh-72px)]">
         <div className="aurora" aria-hidden="true" />
         <WorkflowHero progress={progress} />
+        {/* Narrow screens: the scene occupies the top; this keeps the copy readable underneath. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_top,var(--void)_0%,color-mix(in_srgb,var(--void)_92%,transparent)_38%,color-mix(in_srgb,var(--void)_55%,transparent)_58%,transparent_74%)] lg:hidden"
+        />
         {/* Keeps the copy legible while pieces of the scene pass behind it. */}
         <motion.div
           aria-hidden="true"
@@ -91,7 +97,7 @@ export function HeroStory() {
           className={`hero-scrim-right pointer-events-none absolute inset-0 z-[2] hidden bg-[linear-gradient(270deg,${SCRIM})] lg:block`}
         />
         <div
-          className={`${wrap} relative z-10 grid items-center gap-12 pb-16 pt-14 lg:grid-cols-12 lg:pb-24 lg:pt-20 lg:motion-safe:h-full lg:motion-safe:py-0`}
+          className={`${wrap} relative z-10 mt-auto grid gap-12 pb-24 pt-6 lg:mt-0 lg:grid-cols-12 lg:items-center lg:pb-24 lg:pt-20 lg:motion-safe:h-full lg:motion-safe:py-0`}
         >
           <div className="grid lg:col-span-6">
             <StageCopy index={0} stage={stage} progress={progress} pinned={pinned}>
@@ -121,6 +127,8 @@ export function HeroStory() {
           {/* Empty column the 3D scene measures to place the settled workflow. */}
           <div className="hidden self-stretch lg:col-span-6 lg:block" data-hero-anchor aria-hidden="true" />
         </div>
+        {/* On narrow screens the scene sits in the upper portion, clear of the copy. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[42%] lg:hidden" data-hero-anchor aria-hidden="true" />
         {pinned ? <StageRail stage={stage} progress={progress} onSelect={scrollToStage} /> : null}
       </div>
     </section>
@@ -171,15 +179,15 @@ function StageCopy({
 function IntroCopy() {
   return (
     <div>
-      <h1 className="font-serif-display m-0 text-[clamp(2.8rem,5.6vw,5.6rem)] font-light leading-[0.94] tracking-[-0.03em] text-[var(--chalk)]">
+      <h1 className="font-serif-display m-0 text-[1.7rem] font-light leading-[1.12] tracking-[-0.03em] text-[var(--chalk)] sm:text-[2.15rem] lg:text-[clamp(2.8rem,5.6vw,5.6rem)] lg:leading-[0.94]">
         <span className="block">Better customer</span>
         <Accent className="block">experiences.</Accent>
         <span className="block">Less repetitive work.</span>
       </h1>
-      <p className={`mb-0 mt-7 max-w-[34rem] text-lg leading-relaxed ${muted}`}>
-        We help SMEs turn scattered AI experimentation into practical improvements: finding the right opportunities, building useful solutions and helping teams adopt them.
+      <p className={`mb-0 mt-4 max-w-[34rem] text-[0.95rem] leading-relaxed lg:mt-7 lg:text-lg ${muted}`}>
+        You have something worth building, work that needs simplifying, or a team that needs help putting AI to use. ROQ CX is an AI-native studio that gets you there.
       </p>
-      <div className="mt-8">
+      <div className="mt-5 lg:mt-8">
         <CallsToAction />
       </div>
     </div>
@@ -193,11 +201,11 @@ function Accent({ children, className = "" }: { children: ReactNode; className?:
 function StageBlock({ title, body, children }: { title: ReactNode; body: string; children?: ReactNode }) {
   return (
     <div>
-      <h2 className="font-serif-display m-0 max-w-[13ch] text-[clamp(2.6rem,4.8vw,4.9rem)] font-light leading-[0.96] tracking-[-0.03em] text-[var(--chalk)]">
+      <h2 className="font-serif-display m-0 max-w-[16ch] text-[1.85rem] font-light leading-[1.08] tracking-[-0.03em] text-[var(--chalk)] sm:text-[2.35rem] lg:max-w-[13ch] lg:text-[clamp(2.6rem,4.8vw,4.9rem)] lg:leading-[0.96]">
         {title}
       </h2>
-      <p className={`mb-0 mt-7 max-w-[34rem] text-lg leading-relaxed ${muted}`}>{body}</p>
-      {children ? <div className="mt-8">{children}</div> : null}
+      <p className={`mb-0 mt-4 max-w-[34rem] text-[0.95rem] leading-relaxed lg:mt-7 lg:text-lg ${muted}`}>{body}</p>
+      {children ? <div className="mt-5 lg:mt-8">{children}</div> : null}
     </div>
   )
 }

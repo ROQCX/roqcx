@@ -12,8 +12,10 @@ export interface SceneState {
   /** False while the hero is offscreen; idle motion stops. */
   visible: boolean
   pointer: { x: number; y: number }
-  /** The right-hand hero column, in canvas pixels. */
+  /** The region the settled workflow fills, in canvas pixels. */
   anchor: { x: number; y: number; width: number; height: number }
+  /** Narrow layout: keep the workflow centred in the upper area, clear of the copy. */
+  compact: boolean
   font: string
   wake: () => void
 }
@@ -454,6 +456,23 @@ function cameraKeys(p: THREE.Vector3, dir: number, follow: number): CameraKey[] 
   ]
 }
 
+/**
+ * Narrow screens can't take the wide orbit: the same lateral offsets leave
+ * the frame. Stay pulled back and nearly frontal so the workflow fits the
+ * width and sits above the copy.
+ */
+const COMPACT_CAMERA: CameraKey[] = [
+  { at: 0, pos: [0.12, 0.45, 13.6], look: [0, 0.16, 0] },
+  { at: 0.22, pos: [-0.22, 0.22, 12.4], look: [0, 0.06, 0] },
+  { at: 0.48, pos: [0.42, 0.62, 11.6], look: [-0.1, 0.1, 0] },
+  { at: 0.72, pos: [-0.26, -0.04, 11.1], look: [0.06, 0.02, 0] },
+  { at: 0.88, pos: [0, 0, CAMERA_Z], look: [0, 0, 0] },
+  { at: 1, pos: [0, 0, CAMERA_Z], look: [0, 0, 0] },
+]
+
+/** How far the wide-frame scatter is pulled in so it stays on a phone. */
+const COMPACT_SCATTER = 0.38
+
 function sampleCamera(keys: CameraKey[], t: number, pos: THREE.Vector3, look: THREE.Vector3) {
   let i = 0
   while (i < keys.length - 2 && t > keys[i + 1].at) i++
@@ -548,20 +567,23 @@ function Workflow({ state }: { state: MutableRefObject<SceneState> }) {
     const align = smooth(remap(t, T.align[0], T.align[1]))
     const sigT = remap(t, T.signal[0], T.signal[1])
     const idle = 1 - align
+    const compact = s.compact
 
-    // Anchor the settled workflow to the right-hand hero column.
+    // Anchor the settled workflow to its column, or to the upper area on a phone.
     const wpp = VIEW_H / size.height
     const a = s.anchor
     const cx = (a.x + a.width / 2 - size.width / 2) * wpp
     const cy = -(a.y + a.height / 2 - size.height / 2) * wpp
 
     // The workflow crosses the hero at each stage, mirroring its column.
-    const side = sideAt(t)
+    // Narrow screens keep it centred; there is no second column to clear.
+    const side = compact ? 0 : sideAt(t)
     const dir = 1 - side * 2
     const swoop = Math.sin(Math.PI * side)
     // On the left the copy sits right beside the column, so the workflow
     // gets a little smaller and moves out to leave a clear gutter.
-    const scale = Math.min((a.width * lerp(1.06, 0.86, side) * wpp) / LAYOUT_W, (a.height * 0.95 * wpp) / LAYOUT_H)
+    const fit = compact ? 0.92 : lerp(1.06, 0.86, side)
+    const scale = Math.min((a.width * fit * wpp) / LAYOUT_W, (a.height * 0.95 * wpp) / LAYOUT_H)
     const local = wpp / scale
     const gutter = side * 20 * wpp
     rig.current.position.set(cx * dir - gutter, cy + t * 20 * wpp - swoop * 0.25, swoop * -1.2)
@@ -571,7 +593,8 @@ function Workflow({ state }: { state: MutableRefObject<SceneState> }) {
 
     // Camera: wide and drifting, a sweep round to three-quarters, low and
     // close on the signal, then straight on for the settled system.
-    sampleCamera(cameraKeys(frame.pivot, dir, sigT), t, frame.camPos, frame.look)
+    // Phones stay pulled back so that orbit doesn't leave the frame.
+    sampleCamera(compact ? COMPACT_CAMERA : cameraKeys(frame.pivot, dir, sigT), t, frame.camPos, frame.look)
     camera.position.set(frame.camPos.x + d.px * 0.35, frame.camPos.y + d.py * 0.22, frame.camPos.z)
     camera.lookAt(frame.look)
 
@@ -581,6 +604,9 @@ function Workflow({ state }: { state: MutableRefObject<SceneState> }) {
     grid.current.position.set(lerp(cx * 0.4, frame.pivot.x * 1.2 - 0.6 * dir, wall), lerp(-2.6, cy * 1.2 - t * 12 * wpp, wall), lerp(-2, BG_Z, wall))
 
     const rush = (1 - d.intro) * 9
+    // The scatter is authored for a wide frame. Pull it in so the pieces
+    // are on screen while the camera stays back on a phone.
+    const scatter = compact ? COMPACT_SCATTER : 1
     tiles.forEach((tile, index) => {
       const group = tileRefs.current[index]
       if (!group) return
@@ -589,9 +615,9 @@ function Workflow({ state }: { state: MutableRefObject<SceneState> }) {
       const bob = Math.sin(time * 0.6 + index * 1.7) * 0.18 * idle
       const lift = tile.foreground ? Math.sin(Math.PI * align) * 50 * local : 0
       group.position.set(
-        lerp(from.position[0], to.position[0], align),
-        lerp(from.position[1], to.position[1], align) + bob + lift,
-        lerp(from.position[2], to.position[2], align) - rush * (1 + index * 0.15),
+        lerp(from.position[0] * scatter, to.position[0], align),
+        lerp(from.position[1] * scatter, to.position[1], align) + bob + lift,
+        lerp(from.position[2] * scatter, to.position[2], align) - rush * (1 + index * 0.15),
       )
       const flip =
         tile.id === "approval"
@@ -612,11 +638,11 @@ function Workflow({ state }: { state: MutableRefObject<SceneState> }) {
     fragments.forEach((fragment, index) => {
       const pull = smooth(remap(t, T.converge[0] + fragment.delay, T.converge[1] + fragment.delay))
       const angle = swirlAngle * (0.6 + fragment.spin * 0.5)
-      const sx = fragment.scattered.x
-      const sz = fragment.scattered.z + 2
+      const sx = fragment.scattered.x * scatter
+      const sz = fragment.scattered.z * scatter + 2
       frame.swirl.set(
         sx * Math.cos(angle * 0.25) - sz * Math.sin(angle * 0.25),
-        fragment.scattered.y + Math.sin(time * 0.5 + fragment.bob) * 0.25,
+        fragment.scattered.y * scatter + Math.sin(time * 0.5 + fragment.bob) * 0.25,
         sx * Math.sin(angle * 0.25) + sz * Math.cos(angle * 0.25) - 2 - rush * 1.4,
       )
       frame.dummy.position.lerpVectors(frame.swirl, fragment.target, pull)

@@ -180,14 +180,6 @@
     pointer-events: none;
   }
 
-  .hero-stage::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(100deg, color-mix(in srgb, var(--void) 92%, transparent) 0%, color-mix(in srgb, var(--void) 55%, transparent) 58%, transparent 100%);
-    pointer-events: none;
-  }
-
   .hero-scene {
     opacity: 0;
     transition: opacity 700ms ease;
@@ -197,9 +189,19 @@
     opacity: 1;
   }
 
-  /* Alternating hero: right-hand copy moves across one column plus the grid gap. */
-  .hero-stage[data-scene="live"] .hero-copy[data-side="right"] {
-    translate: calc(100% + 3rem) 0;
+  /* Wide screens only: a left scrim, and copy that steps into the other column. */
+  @media (min-width: 1024px) {
+    .hero-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, color-mix(in srgb, var(--void) 92%, transparent) 0%, color-mix(in srgb, var(--void) 55%, transparent) 58%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .hero-stage[data-scene="live"] .hero-copy[data-side="right"] {
+      translate: calc(100% + 3rem) 0;
+    }
   }
 
   .hero-stage:not([data-scene="live"]) .hero-scrim-right {
