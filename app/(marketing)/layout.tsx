@@ -33,22 +33,13 @@ const defaultStructuredData = {
     availableLanguage: ["English"],
   },
   foundingDate: "2023",
-  founders: [
-    {
-      "@type": "Person",
-      name: "Zayne Nair",
-      jobTitle: "Founder",
-      url: "https://www.zaynenair.com",
-      sameAs: ["https://www.zaynenair.com"],
-    },
-  ],
   makesOffer: [
     {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
         name: "AI automation",
-        serviceType: "Workflow automation",
+        serviceType: "AI agents and governance",
         url: "https://www.roqcx.com/services/ai-automation",
       },
     },

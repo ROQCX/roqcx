@@ -36,13 +36,13 @@ const STUDIO = [
 
   `Pricing: ROQ CX quotes after it understands the work, and confirms any fee before paid work begins.`,
 
-  `Zayne Nair founded ROQ CX. Studio delivery (websites, applications, automations and training) is hired through ROQ CX at ${SITE}. Fractional product leadership with Zayne is a separate practice at https://www.zaynenair.com.`,
+  `Studio delivery (websites, applications, automations and training) is hired through ROQ CX at ${SITE}.`,
 
   `ROQ CX does not promise delivery in two weeks, and it quotes after it understands the work. It no longer offers Prototype Sprint, Website Sprint, Build & Launch, Market Launch or a sample sprint plan. A prototype is available when you need to learn something before a larger build, as part of websites and web apps: ${SITE}/services/websites-web-apps.`,
 
   `The chat demo at ${SITE}/chatbot lets you tell it something, then ask for it back. It answers from what you gave it. Those notes are stored for that browser session. Delete notes removes them immediately, and a daily cleanup removes anything older than 24 hours. What you type is sent so it can reply, so do not share anything private. The chat on other pages is sent to OpenAI to reply and is not stored in the website database. The same idea, using information a business has approved, can answer customer questions from sources the business controls. Project enquiries go through ${SITE}/contact.`,
 
-  `What happens to an enquiry: the contact form asks for a name, email, business name, and what you would like to improve. Google reCAPTCHA checks the submission. If it passes, the message is emailed to hello@roqcx.com. The website does not keep a copy in a database. The studio keeps the email so it can reply, and will delete it on request. Privacy: ${SITE}/privacy.`,
+  `What happens to an enquiry: the contact form asks for a name, email, business name, and what you would like to improve. Google reCAPTCHA checks the submission. If it passes, the message is emailed to zayne@roqcx.com. The website does not keep a copy in a database. The studio keeps the email so it can reply, and will delete it on request. Privacy: ${SITE}/privacy.`,
 
   `Why ROQ CX exists: many smaller businesses have a few people trying ChatGPT and no clear next step. The studio starts from the business problem and builds the smallest thing that changes the work. Sometimes that is an automation, a website or a prototype. Sometimes the right answer is not AI. ROQ CX is based in Dubai, works across the GCC, and also works remotely. About: ${SITE}/about.`,
 
@@ -159,7 +159,7 @@ async function buildChunks() {
 
   return [
     ...STUDIO,
-    `ROQ CX services: AI automation (${SITE}/services/ai-automation), websites and web apps (${SITE}/services/websites-web-apps), and AI training (${SITE}/services/ai-training). The AI Opportunity Review (${SITE}/ai-opportunity-review) is the suggested place to start when you are not sure which you need. Overview: ${SITE}/services`,
+    `ROQ CX services: AI automation, including AI agents and governance (${SITE}/services/ai-automation), websites and web apps (${SITE}/services/websites-web-apps), and AI training (${SITE}/services/ai-training). The AI Opportunity Review (${SITE}/ai-opportunity-review) is the suggested place to start when you are not sure which you need. Overview: ${SITE}/services`,
     ...services.flatMap(offerChunks),
     ...trainingChunks(),
     ...offerChunks(opportunityReview),

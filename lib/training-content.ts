@@ -43,8 +43,8 @@ export type ModuleArt = "hierarchy" | "rcto" | "agent"
 
 export const curriculum: { title: string; body: string; art?: ModuleArt }[] = [
   {
-    title: "AI before the hype",
-    body: "Discover the AI you’ve already been using and what’s changed with generative AI. Understand the difference between AI, machine learning, generative AI and large language models.",
+    title: "AI 101",
+    body: "What AI is, and how to use it sensibly. Discover the AI you’ve already been using and what’s changed with generative AI, and the difference between AI, machine learning, generative AI and large language models.",
     art: "hierarchy",
   },
   {
@@ -169,9 +169,9 @@ export const trainingFaqs: Faq[] = [
       "Yes, alongside Claude, Gemini, Perplexity and Microsoft Copilot. The aim is not to memorise where the buttons are. It is to understand what these tools are doing, so you can choose the right one for a task and get more useful results from it.",
   },
   {
-    question: "What is the difference between AI 101 and AI in Practice?",
+    question: "What is AI 101?",
     answer:
-      "AI 101 is a shorter introduction to what AI is and how to use it sensibly. AI in Practice is the full-day masterclass. It covers the same foundations, then adds prompting, AI agents, safe use across a business and three practical exercises using your own work.",
+      "AI 101 is a module inside AI in Practice, not a separate course. It covers what AI is and how to use it sensibly. The rest of the day builds on it: prompting, AI agents, safe use across a business, and three exercises using your own work.",
   },
   {
     question: "Does the masterclass cover AI agents?",

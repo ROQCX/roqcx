@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const siteUrl = "https://www.roqcx.com"
 export const siteName = "ROQ CX"
 
-export const defaultTitle = "AI Automation & Digital Products for SMEs | ROQ CX"
+export const defaultTitle = "AI Automation, Websites & Training for SMEs | ROQ CX"
 export const defaultDescription =
   "You have something worth building, work that needs simplifying, or a team putting AI to use. ROQ CX is an AI-native studio that gets you there."
 

@@ -18,6 +18,7 @@ const nextConfig = {
   async redirects() {
     return [
       // Specific legacy paths before the sprint-catalog wildcard.
+      { source: '/case-studies/zaynenair', destination: '/case-studies', permanent: true },
       { source: '/solutions/roqchat', destination: '/chatbot', permanent: true },
       { source: '/solutions/automation', destination: '/services/ai-automation', permanent: true },
       { source: '/solutions/ai', destination: '/services/ai-automation', permanent: true },

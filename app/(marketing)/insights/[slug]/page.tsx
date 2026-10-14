@@ -30,7 +30,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return pageSeo({
-    title: post.title,
+    title: post.seoTitle ?? post.title,
+    socialTitle: post.title,
     description: post.description,
     path: `/insights/${post.slug}`,
     type: "article",
@@ -68,6 +69,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             ? {
                 "@type": "Person",
                 name: post.author.name,
+                ...(post.author.url ? { url: post.author.url } : {}),
               }
             : undefined,
         }}
@@ -81,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <p className="mb-0 mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[color-mix(in_srgb,var(--chalk)_78%,transparent)]">
           <span className="inline-flex items-center gap-2">
             <Glyph name="person" size={16} />
-            {post.author.name}
+            <AuthorName name={post.author.name} url={post.author.url} onDark />
           </span>
           <span className="inline-flex items-center gap-2">
             <Glyph name="clock" size={16} />
@@ -99,7 +101,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <div className="grid gap-5 lg:sticky lg:top-[96px]">
             <div className="plate bg-[var(--chalk)] p-6">
               <p className="m-0 font-geist-mono text-xs uppercase tracking-[0.18em] text-[var(--forest)]">Written by</p>
-              <p className="font-serif-display m-0 mt-3 text-2xl">{post.author.name}</p>
+              <AuthorName name={post.author.name} url={post.author.url} className="font-serif-display mt-3 text-2xl" />
               <p className="mb-0 mt-1 text-[var(--ink-soft)]">{post.author.role}</p>
               <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 border-t border-[var(--rule)] p-0 pt-4">
                 {post.tags.map((tag) => (
@@ -149,5 +151,32 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         art={<TangleLine className="mb-10 block h-auto w-full max-w-[720px]" />}
       />
     </article>
+  )
+}
+
+function AuthorName({
+  name,
+  url,
+  onDark = false,
+  className = "",
+}: {
+  name: string
+  url?: string
+  onDark?: boolean
+  className?: string
+}) {
+  if (!url) return <span className={className}>{name}</span>
+
+  const tone = onDark
+    ? "text-[var(--chalk)] decoration-[var(--signal)]"
+    : "text-[var(--ink)] decoration-[var(--signal)]"
+
+  return (
+    <a
+      href={url}
+      className={`inline-flex min-h-11 items-center underline decoration-2 underline-offset-4 ${tone} ${className}`}
+    >
+      {name}
+    </a>
   )
 }

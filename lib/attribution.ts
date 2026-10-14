@@ -1,5 +1,5 @@
 /**
- * First-touch session attribution for inbound traffic (esp. zaynenair.com → roqcx.com).
+ * First-touch session attribution for inbound traffic.
  * Captures UTMs + referrer once per session and reuses them on contact submit.
  */
 

@@ -273,24 +273,21 @@ export function TrainingPage() {
         </div>
       </section>
 
-      {/* Facilitator */}
+      {/* Studio */}
       <section className="border-t border-[var(--rule)]">
         <div className={`${wrap} grid gap-8 py-14 md:grid-cols-12 md:py-20`}>
           <div className="md:col-span-4">
-            <h2 className="font-serif-display m-0 text-3xl leading-tight">Learn from someone applying AI in real work.</h2>
+            <h2 className="font-serif-display m-0 text-3xl leading-tight">Taught by the studio.</h2>
           </div>
           <div className="md:col-span-7 md:col-start-6">
             <p className="m-0 text-lg leading-relaxed">
-              The masterclass is facilitated by Zayne Nair, founder of ROQ CX. AI is part of Zayne’s everyday work, from research and product strategy to building applications and exploring automation.
+              AI in Practice is run by ROQ CX. The day uses the same judgement as the studio’s client work: where AI helps, where it does not, and what a person still has to check.
             </p>
             <p className="mb-0 mt-4 leading-relaxed text-[var(--ink-soft)]">
-              Zayne’s background spans product management, technology delivery and customer experience, with more than 15 years helping organisations turn ideas and technology into practical business outcomes. Through ROQ CX, the studio helps organisations find opportunities for AI, understand the risks and improve the way they operate. The masterclass brings that experience into a practical, approachable day.
+              You practise on your own non-confidential work, then leave with a way to judge what is worth trying next.
             </p>
-            <p className="mb-0 mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              <Link href="https://www.zaynenair.com" className="text-[var(--ink)] underline decoration-[var(--signal)] decoration-2 underline-offset-4">
-                More about Zayne
-              </Link>
-              <Link href="/about" className="text-[var(--ink)] underline decoration-[var(--signal)] decoration-2 underline-offset-4">
+            <p className="mb-0 mt-6">
+              <Link href="/about" className="inline-flex min-h-11 items-center text-[var(--ink)] underline decoration-[var(--signal)] decoration-2 underline-offset-4">
                 About the studio
               </Link>
             </p>

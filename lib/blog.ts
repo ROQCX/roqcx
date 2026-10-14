@@ -23,12 +23,15 @@ const defaultAuthor = {
 export interface BlogPost {
   slug: string
   title: string
+  /** Search-result title when it should differ from the on-page headline. */
+  seoTitle?: string
   description: string
   date: string
   author: {
     name: string
     image: string
     role: string
+    url?: string
   }
   readingTime: number
   tags: string[]
@@ -51,6 +54,17 @@ function normalizeTag(tag: string): string {
     .join(" ")
 }
 
+function authorUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined
+  try {
+    const url = new URL(value.trim())
+    if (url.protocol !== "https:" && url.protocol !== "http:") return undefined
+    return url.href
+  } catch {
+    return undefined
+  }
+}
+
 function authorFrom(author: unknown): BlogPost["author"] {
   if (typeof author === "string") {
     return { name: author, image: defaultAuthor.image, role: "Author" }
@@ -61,6 +75,7 @@ function authorFrom(author: unknown): BlogPost["author"] {
       name: record.name || defaultAuthor.name,
       image: record.image || defaultAuthor.image,
       role: record.role || defaultAuthor.role,
+      url: authorUrl(record.url),
     }
   }
   return defaultAuthor
@@ -81,6 +96,7 @@ function parsePost(slug: string, fileContent: string, includeContent: boolean) {
   const post: BlogPost = {
     slug,
     title: data.title,
+    seoTitle: typeof data.seoTitle === "string" ? data.seoTitle : undefined,
     description: data.description,
     date: data.date,
     lastModified: getContentLastModified(data.updated),

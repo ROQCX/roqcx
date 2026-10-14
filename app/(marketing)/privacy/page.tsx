@@ -13,7 +13,7 @@ export const metadata: Metadata = pageSeo({
 const loads: { icon: GlyphName; body: string }[] = [
   {
     icon: "grid",
-    body: "Google Tag Manager, shared with zaynenair.com so a visit can be recognised across both sites. It can load analytics and advertising tags.",
+    body: "Google Tag Manager. It can load analytics and advertising tags, and can recognise a visit across sites that use the same container.",
   },
   {
     icon: "eye",
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
     <article className="pb-20">
       <PageHero
         title="Privacy"
-        lede="ROQ CX is operated from Dubai. Enquiries are read by the studio at hello@roqcx.com."
+        lede="ROQ CX is operated from Dubai. Enquiries from the form are read at zayne@roqcx.com."
         art={<PrivacyFlowArt />}
       />
       <div className={`${wrap} grid gap-10 py-14 md:py-20 lg:grid-cols-12`}>
@@ -51,10 +51,10 @@ export default function PrivacyPage() {
               Enquiry form
             </h2>
             <p className="mb-0 mt-4 leading-relaxed">
-              The contact form asks for your name, email, business name, and what you would like to improve. Interest and timing are optional. Google reCAPTCHA checks the submission. If it passes, the message is emailed to hello@roqcx.com. We don’t keep a copy in a website database. Please don’t include passwords, customer records or confidential documents.
+              The contact form asks for your name, email, business name, and what you would like to improve. Interest and timing are optional. Google reCAPTCHA checks the submission. If it passes, the message is emailed to zayne@roqcx.com. We don’t keep a copy in a website database. Please don’t include passwords, customer records or confidential documents.
             </p>
             <p className="mb-0 mt-3 leading-relaxed text-[var(--ink-soft)]">
-              We keep the email so we can reply. Write to hello@roqcx.com if you want that enquiry deleted. Don’t include passwords, customer records or confidential documents.
+              We keep the email so we can reply. Write to zayne@roqcx.com if you want that enquiry deleted. Don’t include passwords, customer records or confidential documents.
             </p>
           </section>
 
@@ -80,8 +80,8 @@ export default function PrivacyPage() {
             </span>
             <p className="font-serif-display m-0 mt-4 text-2xl leading-tight">Questions about your data?</p>
             <p className="mb-0 mt-2 leading-relaxed text-[color-mix(in_srgb,var(--chalk)_82%,transparent)]">Write to the studio and we’ll answer directly.</p>
-            <a href="mailto:hello@roqcx.com" className="btn-signal mt-5">
-              hello@roqcx.com
+            <a href="mailto:zayne@roqcx.com" className="btn-signal mt-5">
+              zayne@roqcx.com
             </a>
           </div>
         </aside>

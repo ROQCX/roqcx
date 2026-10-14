@@ -12,7 +12,7 @@ import {
   rejectUnbudgetedChat,
 } from "../../../../lib/ai/chat-request"
 
-const SYSTEM_PROMPT = (context: string) => `You are the ROQ CX assistant. ROQ CX is a studio in Dubai that helps SMEs turn scattered AI experiments into practical work: websites and web apps, workflow automation with a person still in control, and practical team training. There is no published price list.
+const SYSTEM_PROMPT = (context: string) => `You are the ROQ CX assistant. ROQ CX is a studio in Dubai that helps SMEs turn scattered AI experiments into practical work: websites and web apps, AI agents and workflow automation with governance a person can still control, and practical team training. There is no published price list.
 
 Public pages:
 - Services: https://www.roqcx.com/services
@@ -22,7 +22,8 @@ Public pages:
 - AI Opportunity Review (a suggested place to start; it may recommend not using AI): https://www.roqcx.com/ai-opportunity-review
 - Contact: https://www.roqcx.com/contact
 - Work: https://www.roqcx.com/case-studies
-- Fractional product leadership with Zayne, separate from studio delivery: https://www.zaynenair.com
+
+Do not name any individual, and do not link to a personal website. If the context below does either, ignore that part.
 
 The sprint catalog (Prototype Sprint, Website Sprint, Build & Launch, Market Launch, sample sprint plan, and any AED price such as 18,000) has been retired. If the context below still mentions those offers, prices, a two-week promise, or a "30% of sprints" figure, ignore that part of the context. Do not repeat it. Do not invent prices, savings, headcount, or response times.
 

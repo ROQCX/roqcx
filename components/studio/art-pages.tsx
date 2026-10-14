@@ -291,10 +291,120 @@ function VibeArt() {
   )
 }
 
+/** An agent proposes a refund; checks outside the agent catch the authority limit and route it to a person. */
+function GovernanceArt() {
+  const checks: { label: string; ok: boolean }[] = [
+    { label: "Evidence", ok: true },
+    { label: "Rules", ok: true },
+    { label: "Policy", ok: true },
+    { label: "Authority", ok: false },
+  ]
+  return (
+    <>
+      <text x={24} y={58} fontSize="13" fontStyle="italic" fill={C.clay}>checked outside the agent</text>
+      <path d="M150 62 C 166 64, 176 70, 184 80" fill="none" stroke={C.clay} strokeWidth={1.5} strokeLinecap="round" />
+      <Sheet x={24} y={98} w={124} h={104} r={10}>
+        <circle cx={46} cy={120} r={11} fill={C.signal} stroke={C.ink} strokeWidth={1.25} />
+        <G name="chat" x={39} y={113} size={14} />
+        <Bar x={64} y={116} w={60} h={7} fill={C.ink} />
+        <rect x={36} y={142} width={100} height={46} rx={8} fill={C.paper} stroke={C.ink} strokeWidth={1.25} />
+        <text x={48} y={160} fontSize="11" fill={C.soft}>Refund</text>
+        <text x={48} y={179} fontSize="15" fontWeight="600" fill={C.ink}>AED 750</text>
+      </Sheet>
+      <path d="M150 150 H176" stroke={C.ink} strokeWidth={1.5} className="ill-march" />
+      <path d="M170 144 l7 6 -7 6" fill="none" stroke={C.ink} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <Sheet x={182} y={44} w={128} h={218} r={12} fill={C.paper}>
+        {checks.map((c, i) => (
+          <g key={c.label}>
+            <rect x={196} y={62 + i * 48} width={100} height={34} rx={8} fill={c.ok ? C.chalk : C.clay} stroke={C.ink} strokeWidth={1.25} />
+            <G name={c.ok ? "check" : "cross"} x={206} y={70 + i * 48} size={18} color={c.ok ? C.forest : C.chalk} width={2.25} />
+            <text x={232} y={84 + i * 48} fontSize="13" fill={c.ok ? C.ink : C.chalk}>{c.label}</text>
+          </g>
+        ))}
+      </Sheet>
+      <path d="M310 106 C 330 106, 334 94, 352 94" fill="none" stroke={C.soft} strokeWidth={1.5} strokeDasharray="3 4" />
+      <Sheet x={352} y={70} w={106} h={48} r={10} fill={C.forest} stroke={C.forest}>
+        <G name="check" x={364} y={84} size={20} color={C.signal} width={2.25} />
+        <text x={392} y={99} fontSize="13" fill={C.chalk}>Execute</text>
+      </Sheet>
+      <path d="M296 223 C 330 223, 346 210, 378 206" fill="none" stroke={C.ink} strokeWidth={1.5} className="ill-march" />
+      <circle cx={405} cy={204} r={26} fill={C.signal} stroke={C.ink} strokeWidth={1.5} />
+      <G name="person" x={393} y={192} />
+      <path d="M405 178 V124" stroke={C.ink} strokeWidth={1.25} strokeDasharray="3 4" />
+      <path d="M399 130 l6 -7 6 7" fill="none" stroke={C.ink} strokeWidth={1.25} strokeLinecap="round" strokeLinejoin="round" />
+      <text x={405} y={250} textAnchor="middle" fontSize="12" fill={C.soft}>over AED 500</text>
+      <text x={405} y={266} textAnchor="middle" fontSize="12" fill={C.soft}>needs approval</text>
+    </>
+  )
+}
+
+/** A loose demo on the left; the same agent in production on the right, with narrow tools, evals, limits and a fallback. */
+function ProductionAgentArt() {
+  const tools = ["getCustomer()", "getOpenCases()", "createCase()"]
+  const ops: { icon?: GlyphName; label: string }[] = [
+    { label: "evals" },
+    { icon: "gauge", label: "limits" },
+    { icon: "person", label: "fallback" },
+  ]
+  return (
+    <>
+      <text x={30} y={78} fontSize="13" fontStyle="italic" fill={C.clay}>the demo</text>
+      <Sheet x={22} y={92} w={116} h={92} r={6} fill={C.paper} rotate={-6}>
+        <Bar x={36} y={110} w={70} h={7} fill={C.ink} />
+        <Bar x={36} y={126} w={88} h={6} />
+        <Bar x={36} y={140} w={54} h={6} />
+        <rect x={36} y={154} width={46} height={18} rx={5} fill={C.signal} stroke={C.ink} strokeWidth={1.25} />
+      </Sheet>
+      <text x={30} y={222} fontSize="13" fontStyle="italic" fill={C.clay}>works once</text>
+      <path d="M144 136 C 154 130, 160 130, 168 134" fill="none" stroke={C.ink} strokeWidth={1.5} strokeLinecap="round" />
+      <path d="M161 129 l8 5 -6 7" fill="none" stroke={C.ink} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <Sheet x={172} y={24} w={290} h={250} r={14}>
+        <text x={190} y={48} fontSize="11" letterSpacing="1.5" fontFamily="var(--font-geist-mono), ui-monospace, monospace" fill={C.forest}>
+          PRODUCTION
+        </text>
+        <circle cx={222} cy={112} r={24} fill={C.signal} stroke={C.ink} strokeWidth={1.5} />
+        <G name="chat" x={211} y={101} size={22} />
+        <path d="M246 112 H264" stroke={C.ink} strokeWidth={1.5} />
+        <rect x={264} y={99} width={28} height={26} rx={6} fill={C.paper} stroke={C.ink} strokeWidth={1.25} />
+        <G name="lock" x={270} y={104} size={16} />
+        {tools.map((t, i) => (
+          <g key={t}>
+            <path d={`M292 112 C 304 112, 306 ${73 + i * 40}, 320 ${73 + i * 40}`} fill="none" stroke={C.forest} strokeWidth={1.5} />
+            <rect x={320} y={58 + i * 40} width={126} height={30} rx={7} fill={C.chalk} stroke={C.ink} strokeWidth={1.25} />
+            <text x={332} y={77 + i * 40} fontSize="11" fontFamily="var(--font-geist-mono), ui-monospace, monospace" fill={C.ink}>{t}</text>
+          </g>
+        ))}
+        <path d="M190 182 H444" stroke={C.rule} strokeWidth={1.5} />
+        {ops.map((o, i) => {
+          const x = 190 + i * 88
+          return (
+            <g key={o.label}>
+              <rect x={x} y={196} width={78} height={60} rx={8} fill={C.paper} stroke={C.ink} strokeWidth={1.25} />
+              {o.icon ? (
+                <G name={o.icon} x={x + 29} y={204} size={20} />
+              ) : (
+                [0, 1, 2].map((k) => (
+                  <g key={k}>
+                    <rect x={x + 12 + k * 20} y={206} width={16} height={16} rx={3} fill={k === 2 ? C.clay : C.forest} />
+                    <G name={k === 2 ? "cross" : "check"} x={x + 14 + k * 20} y={208} size={12} color={k === 2 ? C.chalk : C.signal} width={2} />
+                  </g>
+                ))
+              )}
+              <text x={x + 39} y={246} textAnchor="middle" fontSize="12" fill={C.soft}>{o.label}</text>
+            </g>
+          )
+        })}
+      </Sheet>
+    </>
+  )
+}
+
 const insightArt: Record<string, () => ReactNode> = {
   "ai-automation-smb": AutomationSmbArt,
   "cx-matters": CxArt,
   "digital-transformation": FoundationArt,
+  "implementing-ai-governance": GovernanceArt,
+  "production-ai-agents": ProductionAgentArt,
   "rpa-evolution": EvolutionArt,
   "vibe-coding": VibeArt,
 }

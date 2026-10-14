@@ -189,6 +189,23 @@
     opacity: 1;
   }
 
+  /* Phones: darken the aurora behind headlines. The scene and the copy sit above this. */
+  @media (max-width: 1023px) {
+    .hero-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--void) 88%, transparent) 0%,
+        color-mix(in srgb, var(--void) 55%, transparent) 42%,
+        transparent 72%
+      );
+    }
+  }
+
   /* Wide screens only: a left scrim, and copy that steps into the other column. */
   @media (min-width: 1024px) {
     .hero-stage::after {

@@ -4,9 +4,6 @@ import { AboutArt, Glyph, TangleLine, type GlyphName } from "@/components/studio
 import { PageHero, sectionTitle, wrap } from "@/components/studio/page-hero"
 import { pageSeo } from "@/lib/seo"
 
-// The bounded improvement cycle from The Adaptive Enterprise Loop white paper.
-const whitePaper = "https://www.zaynenair.com/papers/adaptive-enterprise-loop"
-
 const cycle: { icon: GlyphName; title: string; body: string }[] = [
   { icon: "eye", title: "Map the flow", body: "See where the work goes and where it waits, before anyone names a tool." },
   { icon: "search", title: "Find the constraint", body: "Find what actually holds the work up, and test that explanation." },
@@ -111,11 +108,7 @@ export default function AboutPage() {
             <h2 className={`${sectionTitle} md:col-span-4`}>How we choose what to build</h2>
             <div className="grid gap-4 text-lg leading-relaxed text-[var(--ink-soft)] md:col-span-7 md:col-start-6">
               <p className="m-0 text-[var(--ink)]">
-                We run our own work, and every client engagement, on the improvement cycle from{" "}
-                <Link href={whitePaper} className="text-[var(--ink)] underline decoration-[var(--signal)] decoration-2 underline-offset-4">
-                  The Adaptive Enterprise Loop
-                </Link>
-                . It keeps each commitment small enough to test, and lets evidence decide what happens next.
+                We run our own work, and every client engagement, on a short improvement cycle. It keeps each commitment small enough to test, and lets evidence decide what happens next.
               </p>
               <p className="m-0">
                 A person stays able to approve, stop or correct anything we put in place. We agree what we will measure before we start.

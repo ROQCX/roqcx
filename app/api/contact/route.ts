@@ -111,7 +111,8 @@ ${formatAttributionForEmail(attribution)}
 
     await resend.emails.send({
       from: 'ROQ CX <hello@updates.roqcx.com>',
-      to: ['hello@roqcx.com'],
+      to: ['zayne@roqcx.com'],
+      replyTo: email,
       subject: trainingTrack
         ? `AI in Practice: ${trainingLabels[trainingTrack]} from ${name.slice(0, 80) || 'a visitor'}`
         : `New Contact Form Submission from ${name.slice(0, 80) || 'a visitor'}`,

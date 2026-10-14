@@ -31,21 +31,21 @@ export const services: ServiceContent[] = [
     path: "/services/ai-automation",
     label: "AI automation",
     eyebrow: "Automate",
-    title: "Reduce repetitive work without losing control.",
-    lede: "We look at the copying, chasing and re-entering between the tools you already use, then automate the parts that are worth it, with a person still able to stop, edit or approve.",
+    title: "AI agents and automation you can still control.",
+    lede: "We automate the copying, chasing and re-entering between the tools you already use. Where an AI agent is the useful part, we build a bounded one and put governance around it: what it can access, what it can do, and where a person still approves.",
     situation:
-      "For teams that already have a handful of tools, and a few people quietly pasting between them. You do not need a named AI project to start.",
+      "For teams pasting between a handful of tools, or trying an AI agent with no shared rules. You do not need a named AI project to start.",
     problems: [
       "Customer questions wait while someone searches for the answer.",
       "The same details are typed into more than one system.",
       "Follow-ups depend on who remembers to send them.",
-      "A chat tool is in use, but there is no shared way of working.",
+      "An AI agent is in use, but nobody has agreed what it can see or do.",
     ],
     deliverables: [
-      "A workflow that moves a defined piece of work from one step to the next.",
+      "An AI agent, or a plain workflow, for one defined piece of work.",
+      "Governance for it: access, allowed actions, approval, review, and an owner after launch.",
       "Connections to the systems that already hold the information.",
-      "AI-assisted drafting, sorting or extraction where that is the useful part.",
-      "An approval point, and a note of who operates it after launch.",
+      "Operating notes the team can run without us in the room.",
     ],
     process: [
       {
@@ -54,19 +54,19 @@ export const services: ServiceContent[] = [
       },
       {
         title: "Choose the intervention",
-        body: "Sometimes that is an automation. Sometimes it is a clearer handoff with no model in it. We say which, and why.",
+        body: "Sometimes that is an AI agent. Sometimes it is a plain automation, or a clearer handoff with no model in it. We say which, and why.",
       },
       {
         title: "Build the bounded version",
-        body: "We connect the systems we agreed, and we limit what the automation can see and do.",
+        body: "We connect the systems we agreed, and we write the governance: what the agent can see, what it can do, and where it must stop.",
       },
       {
         title: "Hand it over",
-        body: "You get the operating notes: what it can access, where a person approves, and who owns it.",
+        body: "You get the operating notes: what it can access, where a person approves, how activity is reviewed, and who owns it.",
       },
     ],
     boundaries: [
-      "An agent is not the default. We use one when a person would otherwise repeat the same judgement.",
+      "An AI agent is not the default. We use one when a person would otherwise repeat the same judgement, and governance is agreed before it runs.",
       "Ongoing oversight is part of the engagement only if we agree it.",
       "We name the specific tools in the proposal, after we have seen how you use them.",
       "We quote once we understand the work, and confirm the fee before anything is paid.",
@@ -86,6 +86,16 @@ export const services: ServiceContent[] = [
       },
     ],
     faqs: [
+      {
+        question: "Do you build AI agents?",
+        answer:
+          "Yes, when an agent is the useful part of a workflow. It gets a defined job, limited access, and a person who can stop, edit or approve. If a plain automation would do the job, we say so.",
+      },
+      {
+        question: "What does AI agent governance include?",
+        answer:
+          "What the agent can access, what it is allowed to do, where a person has to approve, how activity is reviewed, and who owns it after launch. Those limits are agreed before it runs.",
+      },
       {
         question: "Will this replace someone on the team?",
         answer:
@@ -189,7 +199,7 @@ export const services: ServiceContent[] = [
       "Leaders want the team capable, without a new platform project.",
     ],
     deliverables: [
-      "An AI 101 that uses your actual work, not a generic slideshow.",
+      "The AI 101 module, using your actual work rather than a generic slideshow.",
       "Exercises in drafting, checking and rejecting an answer.",
       "A short written reminder of the limits you want the team to keep.",
     ],

@@ -216,33 +216,6 @@ export function HomePage({ studies }: HomePageProps) {
         </div>
       </section>
 
-      <section className={`${wrap} py-16 md:py-24`}>
-        <h2 className={sectionTitle}>Who you work with</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          <div className="plate bg-[var(--forest)] p-8 text-[var(--chalk)] md:p-10">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-[var(--signal)] text-[var(--ink)]">
-              <Glyph name="layers" size={22} />
-            </span>
-            <p className="font-serif-display m-0 mt-6 text-3xl">ROQ CX</p>
-            <p className="mb-0 mt-3 text-lg leading-relaxed text-[color-mix(in_srgb,var(--chalk)_86%,transparent)]">
-              The studio you hire for websites, web apps, automations and training.
-            </p>
-          </div>
-          <div className="plate bg-[var(--chalk)] p-8 md:p-10">
-            <span className="grid h-12 w-12 place-items-center rounded-full border border-[var(--ink)] bg-[var(--paper)]">
-              <Glyph name="person" size={22} />
-            </span>
-            <p className="font-serif-display m-0 mt-6 text-3xl">Zayne Nair</p>
-            <p className="mb-0 mt-3 text-lg leading-relaxed text-[var(--ink-soft)]">
-              Founder of the studio. Fractional product leadership is a separate practice, on his personal site.
-            </p>
-            <Link href="https://www.zaynenair.com" className="mt-5 inline-flex items-center gap-2 text-[var(--ink)] underline decoration-[var(--signal)] decoration-2 underline-offset-4">
-              Looking for fractional product leadership? Meet Zayne. <Glyph name="arrow" size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <section className="border-t border-[var(--rule)] bg-[var(--chalk)]">
         <div className={`${wrap} grid gap-10 py-16 md:grid-cols-12 md:py-24`}>
           <h2 className={`${sectionTitle} md:col-span-4`}>Questions</h2>
