@@ -80,28 +80,43 @@ export async function storeEmbedding(
 // Find similar chunks based on embedding.
 // vector_distance_cos returns cosine *distance* (0 = identical, 2 = opposite),
 // so we order ASC and convert to a similarity score for callers.
-// A session id searches only that session. No session id searches the global base.
+// A session id searches only that session, and distance is computed after the
+// session filter. The global vector index must not pick neighbours first and
+// then drop this visitor's notes. No session id searches the global base.
 export async function findSimilarChunks(
   embedding: number[],
   sessionId?: string | null,
   limit: number = 5
 ): Promise<{ content: string; similarity: number }[]> {
-  const args: Array<string | number> = [JSON.stringify(embedding)]
-  if (sessionId) args.push(sessionId)
-  args.push(limit)
-
-  const results = await db.execute(
-    `
-      SELECT DISTINCT c.content,
-             vector_distance_cos(e.embedding, vector32(?)) as distance
-      FROM chunks c
-      JOIN embeddings e ON c.id = e.chunk_id
-      WHERE ${sessionId ? "c.session_id = ?" : "c.is_global = TRUE"}
-      ORDER BY distance ASC
-      LIMIT ?
-    `,
-    args
-  )
+  const vector = JSON.stringify(embedding)
+  const results = sessionId
+    ? await db.execute(
+        `
+          SELECT content, distance
+          FROM (
+            SELECT c.content,
+                   vector_distance_cos(e.embedding, vector32(?)) AS distance
+            FROM chunks c
+            JOIN embeddings e ON c.id = e.chunk_id
+            WHERE c.session_id = ?
+          )
+          ORDER BY distance ASC
+          LIMIT ?
+        `,
+        [vector, sessionId, limit],
+      )
+    : await db.execute(
+        `
+          SELECT DISTINCT c.content,
+                 vector_distance_cos(e.embedding, vector32(?)) as distance
+          FROM chunks c
+          JOIN embeddings e ON c.id = e.chunk_id
+          WHERE c.is_global = TRUE
+          ORDER BY distance ASC
+          LIMIT ?
+        `,
+        [vector, limit],
+      )
 
   return results.rows.map(row => ({
     content: row.content as string,
