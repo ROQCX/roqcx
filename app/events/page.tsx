@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 import Script from "next/script"
 import { BrandLockup } from "@/components/brand/lockup"
 import { LteyInterestForm } from "@/components/events/ltey-interest-form"
@@ -35,19 +34,9 @@ export default function EventsPage() {
         src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
         strategy="afterInteractive"
       />
-      <article className="flex min-h-screen flex-col bg-white text-[#8f2d3a]">
+      <article className="flex min-h-[calc(100svh-72px)] flex-col bg-white text-[#8f2d3a]">
         <header className="relative flex flex-1 flex-col overflow-hidden bg-white">
-          <div className="mx-auto flex w-[min(1100px,calc(100%-2.5rem))] justify-end py-4 md:w-[min(1100px,calc(100%-4rem))]">
-            <nav aria-label="Event">
-              <Link
-                href="/"
-                className="inline-flex min-h-11 items-center text-sm font-medium tracking-wide text-[#8f2d3a] no-underline underline-offset-4 hover:underline"
-              >
-                Home
-              </Link>
-            </nav>
-          </div>
-          <div className="mx-auto grid w-[min(1100px,calc(100%-2.5rem))] items-center gap-10 pb-10 md:w-[min(1100px,calc(100%-4rem))] md:pb-16 lg:grid-cols-12 lg:gap-16">
+          <div className="mx-auto grid w-[min(1100px,calc(100%-2.5rem))] items-center gap-10 py-10 md:w-[min(1100px,calc(100%-4rem))] md:py-16 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
               <div className="ltey-partnership">
                 <div className="ltey-partnership-row">
