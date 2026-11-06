@@ -70,7 +70,7 @@ export default function EventsPage() {
                 </svg>
               </p>
               <p className="mb-0 mt-6 max-w-[26rem] text-lg leading-relaxed">
-                We’ll let you know as soon as a date is scheduled.
+                Practical AI training. We’ll let you know as soon as a date is scheduled.
               </p>
             </div>
             <LteyInterestForm />

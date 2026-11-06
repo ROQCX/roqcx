@@ -3,6 +3,7 @@ import { Resend } from "resend"
 import { z } from "zod"
 import { rejectOffsiteContact } from "@/lib/ai/chat-request"
 import { enquiryErrorMessage, eventInterestRequestSchema } from "@/lib/enquiry"
+import { lteyConfirmationEmail } from "@/lib/ltey-confirmation-email"
 import { addLteyInterest } from "@/lib/ltey-segment"
 import { budgetResponse, takeEventSlot } from "@/lib/rate-limit"
 
@@ -74,16 +75,7 @@ export async function POST(req: Request) {
         to: [email],
         replyTo: "hello@roqcx.com",
         subject: "You registered your interest",
-        text: [
-          "Thanks for registering from the banner at Let’s Talk Early Years.",
-          "",
-          "This secures your conference discount on the next practical AI training. We will let you know as soon as a date is scheduled.",
-          "",
-          "That is the only thing this address is for. To be removed, write to hello@roqcx.com.",
-          "",
-          "ROQ CX - FZCO",
-          "Dubai, UAE",
-        ].join("\n"),
+        ...lteyConfirmationEmail(),
       },
       { idempotencyKey: `ltey-interest/${email}`.slice(0, 256) },
     )
