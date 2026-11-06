@@ -11,6 +11,9 @@ const withMDX = createMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   agentRules: false,
+  experimental: {
+    agentUpgrade: 'security',
+  },
   turbopack: {
     root: import.meta.dirname,
   },
