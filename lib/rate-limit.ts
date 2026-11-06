@@ -17,6 +17,12 @@ const CHAT_DAILY_LIMIT = positiveInt("CHAT_DAILY_LIMIT", 500)
 const CONTACT_IP_LIMIT = positiveInt("CONTACT_IP_LIMIT", 5)
 const CONTACT_IP_WINDOW_MS = positiveInt("CONTACT_IP_WINDOW_MS", HOUR)
 const CONTACT_DAILY_LIMIT = positiveInt("CONTACT_DAILY_LIMIT", 40)
+// A printed QR is often scanned from one venue connection, so the IP cap stays high.
+const EVENT_EMAIL_LIMIT = positiveInt("EVENT_EMAIL_LIMIT", 3)
+const EVENT_EMAIL_WINDOW_MS = positiveInt("EVENT_EMAIL_WINDOW_MS", HOUR)
+const EVENT_IP_LIMIT = positiveInt("EVENT_IP_LIMIT", 120)
+const EVENT_IP_WINDOW_MS = positiveInt("EVENT_IP_WINDOW_MS", HOUR)
+const EVENT_DAILY_LIMIT = positiveInt("EVENT_DAILY_LIMIT", 1000)
 
 export type BudgetResult = "ok" | "limited" | "unavailable"
 
@@ -112,6 +118,18 @@ export async function takeContactSlot(req: Request): Promise<BudgetResult> {
   return takeSlots([
     [`contact:burst:${ip}`, CONTACT_IP_LIMIT, CONTACT_IP_WINDOW_MS],
     [`contact:day:${day}`, CONTACT_DAILY_LIMIT, 0],
+  ])
+}
+
+/** Separate from contact enquiries so a busy event does not use that budget. */
+export async function takeEventSlot(req: Request, email: string): Promise<BudgetResult> {
+  const ip = await hashAddress(clientAddress(req))
+  const mail = await hashAddress(email.trim().toLowerCase())
+  const day = utcDay()
+  return takeSlots([
+    [`event:email:${mail}`, EVENT_EMAIL_LIMIT, EVENT_EMAIL_WINDOW_MS],
+    [`event:ip:${ip}`, EVENT_IP_LIMIT, EVENT_IP_WINDOW_MS],
+    [`event:day:${day}`, EVENT_DAILY_LIMIT, 0],
   ])
 }
 

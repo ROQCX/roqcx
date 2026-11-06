@@ -58,6 +58,21 @@ export default function PrivacyPage() {
             </p>
           </section>
 
+          <section className="plate bg-[var(--chalk)] p-6 md:p-8">
+            <h2 className="m-0 flex items-center gap-3 text-2xl font-medium">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-[var(--signal)]">
+                <Glyph name="mail" size={18} />
+              </span>
+              Event registration
+            </h2>
+            <p className="mb-0 mt-4 leading-relaxed">
+              The page at /events is for people who scan the banner at Let’s Talk Early Years. It asks for your name, email, and whether the training is for you or a group. A group registration also asks for the organisation. Sending the form registers your interest and secures your conference discount. Google reCAPTCHA checks the submission. Your name, email, training choice, and organisation are stored with Resend, in the LTEY AI segment, so we can tell you when a date is scheduled. We don’t keep a copy in a website database.
+            </p>
+            <p className="mb-0 mt-3 leading-relaxed text-[var(--ink-soft)]">
+              Write to zayne@roqcx.com if you want to be removed from that list. Please don’t include passwords, children’s records or confidential documents.
+            </p>
+          </section>
+
           <section>
             <h2 className="font-serif-display m-0 text-3xl">Tools that run in your browser</h2>
             <ul className="m-0 mt-6 grid list-none gap-4 p-0 sm:grid-cols-2">

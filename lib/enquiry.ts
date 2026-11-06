@@ -121,6 +121,41 @@ export function shownEnquiryError(error: unknown) {
   return enquiryErrorMessage(0)
 }
 
+export const eventAudiences = ["individual", "group"] as const
+
+function requireGroupOrganisation(data: { audience?: string; organisation?: string }, ctx: z.RefinementCtx) {
+  if (data.audience === "group" && (data.organisation?.trim().length ?? 0) < MIN_BUSINESS) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["organisation"],
+      message: "Tell us which organisation the training is for",
+    })
+  }
+}
+
+export const eventInterestSchema = z
+  .object({
+    audience: z.enum(eventAudiences, { message: "Choose individual or group training." }),
+    name: nameField,
+    email: emailField,
+    organisation: z.string().trim().max(200).optional(),
+  })
+  .superRefine(requireGroupOrganisation)
+
+export const eventInterestRequestSchema = z
+  .object({
+    audience: z.enum(eventAudiences, { message: "Choose individual or group training." }),
+    name: nameField,
+    email: emailField,
+    organisation: z.string().trim().max(200).optional(),
+    // Any value is accepted so a filled honeypot can be dropped quietly.
+    companyUrlHp: z.string().max(200).optional(),
+    token: z.string().min(1).max(4000),
+  })
+  .superRefine(requireGroupOrganisation)
+
 export type ContactFormValues = z.infer<typeof contactFormSchema>
 export type TrainingFormValues = z.infer<typeof trainingFormSchema>
 export type EnquiryRequest = z.infer<typeof enquiryRequestSchema>
+export type EventInterestValues = z.infer<typeof eventInterestSchema>
+export type EventInterestRequest = z.infer<typeof eventInterestRequestSchema>

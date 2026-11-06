@@ -65,8 +65,8 @@ export function ChatWidget() {
     return () => document.removeEventListener('keydown', onKey)
   }, [isOpen])
 
-  // The demo page has its own, larger chat.
-  if (pathname === '/chatbot') return null
+  // The demo page has its own chat. The event QR page is a single registration.
+  if (pathname === '/chatbot' || pathname === '/events') return null
 
   const send = async (content: string, example = false) => {
     if (busy || !content.trim()) return

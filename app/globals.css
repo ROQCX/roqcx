@@ -161,6 +161,71 @@
     box-shadow: 0 0 0 2px var(--void);
   }
 
+  .ltey-landing :focus-visible {
+    outline-color: #8f2d3a;
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  /* Hero lockup is sized for the column, then scaled down so it stays on one line. */
+  .ltey-landing .ltey-partnership {
+    container-type: inline-size;
+    width: 100%;
+  }
+
+  .ltey-landing .ltey-partnership-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1rem;
+    width: 29rem;
+    zoom: min(1, calc(100cqw / 29rem));
+  }
+
+  .ltey-landing .ltey-check {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .ltey-landing .ltey-check-badge {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  .ltey-landing [data-sent="true"] .ltey-check {
+    animation: ltey-check 0.65s 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .ltey-landing [data-sent="true"] .ltey-check-badge {
+    animation: ltey-badge 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes ltey-check {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes ltey-badge {
+    70% {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ltey-landing [data-sent="true"] .ltey-check,
+    .ltey-landing [data-sent="true"] .ltey-check-badge {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      stroke-dashoffset: 0;
+    }
+  }
+
   .hero-stage {
     position: relative;
     overflow: hidden;
